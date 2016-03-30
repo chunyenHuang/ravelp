@@ -30,7 +30,7 @@ var stores =[
     tags: ['coffee', 'restaurant'],
     reviews: [
       {
-        userId: 1,
+        userId: 3,
         description: tool.randomText(200),
         date: new Date()
       }, {
@@ -49,7 +49,7 @@ var stores =[
     tags: ['coffee', 'restaurant'],
     reviews: [
       {
-        userId: 1,
+        userId: 3,
         description: tool.randomText(200),
         date: new Date(),
       }, {
@@ -60,6 +60,12 @@ var stores =[
     ]
   }
 ]
+
+function Review(userId, description, date){
+  this.userId = userId;
+  this.description = description;
+  this.date = date;
+}
 
 // Users Database
 var users = [
@@ -83,6 +89,16 @@ var users = [
     phone: '123-123-1233',
     address: '100 JD St., Irvine, CA92603',
     business: true
+  }, {
+    id: 3,
+    username: "wahaha",
+    password: "123",
+    firstname: "Helena",
+    lastname: 'Kim',
+    email: '123123@gmail.com',
+    phone: '123-123-1233',
+    address: '100 JD St., Irvine, CA92603',
+    business: false
   }
 ];
 
@@ -99,9 +115,9 @@ function User(id, username, password, firstname, lastname, email, phone, address
 
 // Sessions
 var sessions =[];
-function Session(token, username){
+function Session(token, id){
   this.token = token;
-  this.username = username;
+  this.id = id;
 }
 
 // Search EventEmitter
@@ -131,7 +147,7 @@ app.post('/login', jsonParser, function(req, res){
       if (remember) {
         var token = tool.sessionToken(50);
         res.cookie('sessionTokenForRavelp', token);
-        sessions.push(new Session(token, match[0].username));
+        sessions.push(new Session(token, match[0].id));
       }
       res.json(match[0]);
     } else {
@@ -162,7 +178,7 @@ app.post('/newuser', jsonParser, function(req, res){
     var currentUser = _.where(users, {username: username});
     var token = tool.sessionToken(50);
     res.cookie('sessionTokenForRavelp', token);
-    sessions.push(new Session(token, currentUser[0].username));
+    sessions.push(new Session(token, currentUser[0].id));
     res.json(currentUser[0]);
   }
 })
@@ -197,7 +213,36 @@ app.get('/show-store/:id', function(req, res){
       reviewUserlist.push({id: user[0].id, name: user[0].firstname});
     }
   }
-  res.json({store: match[0], reviewers: reviewUserlist});
+  var currentToken = req.cookies.sessionTokenForRavelp;
+  var matchSession = _.where(sessions, {token: currentToken});
+  if (matchSession.length>0){
+    res.json({editable: true, store: match[0], reviewers: reviewUserlist});
+  } else {
+    res.json({editable: false, store: match[0], reviewers: reviewUserlist});
+  }
+})
+
+app.post('/new-review', jsonParser, function(req, res){
+  var id = req.body.id;
+  var content = req.body.content;
+  var date = new Date();
+  var currentToken = req.cookies.sessionTokenForRavelp;
+  var matchSession = _.where(sessions, {token: currentToken});
+  if (matchSession.length>0){
+    var addNewReview = new Review(matchSession[0].id, content, date);
+    var store = _.where(stores, {id: id});
+    store[0].reviews.push(addNewReview);
+    var reviewUserlist = [];
+    for (var i = 0; i < store[0].reviews.length; i++) {
+      var user = _.where(users, {id: store[0].reviews[i].userId});
+      if (user.length>0){
+        reviewUserlist.push({id: user[0].id, name: user[0].firstname});
+      }
+    }
+    res.json({editable: true, store: store[0], reviewers: reviewUserlist});
+  } else {
+    res.sendStatus(404);
+  }
 })
 
 app.listen(port, function(){

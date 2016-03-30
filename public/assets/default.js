@@ -72,13 +72,13 @@ document.body.addEventListener('click', function(event){
     XHR.send();
     XHR.onload = function(){
       var response = JSON.parse(XHR.responseText);
-      showStoreDetail(response.store, response.reviewers);
+      showStoreDetail(response);
     }
   }
 })
 
-document.body.addEventListener('submit', function(e){
-  e.preventDefault();
+document.body.addEventListener('submit', function(event){
+  event.preventDefault();
   var id = filterInt(event.target.getAttribute('data-id'));
   var type = event.target.getAttribute('data-type');
 
@@ -257,7 +257,10 @@ function showStores(store){
   right.appendChild(description);
 }
 
-function showStoreDetail(store, reviewUserlist){
+function showStoreDetail(target){
+  var store = target.store;
+  var reviewUserlist = target.reviewers;
+  var editable = target.editable;
   clearPage();
   storeDetail.classList.remove('hidden');
   var title = document.getElementById('store-title');
@@ -298,7 +301,55 @@ function showStoreDetail(store, reviewUserlist){
   // Reviews
   var reviews = document.getElementById('store-reviews');
   removeAllChild(reviews);
-  for (var i = 0; i < store.reviews.length; i++) {
+  var writingZone = document.createElement('div');
+  removeAllChild(writingZone);
+  if (editable){
+    var form = document.createElement('form');
+    form.className = 'form';
+    var textarea = document.createElement('textarea');
+    textarea.className= 'form-control';
+    textarea.setAttribute('id', 'write-review-content')
+    var button = document.createElement('button');
+    button.setAttribute('data-id', store.id);
+    button.setAttribute('date-type', 'write-review');
+    button.setAttribute('type', 'submit');
+    button.className = 'btn btn-default pull-right';
+    button.textContent = "Write My Review";
+    writingZone.appendChild(form);
+    form.appendChild(textarea);
+    form.appendChild(button);
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var newReview = {
+        id: store.id,
+        content: textarea.value
+      }
+      console.log(newReview);
+      var payload = JSON.stringify(newReview);
+      var XHR = new XMLHttpRequest();
+      XHR.open('POST', '/new-review');
+      XHR.setRequestHeader('content-type', 'application/json');
+      XHR.send(payload);
+
+      XHR.onload = function(){
+        var response = JSON.parse(XHR.responseText);
+        showStoreDetail(response);
+      }
+    })
+  } else {
+    var msgbox = document.createElement('p');
+    msgbox.className="well";
+    var msg = document.createElement('a');
+    msg.href='login';
+    msg.textContent = 'You must login for writing review.';
+    writingZone.appendChild(msgbox);
+    msgbox.appendChild(msg);
+  }
+  reviews.appendChild(writingZone);
+
+  var theReviews = store.reviews;
+  theReviews = theReviews.reverse();
+  for (var i = 0; i < theReviews.length; i++) {
     var reviewBox = document.createElement('div');
     reviewBox.className = 'row';
     var reviewLeft = document.createElement('div');
@@ -306,12 +357,12 @@ function showStoreDetail(store, reviewUserlist){
     var reviewRight = document.createElement('div');
     reviewRight.className ='col-sm-10';
     var reviewUser = document.createElement('h5');
-    var reviewers = _.where(reviewUserlist, {id: store.reviews[i].userId});
+    var reviewers = _.where(reviewUserlist, {id: theReviews[i].userId});
     reviewUser.textContent = reviewers[0].name;
     var reviewDate = document.createElement('p');
-    reviewDate.textContent = store.reviews[i].date;
+    reviewDate.textContent = theReviews[i].date;
     var reviewContent = document.createElement('p');
-    reviewContent.textContent = store.reviews[i].description;
+    reviewContent.textContent = theReviews[i].description;
     reviews.appendChild(reviewBox);
     reviewBox.appendChild(reviewLeft);
     reviewBox.appendChild(reviewRight);
