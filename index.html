@@ -7,11 +7,7 @@
     <link rel="stylesheet" href="master.css">
   </head>
   <body>
-    <div class="container">
-      <h3>Ravelp</h3>
-      <p>
-
-      </p>
+    <div class="container" id='main'>
     </div>
     <form id="login-form" class="" data-id='nan' data-type='login'>
       <div class="container">
@@ -21,16 +17,16 @@
           </div>
           <div class="panel-body">
             <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" class="form-control" id="username">
+              <label for="input-username">Username</label>
+              <input type="text" class="form-control" id="input-username">
             </div>
             <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" class="form-control" id="password">
+              <label for="input-password">Password</label>
+              <input type="password" class="form-control" id="input-password">
             </div>
             <div class="checkbox">
               <label>
-                <input type="checkbox" id="remember-me"> Remember Me
+                <input type="checkbox" id="remember-me" checked> Remember Me
               </label>
             </div>
             <div class="checkbox">
@@ -40,11 +36,12 @@
             </div>
             <button type="submit" class="btn btn-default">Login</button>
             <button type="button" class="btn btn-default" id="go-to-user-apply" data-type='new-user' data-id='nan'>New User</button>
+            <p id='error-msg'></p>
           </div>
         </div>
       </div>
     </form>
-    <form id="user-application" class="hidden">
+    <form id="user-application" class="hidden" data-id="nan" data-type='new-user'>
       <div class="container">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -87,6 +84,7 @@
               </label>
             </div>
             <button type="submit" class="btn btn-default">Apply</button>
+            <p id='error-msg-2'></p>
           </div>
         </div>
       </div>
