@@ -9,7 +9,7 @@ var homedir = {
 }
 
 gulp.task('minifyHTML', function(){
-  return gulp.src('./*html')
+  return gulp.src('./*.html')
           .pipe(htmlmin({collapseWhitespace: true}))
           .pipe(gulp.dest(homedir.public));
 })
@@ -24,12 +24,14 @@ gulp.task('server', function(){
   nodemon({
     script: 'app.js'
   })
+
   var watcherCSS = gulp.watch('./*.css', ['minifyCSS']);
   watcherCSS.on('change', function(event){
     console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
   })
+
   var watcherHTML = gulp.watch('./*.html', ['minifyHTML']);
-  watcherCSS.on('change', function(event){
+  watcherHTML.on('change', function(event){
     console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
   })
 })
