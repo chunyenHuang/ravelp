@@ -28,7 +28,17 @@ var stores =[
     phone: '(123) 123-1233',
     address: '105 Research Drive, Irvine, CA93023',
     tags: ['coffee', 'restaurant'],
-    reviews: []
+    reviews: [
+      {
+        userId: 1,
+        description: tool.randomText(200),
+        date: new Date()
+      }, {
+        userId: 2,
+        description: tool.randomText(200),
+        date: new Date()
+      }
+    ]
   }, {
     id: 2,
     name: 'Tomo Cafe',
@@ -37,7 +47,17 @@ var stores =[
     description: tool.randomText(150),
     address: '321 Culver Ave., Irvine, CA93023',
     tags: ['coffee', 'restaurant'],
-    reviews: []
+    reviews: [
+      {
+        userId: 1,
+        description: tool.randomText(200),
+        date: new Date(),
+      }, {
+        userId: 2,
+        description: tool.randomText(200),
+        date: new Date(),
+      }
+    ]
   }
 ]
 
@@ -170,7 +190,14 @@ app.post('/search', jsonParser, function(req, res){
 
 app.get('/show-store/:id', function(req, res){
   var match = _.where(stores, {id: filterInt(req.params.id)});
-  res.json(match[0]);
+  var reviewUserlist = [];
+  for (var i = 0; i < match[0].reviews.length; i++) {
+    var user = _.where(users, {id: match[0].reviews[i].userId});
+    if (user.length>0){
+      reviewUserlist.push({id: user[0].id, name: user[0].firstname});
+    }
+  }
+  res.json({store: match[0], reviewers: reviewUserlist});
 })
 
 app.listen(port, function(){

@@ -1,4 +1,4 @@
-function filterInt(value) {
+  function filterInt(value) {
   if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
     return Number(value);
   }
@@ -13,12 +13,14 @@ function removeAllChild(nodeName){
 
 function clearPage(){
   removeAllChild(main);
+  storeDetail.classList.add('hidden');
   loginForm.classList.add('hidden');
   newUserForm.classList.add('hidden');
 }
 
 // Elements
 var main = document.getElementById('main');
+var storeDetail = document.getElementById('store-detail');
 var loginForm = document.getElementById('login-form');
 var newUserForm = document.getElementById('user-application');
 var login = document.getElementById('login-button');
@@ -70,7 +72,7 @@ document.body.addEventListener('click', function(event){
     XHR.send();
     XHR.onload = function(){
       var response = JSON.parse(XHR.responseText);
-      showStoreDetail(response);
+      showStoreDetail(response.store, response.reviewers);
     }
   }
 })
@@ -255,15 +257,15 @@ function showStores(store){
   right.appendChild(description);
 }
 
-function showStoreDetail(store){
+function showStoreDetail(store, reviewUserlist){
   clearPage();
-  var panel = document.createElement('div');
-  panel.className = "panel panel-primary";
-  var heading = document.createElement('div');
-  heading.className = 'panel-heading';
-  heading.textContent = store.name;
-  var body = document.createElement('div');
-  body.className = 'panel-body';
+  storeDetail.classList.remove('hidden');
+  var title = document.getElementById('store-title');
+  title.textContent = store.name;
+
+  // Store info
+  var info = document.getElementById('store-info');
+  removeAllChild(info);
   var box = document.createElement('div');
   box.className = 'row';
   var left = document.createElement('div');
@@ -284,10 +286,7 @@ function showStoreDetail(store){
   var description = document.createElement('p');
   description.textContent = store.description;
 
-  main.appendChild(panel);
-  panel.appendChild(heading);
-  panel.appendChild(body);
-  body.appendChild(box);
+  info.appendChild(box);
   box.appendChild(left);
   box.appendChild(right);
   left.appendChild(link);
@@ -295,4 +294,29 @@ function showStoreDetail(store){
   right.appendChild(phone);
   right.appendChild(address);
   right.appendChild(description);
+
+  // Reviews
+  var reviews = document.getElementById('store-reviews');
+  removeAllChild(reviews);
+  for (var i = 0; i < store.reviews.length; i++) {
+    var reviewBox = document.createElement('div');
+    reviewBox.className = 'row';
+    var reviewLeft = document.createElement('div');
+    reviewLeft.className ='col-sm-2';
+    var reviewRight = document.createElement('div');
+    reviewRight.className ='col-sm-10';
+    var reviewUser = document.createElement('h5');
+    var reviewers = _.where(reviewUserlist, {id: store.reviews[i].userId});
+    reviewUser.textContent = reviewers[0].name;
+    var reviewDate = document.createElement('p');
+    reviewDate.textContent = store.reviews[i].date;
+    var reviewContent = document.createElement('p');
+    reviewContent.textContent = store.reviews[i].description;
+    reviews.appendChild(reviewBox);
+    reviewBox.appendChild(reviewLeft);
+    reviewBox.appendChild(reviewRight);
+    reviewLeft.appendChild(reviewUser);
+    reviewLeft.appendChild(reviewDate);
+    reviewRight.appendChild(reviewContent);
+  }
 }
