@@ -1,0 +1,30 @@
+{
+  "name": "ravelp",
+  "version": "1.0.0",
+  "description": "A Yelp-like review-based website.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chunyenHuang/ravelp.git"
+  },
+  "author": "John Huang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chunyenHuang/ravelp/issues"
+  },
+  "homepage": "https://github.com/chunyenHuang/ravelp#readme",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.1",
+    "express": "^4.13.4",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "gulp-csso": "^1.1.0",
+    "gulp-htmlmin": "^1.3.0",
+    "gulp-nodemon": "^2.0.6"
+  }
+}
