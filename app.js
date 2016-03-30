@@ -1,5 +1,6 @@
 // Database
 var users = [{
+  id: 1,
   username: "test",
   password: "123",
   firstname: "Tesla",
@@ -7,8 +8,9 @@ var users = [{
   email: '123123@gmail.com',
   phone: '123-123-1233',
   address: '100 JD St., Irvine, CA92603',
-  business: true
+  business: false
 }, {
+  id: 2,
   username: "business",
   password: "123",
   firstname: "Steve",
@@ -16,10 +18,11 @@ var users = [{
   email: '123123@gmail.com',
   phone: '123-123-1233',
   address: '100 JD St., Irvine, CA92603',
-  business: false
+  business: true
 }];
 
-function User(username, password, firstname, lastname, email, phone, address, business){
+function User(id, username, password, firstname, lastname, email, phone, address, business){
+  this.id = id;
   this.username = username;
   this.password = password;
   this.firstname = firstname;
@@ -98,7 +101,9 @@ app.post('/newuser', jsonParser, function(req, res){
   if (match.length>0){
     res.sendStatus(403);
   } else {
-    var newUser = new User(username, password, firstname, lastname, email, phone, address, business);
+    var last = _.last(users);
+    var id = last.id + 1;
+    var newUser = new User(id, username, password, firstname, lastname, email, phone, address, business);
     users.push(newUser);
     var currentUser = _.where(users, {username: username});
     var token = sessionToken(50);
@@ -109,7 +114,7 @@ app.post('/newuser', jsonParser, function(req, res){
 })
 
 app.get('/login', function(req, res){
-  var currentToken = req.cookies.sessionTokenFor85;
+  var currentToken = req.cookies.sessionTokenForRavelp;
   var matchSession = _.where(sessions, {token: currentToken});
   if (matchSession.length>0){
     var currentUser = _.where(users, {username: matchSession[0].username})

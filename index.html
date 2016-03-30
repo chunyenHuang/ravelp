@@ -7,9 +7,31 @@
     <link rel="stylesheet" href="master.css">
   </head>
   <body>
+    <div class="container-fluid" id='menu-bar'>
+      <div class="row">
+        <div class="col-sm-3">
+          <h3>Ravelp</h3>
+        </div>
+        <div class="col-sm-6">
+          <form class="form-inline" id="search-form" data-id="nan" data-type="search">
+            <input type="text" class="form-control" id="search-content" placeholder="Store Name...">
+            <input type="text" class="form-control" id="search-location" placeholder="Location">
+            <button type="submit" class="btn btn-default">Search</button>
+          </form>
+        </div>
+        <div class="col-sm-3">
+          <div id="admin-bar">
+            <span id="show-user-name"></span>
+            <button type="button" class="btn btn-default" id="login-button" data-id="nan" data-type="login">Login</button>
+            <button type="button" class="btn btn-default hidden" id="logout-button" data-id="nan" data-type="logout">Logout</button>
+            <button type="button" class="btn btn-default hidden" id="profile-button" data-id="nan" data-type="profile">My Profile</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="container" id='main'>
     </div>
-    <form id="login-form" class="" data-id='nan' data-type='login'>
+    <form id="login-form" class="hidden" data-id='nan' data-type='login'>
       <div class="container">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -89,6 +111,17 @@
         </div>
       </div>
     </form>
+    <div class="container hidden" id="show-user">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h5 id="show-user-name"></h5>
+        </div>
+        <div class="panel-body">
+          <div id="show-user-info">
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="text/javascript" src="default.js"></script>
   </body>
 </html>

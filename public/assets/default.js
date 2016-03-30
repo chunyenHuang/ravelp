@@ -16,10 +16,14 @@ function clearPage(){
   loginForm.classList.add('hidden');
   newUserForm.classList.add('hidden');
 }
+
 // Elements
 var main = document.getElementById('main');
 var loginForm = document.getElementById('login-form');
 var newUserForm = document.getElementById('user-application');
+var login = document.getElementById('login-button');
+var logout = document.getElementById('logout-button');
+var profile = document.getElementById('profile-button');
 
 // EventListeners
 document.body.addEventListener('click', function(event){
@@ -37,10 +41,27 @@ document.body.addEventListener('click', function(event){
   }
   if (type==='logout'){
     var XHR = new XMLHttpRequest();
+    XHR.open('get','/logout');
+    clearPage();
+    login.classList.remove('hidden');
+    logout.classList.add('hidden');
+    profile.classList.add('hidden');
+  }
+  if (type==='login'){
+    var XHR = new XMLHttpRequest();
     XHR.open('get','/login');
-    newUserForm.classList.add('hidden');
+    clearPage();
     loginForm.classList.remove('hidden');
-    removeAllChild(main);
+  }
+  if (type==='profile'){
+    var XHR = new XMLHttpRequest();
+    XHR.open('get','/login');
+    XHR.send();
+    XHR.onload = function(){
+      console.log(XHR.responseText);
+      var response = JSON.parse(XHR.responseText);
+      showUser(response);
+    }
   }
 })
 
@@ -74,14 +95,12 @@ document.body.addEventListener('submit', function(e){
       } else if (XHR.status === 403){
         msg.textContent = '(wrong password)';
       } else {
-        loginForm.classList.add('hidden');
-        console.log(XHR.responseText);
-
-        var logout = document.createElement('button');
-        logout.setAttribute('data-type', 'logout');
-        logout.setAttribute('data-id', 'nan');
-        logout.textContent = 'logout';
-        main.appendChild(logout);
+        var response = JSON.parse(XHR.responseText);
+        clearPage();
+        profile.classList.remove('hidden');
+        logout.classList.remove('hidden');
+        login.classList.add('hidden');
+        profile.setAttribute('data-id', response.id);
       }
     }
   }
@@ -117,14 +136,48 @@ document.body.addEventListener('submit', function(e){
       if (XHR.status === 403) {
         msg.textContent = '(username is already taken)';
       } else {
+        var response = JSON.parse(XHR.responseText);
         clearPage();
-
-        var logout = document.createElement('button');
-        logout.setAttribute('data-type', 'logout');
-        logout.setAttribute('data-id', 'nan');
-        logout.textContent = 'logout';
-        main.appendChild(logout);
+        profile.classList.remove('hidden');
+        logout.classList.remove('hidden');
+        login.classList.add('hidden');
+        profile.setAttribute('data-id', response.id);
       }
     }
   }
 })
+
+function showUser(user){
+  clearPage();
+  var panel = document.createElement('div');
+  panel.className = "panel panel-default";
+  var heading = document.createElement('div');
+  heading.className = 'panel-heading';
+  heading.textContent = user.firstname + ' ' + user.lastname;
+  var body = document.createElement('div');
+  body.className = 'panel-body';
+  var ul = document.createElement('ul');
+  var li1 = document.createElement('li');
+  var li2 = document.createElement('li');
+  var li3 = document.createElement('li');
+  var li4 = document.createElement('li');
+  var li5 = document.createElement('li');
+  var li6 = document.createElement('li');
+  li1.textContent = user.username;
+  li2.textContent = user.firstname + ' ' + user.lastname;
+  li3.textContent = user.email;
+  li4.textContent = user.phone;
+  li5.textContent = user.address;
+  li6.textContent = 'business: ' + user.business;
+  ul.appendChild(li1);
+  ul.appendChild(li2);
+  ul.appendChild(li3);
+  ul.appendChild(li4);
+  ul.appendChild(li5);
+  ul.appendChild(li6);
+
+  main.appendChild(panel);
+  panel.appendChild(heading);
+  panel.appendChild(body);
+  body.appendChild(ul);
+}
