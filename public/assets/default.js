@@ -145,6 +145,24 @@ document.body.addEventListener('submit', function(e){
       }
     }
   }
+  if (type==='search'){
+    var content = document.getElementById('search-content');
+    var location = document.getElementById('search-location');
+    var newSearch = {
+      content: content.value,
+      location: location.value
+    }
+    var payload = JSON.stringify(newSearch);
+    var XHR = new XMLHttpRequest();
+    XHR.open('POST', '/search');
+    XHR.setRequestHeader('content-type', 'application/json');
+    XHR.send(payload);
+
+    XHR.onload = function(){
+      console.log(XHR.responseText);
+    }
+  }
+
 })
 
 function showUser(user){
