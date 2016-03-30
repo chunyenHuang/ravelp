@@ -63,6 +63,16 @@ document.body.addEventListener('click', function(event){
       showUser(response);
     }
   }
+  if (type==='show-store'){
+    event.preventDefault();
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', '/show-store/'+id);
+    XHR.send();
+    XHR.onload = function(){
+      var response = JSON.parse(XHR.responseText);
+      showStoreDetail(response);
+    }
+  }
 })
 
 document.body.addEventListener('submit', function(e){
@@ -159,7 +169,11 @@ document.body.addEventListener('submit', function(e){
     XHR.send(payload);
 
     XHR.onload = function(){
-      console.log(XHR.responseText);
+      var store = JSON.parse(XHR.responseText);
+      clearPage();
+      for (var i=0; i<store.length; i++){
+        showStores(store[i]);
+      }
     }
   }
 
@@ -198,4 +212,87 @@ function showUser(user){
   panel.appendChild(heading);
   panel.appendChild(body);
   body.appendChild(ul);
+}
+
+function showStores(store){
+  var panel = document.createElement('div');
+  panel.className = "panel panel-default";
+  var heading = document.createElement('div');
+  heading.className = 'panel-heading';
+  heading.textContent = store.name;
+  var body = document.createElement('div');
+  body.className = 'panel-body';
+  var box = document.createElement('div');
+  box.className = 'row';
+  var left = document.createElement('div');
+  left.className ='col-sm-4';
+  var right = document.createElement('div');
+  right.className ='col-sm-8';
+  var link = document.createElement('a');
+  link.href = store.id;
+  var img = document.createElement('img');
+  img.src = store.thumb;
+  img.setAttribute('width', '100%');
+  img.setAttribute('data-id', store.id);
+  img.setAttribute('data-type', 'show-store');
+  var phone = document.createElement('h5');
+  phone.textContent = store.phone;
+  var address = document.createElement('h5');
+  address.textContent = store.address;
+  var description = document.createElement('p');
+  description.textContent = store.description;
+
+  main.appendChild(panel);
+  panel.appendChild(heading);
+  panel.appendChild(body);
+  body.appendChild(box);
+  box.appendChild(left);
+  box.appendChild(right);
+  left.appendChild(link);
+  link.appendChild(img);
+  right.appendChild(phone);
+  right.appendChild(address);
+  right.appendChild(description);
+}
+
+function showStoreDetail(store){
+  clearPage();
+  var panel = document.createElement('div');
+  panel.className = "panel panel-primary";
+  var heading = document.createElement('div');
+  heading.className = 'panel-heading';
+  heading.textContent = store.name;
+  var body = document.createElement('div');
+  body.className = 'panel-body';
+  var box = document.createElement('div');
+  box.className = 'row';
+  var left = document.createElement('div');
+  left.className ='col-sm-4';
+  var right = document.createElement('div');
+  right.className ='col-sm-8';
+  var link = document.createElement('a');
+  link.href = store.id;
+  var img = document.createElement('img');
+  img.src = store.thumb;
+  img.setAttribute('width', '100%');
+  img.setAttribute('data-id', store.id);
+  img.setAttribute('data-type', 'show-store');
+  var phone = document.createElement('h5');
+  phone.textContent = store.phone;
+  var address = document.createElement('h5');
+  address.textContent = store.address;
+  var description = document.createElement('p');
+  description.textContent = store.description;
+
+  main.appendChild(panel);
+  panel.appendChild(heading);
+  panel.appendChild(body);
+  body.appendChild(box);
+  box.appendChild(left);
+  box.appendChild(right);
+  left.appendChild(link);
+  link.appendChild(img);
+  right.appendChild(phone);
+  right.appendChild(address);
+  right.appendChild(description);
 }

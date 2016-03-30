@@ -11,20 +11,29 @@ var emitter = new events.EventEmitter();
 var port = 3000;
 var app = express();
 
+function filterInt(value) {
+  if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
+    return Number(value);
+  }
+  return NaN;
+}
+
 // Stores Database
 var stores =[
   {
     id: 1,
     name: 'Starbucks',
-    thumb: 'images/1.jpg',
+    thumb: '1.jpg',
     description: tool.randomText(150),
+    phone: '(123) 123-1233',
     address: '105 Research Drive, Irvine, CA93023',
     tags: ['coffee', 'restaurant'],
     reviews: []
   }, {
     id: 2,
     name: 'Tomo Cafe',
-    thumb: 'images/2.jpg',
+    thumb: '2.jpg',
+    phone: '(123) 123-1233',
     description: tool.randomText(150),
     address: '321 Culver Ave., Irvine, CA93023',
     tags: ['coffee', 'restaurant'],
@@ -68,13 +77,14 @@ function User(id, username, password, firstname, lastname, email, phone, address
   this.business = business;
 }
 
-// global functions
+// Sessions
 var sessions =[];
 function Session(token, username){
   this.token = token;
   this.username = username;
 }
 
+// Search EventEmitter
 var foundStores = [];
 emitter.on('search', function(name, location){
   foundStores = [];
@@ -156,6 +166,11 @@ app.get('/logout', function(req, res){
 app.post('/search', jsonParser, function(req, res){
   emitter.emit('search', req.body.content, req.body.location);
   res.json(foundStores);
+})
+
+app.get('/show-store/:id', function(req, res){
+  var match = _.where(stores, {id: filterInt(req.params.id)});
+  res.json(match[0]);
 })
 
 app.listen(port, function(){
