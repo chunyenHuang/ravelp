@@ -22,6 +22,7 @@ function filterInt(value) {
 var stores =[
   {
     id: 1,
+    userId: 2,
     name: 'Starbucks',
     thumb: '1.jpg',
     description: tool.randomText(150),
@@ -47,6 +48,7 @@ var stores =[
     ]
   }, {
     id: 2,
+    userId: 2,
     name: 'Tomo Cafe',
     thumb: '2.jpg',
     phone: '(123) 123-1233',
@@ -106,14 +108,14 @@ var users = [
     business: true
   }, {
     id: 3,
-    username: "wahaha",
+    username: "new",
     password: "123",
     firstname: "Helena",
     lastname: 'Kim',
     email: '123123@gmail.com',
     phone: '123-123-1233',
     address: '100 JD St., Irvine, CA92603',
-    business: false
+    business: true
   }
 ];
 
@@ -197,6 +199,7 @@ app.post('/newuser', jsonParser, function(req, res){
     var id = last.id + 1;
     var newUser = new User(id, username, password, firstname, lastname, email, phone, address, business);
     users.push(newUser);
+    console.log(users);
     var currentUser = _.where(users, {username: username});
     var token = tool.sessionToken(50);
     res.cookie('sessionTokenForRavelp', token);
@@ -207,11 +210,17 @@ app.post('/newuser', jsonParser, function(req, res){
 
 app.get('/login', function(req, res){
   emitter.emit('examination', req.cookies.sessionTokenForRavelp);
-  // var currentToken = req.cookies.sessionTokenForRavelp;
-  // var matchSession = _.where(sessions, {token: currentToken});
   if (matchSession.length>0){
-    var currentUser = _.where(users, {id: matchSession[0].id})
-    res.json(currentUser[0]);
+    var currentUser = _.where(users, {id: matchSession[0].id});
+    var store = _.where(stores, {userId: matchSession[0].id});
+    if (store.length>0){
+      var theStore = store;
+    } else if (currentUser[0].business){
+      var theStore = 'Add your store.';
+    } else {
+      var theStore = 'You have to register a business account.';
+    }
+    res.json({user: currentUser[0], store: theStore});
   } else {
     res.redirect('/');
   }

@@ -25,6 +25,7 @@ function toggleClass(target, value){
 function clearPage(){
   removeAllChild(main);
   storeDetail.classList.add('hidden');
+  accountDetail.classList.add('hidden');
   loginForm.classList.add('hidden');
   newUserForm.classList.add('hidden');
 }
@@ -32,6 +33,7 @@ function clearPage(){
 // Elements
 var main = document.getElementById('main');
 var storeDetail = document.getElementById('store-detail');
+var accountDetail = document.getElementById('account-detail');
 var loginForm = document.getElementById('login-form');
 var newUserForm = document.getElementById('user-application');
 var login = document.getElementById('login-button');
@@ -89,9 +91,8 @@ document.body.addEventListener('click', function(event){
     XHR.open('get','/login');
     XHR.send();
     XHR.onload = function(){
-      console.log(XHR.responseText);
       var response = JSON.parse(XHR.responseText);
-      showUser(response);
+      showUser(response.user, response.store);
     }
   }
   if (type==='show-store'){
@@ -122,7 +123,6 @@ document.body.addEventListener('submit', function(event){
       remember: inputRemember.checked,
       business: inputBusiness.checked,
     };
-    console.log(loginUser);
     var payload = JSON.stringify(loginUser);
     var XHR = new XMLHttpRequest();
     XHR.open('POST','/login');
@@ -210,15 +210,15 @@ document.body.addEventListener('submit', function(event){
 
 })
 
-function showUser(user){
+function showUser(user, store){
   clearPage();
-  var panel = document.createElement('div');
-  panel.className = "panel panel-default";
-  var heading = document.createElement('div');
-  heading.className = 'panel-heading';
+  accountDetail.classList.remove('hidden');
+  var heading = document.getElementById('account-title');
   heading.textContent = user.firstname + ' ' + user.lastname;
+  var row = document.createElement('div');
+  row.className = "row";
   var body = document.createElement('div');
-  body.className = 'panel-body';
+  body.className = 'col-md-12';
   var ul = document.createElement('ul');
   var li1 = document.createElement('li');
   var li2 = document.createElement('li');
@@ -238,11 +238,47 @@ function showUser(user){
   ul.appendChild(li4);
   ul.appendChild(li5);
   ul.appendChild(li6);
-
-  main.appendChild(panel);
-  panel.appendChild(heading);
-  panel.appendChild(body);
+  row.appendChild(body);
   body.appendChild(ul);
+  var accountInfo = document.getElementById('account-info');
+  removeAllChild(accountInfo);
+  accountInfo.appendChild(row);
+
+  var accountStore = document.getElementById('account-store');
+  removeAllChild(accountStore);
+  if (store.lenth>0){
+    for (var i = 0; i < store.length; i++) {
+      console.log(store[i].thumb);
+      var storeBox = document.createElement('div');
+      storeBox.className = 'row';
+      var storeImgBox = document.createElement('div');
+      storeImgBox.className = 'col-sm-3';
+      var storeInfoBox = document.createElement('div');
+      storeInfoBox.className = 'col-sm-9';
+      var storeImg = document.createElement('img');
+      storeImg.src = store[i].thumb;
+      storeImg.className = 'img-responsive';
+      var storeTitle = document.createElement('h5');
+      storeTitle.textContent = store[i].name;
+      accountStore.appendChild(storeBox);
+      storeBox.appendChild(storeImgBox);
+      storeBox.appendChild(storeInfoBox);
+      storeImgBox.appendChild(storeImg);
+      storeInfoBox.appendChild(storeTitle);
+    }
+  }
+  else if (user.business){
+    var accountStore = document.getElementById('account-store');
+    var linkNewStore = document.createElement('a');
+    linkNewStore.textContent = store;
+    linkNewStore.href='#';
+    accountStore.appendChild(linkNewStore);
+  }
+  else {
+    var accountStore = document.getElementById('account-store');
+    accountStore.textContent = store;
+  }
+
 }
 
 function showStores(store){
@@ -400,7 +436,8 @@ function showStoreDetail(target){
         showStoreDetail(response);
       }
     })
-  } else if (editable) {
+  }
+  else if (editable) {
     var msgbox = document.createElement('p');
     msgbox.className="well";
     var msg = document.createElement('a');
@@ -408,7 +445,8 @@ function showStoreDetail(target){
     msg.textContent = 'You can edit';
     writingZone.appendChild(msgbox);
     msgbox.appendChild(msg);
-  } else  {
+  }
+  else  {
     var msgbox = document.createElement('p');
     msgbox.className="well";
     var msg = document.createElement('a');

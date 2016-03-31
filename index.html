@@ -25,7 +25,7 @@
             <span id="show-user-name"></span>
             <button type="button" class="btn btn-default" id="login-button" data-id="nan" data-type="login">Login</button>
             <button type="button" class="btn btn-default hidden" id="logout-button" data-id="nan" data-type="logout">Logout</button>
-            <button type="button" class="btn btn-default hidden" id="profile-button" data-id="nan" data-type="profile">My Profile</button>
+            <button type="button" class="btn btn-default hidden" id="profile-button" data-id="nan" data-type="profile">My Account</button>
           </div>
         </div>
       </div>
@@ -123,6 +123,22 @@
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="store-info">...</div>
           <div role="tabpanel" class="tab-pane" id="store-reviews"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="account-detail" class="">
+      <div class="container">
+        <h3 id="account-title"></h3>
+        <ul class="nav nav-tabs" role="tablist">
+          <li role="presentation" class="active"><a href="#account-info" aria-controls="account-info" role="tab" data-toggle="tab">Information</a></li>
+          <li role="presentation"><a href="#account-reviews" aria-controls="account-reviews" role="tab" data-toggle="tab">My Reviews</a></li>
+          <li role="presentation"><a href="#account-store" aria-controls="account-store" role="tab" data-toggle="tab" name="store-tab">My Stores</a></li>
+        </ul>
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="account-info"></div>
+          <div role="tabpanel" class="tab-pane" id="account-reviews"></div>
+          <div role="tabpanel" class="tab-pane" id="account-store"></div>
         </div>
       </div>
     </div>
