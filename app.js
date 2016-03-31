@@ -32,11 +32,17 @@ var stores =[
       {
         userId: 3,
         description: tool.randomText(200),
-        date: new Date()
+        date: new Date(),
+        rating: 5,
+        tags: {useful: 5, funny: 100, cool: 0},
+        comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }, {
         userId: 2,
         description: tool.randomText(200),
-        date: new Date()
+        date: new Date(),
+        rating: 3,
+        tags: {useful: 5, funny: 100, cool: 0},
+        comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }
     ]
   }, {
@@ -52,18 +58,25 @@ var stores =[
         userId: 3,
         description: tool.randomText(200),
         date: new Date(),
+        rating: 2,
+        tags: {useful: 5, funny: 100, cool: 0},
+        comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }, {
         userId: 2,
         description: tool.randomText(200),
         date: new Date(),
+        rating: 1,
+        tags: {useful: 5, funny: 100, cool: 0},
+        comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }
     ]
   }
 ]
 
-function Review(userId, description, date){
+function Review(userId, description, rating, date){
   this.userId = userId;
   this.description = description;
+  this.rating = rating;
   this.date = date;
 }
 
@@ -127,6 +140,13 @@ emitter.on('search', function(name, location){
   search.target(name, location, stores, foundStores);
 })
 
+// Examination Evmiiter
+var matchSession = [];
+emitter.on('examination', function(cookie){
+  matchSession = [];
+  matchSession = _.where(sessions, {token: cookie});
+})
+
 // Routes
 app.use(express.static('./public/assets'));
 app.use(express.static('./public/images'));
@@ -184,10 +204,11 @@ app.post('/newuser', jsonParser, function(req, res){
 })
 
 app.get('/login', function(req, res){
-  var currentToken = req.cookies.sessionTokenForRavelp;
-  var matchSession = _.where(sessions, {token: currentToken});
+  emitter.emit('examination', req.cookies.sessionTokenForRavelp);
+  // var currentToken = req.cookies.sessionTokenForRavelp;
+  // var matchSession = _.where(sessions, {token: currentToken});
   if (matchSession.length>0){
-    var currentUser = _.where(users, {username: matchSession[0].username})
+    var currentUser = _.where(users, {id: matchSession[0].id})
     res.json(currentUser[0]);
   } else {
     res.redirect('/');
@@ -205,10 +226,10 @@ app.post('/search', jsonParser, function(req, res){
 })
 
 app.get('/show-store/:id', function(req, res){
-  var match = _.where(stores, {id: filterInt(req.params.id)});
+  var store = _.where(stores, {id: filterInt(req.params.id)});
   var reviewUserlist = [];
-  for (var i = 0; i < match[0].reviews.length; i++) {
-    var user = _.where(users, {id: match[0].reviews[i].userId});
+  for (var i = 0; i < store[0].reviews.length; i++) {
+    var user = _.where(users, {id: store[0].reviews[i].userId});
     if (user.length>0){
       reviewUserlist.push({id: user[0].id, name: user[0].firstname});
     }
@@ -216,22 +237,29 @@ app.get('/show-store/:id', function(req, res){
   var currentToken = req.cookies.sessionTokenForRavelp;
   var matchSession = _.where(sessions, {token: currentToken});
   if (matchSession.length>0){
-    res.json({editable: true, store: match[0], reviewers: reviewUserlist});
+    var written = _.where(store.reviews, {userId: matchSession[0].id});
+    if (written.length>0){
+      res.json({writable: false, editable: true, store: store[0], reviewers: reviewUserlist});
+    } else {
+      res.json({writable: true, editable: false, store: store[0], reviewers: reviewUserlist});
+    }
   } else {
-    res.json({editable: false, store: match[0], reviewers: reviewUserlist});
+    res.json({writable: false, editable: false, store: store[0], reviewers: reviewUserlist});
   }
 })
 
 app.post('/new-review', jsonParser, function(req, res){
   var id = req.body.id;
   var content = req.body.content;
+  var rating = req.body.rating;
   var date = new Date();
   var currentToken = req.cookies.sessionTokenForRavelp;
   var matchSession = _.where(sessions, {token: currentToken});
   if (matchSession.length>0){
-    var addNewReview = new Review(matchSession[0].id, content, date);
     var store = _.where(stores, {id: id});
+    var addNewReview = new Review(matchSession[0].id, content, rating, date);
     store[0].reviews.push(addNewReview);
+    console.log(store[0].reviews);
     var reviewUserlist = [];
     for (var i = 0; i < store[0].reviews.length; i++) {
       var user = _.where(users, {id: store[0].reviews[i].userId});
@@ -239,7 +267,7 @@ app.post('/new-review', jsonParser, function(req, res){
         reviewUserlist.push({id: user[0].id, name: user[0].firstname});
       }
     }
-    res.json({editable: true, store: store[0], reviewers: reviewUserlist});
+    res.json({writable: false, editable: true, store: store[0], reviewers: reviewUserlist});
   } else {
     res.sendStatus(404);
   }

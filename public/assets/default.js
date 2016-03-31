@@ -1,4 +1,4 @@
-  function filterInt(value) {
+function filterInt(value) {
   if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
     return Number(value);
   }
@@ -260,6 +260,7 @@ function showStores(store){
 function showStoreDetail(target){
   var store = target.store;
   var reviewUserlist = target.reviewers;
+  var writable = target.writable;
   var editable = target.editable;
   clearPage();
   storeDetail.classList.remove('hidden');
@@ -298,14 +299,34 @@ function showStoreDetail(target){
   right.appendChild(address);
   right.appendChild(description);
 
-  // Reviews
+  // Write Reviews
   var reviews = document.getElementById('store-reviews');
   removeAllChild(reviews);
   var writingZone = document.createElement('div');
   removeAllChild(writingZone);
-  if (editable){
+  if (writable){
+    var formRow = document.createElement('div');
+    formRow.className = 'row';
     var form = document.createElement('form');
     form.className = 'form';
+    var leftFromRow = document.createElement('div');
+    leftFromRow.className = 'col-sm-3';
+    var midFromRow = document.createElement('div');
+    midFromRow.className = 'col-sm-6';
+    var rightFromRow = document.createElement('div');
+    rightFromRow.className = 'col-sm-3';
+    var starRatings = document.createElement('div');
+    for (var i = 1; i <= 5; i++) {
+      var starLabel = document.createElement('label');
+      starLabel.className = "radio-inline";
+      starLabel.textContent = i;
+      var starInput = document.createElement('input');
+      starInput.setAttribute('type', 'radio');
+      starInput.setAttribute('name', 'star-options');
+      starInput.setAttribute('value', i);
+      starLabel.appendChild(starInput);
+      starRatings.appendChild(starLabel);
+    }
     var textarea = document.createElement('textarea');
     textarea.className= 'form-control';
     textarea.setAttribute('id', 'write-review-content')
@@ -315,14 +336,27 @@ function showStoreDetail(target){
     button.setAttribute('type', 'submit');
     button.className = 'btn btn-default pull-right';
     button.textContent = "Write My Review";
-    writingZone.appendChild(form);
-    form.appendChild(textarea);
-    form.appendChild(button);
+    writingZone.appendChild(formRow);
+    formRow.appendChild(form);
+    form.appendChild(leftFromRow);
+    form.appendChild(midFromRow);
+    form.appendChild(rightFromRow);
+    leftFromRow.appendChild(starRatings);
+    midFromRow.appendChild(textarea);
+    rightFromRow.appendChild(button);
     form.addEventListener('submit', function(e){
       e.preventDefault();
+      var starOptions = document.getElementsByName('star-options');
+      for (var x=0; x<starOptions.length; x++){
+        if (starOptions[x].checked){
+          var starValue = filterInt(starOptions[x].value);
+          break;
+        }
+      }
       var newReview = {
         id: store.id,
-        content: textarea.value
+        content: textarea.value,
+        rating: starValue
       }
       console.log(newReview);
       var payload = JSON.stringify(newReview);
@@ -336,7 +370,15 @@ function showStoreDetail(target){
         showStoreDetail(response);
       }
     })
-  } else {
+  } else if (editable) {
+    var msgbox = document.createElement('p');
+    msgbox.className="well";
+    var msg = document.createElement('a');
+    msg.href='login';
+    msg.textContent = 'You can edit';
+    writingZone.appendChild(msgbox);
+    msgbox.appendChild(msg);
+  } else  {
     var msgbox = document.createElement('p');
     msgbox.className="well";
     var msg = document.createElement('a');
@@ -359,15 +401,21 @@ function showStoreDetail(target){
     var reviewUser = document.createElement('h5');
     var reviewers = _.where(reviewUserlist, {id: theReviews[i].userId});
     reviewUser.textContent = reviewers[0].name;
-    var reviewDate = document.createElement('p');
+
+    var showStars = document.createElement('img');
+    showStars.src = "rating-" + theReviews[i].rating + ".png";
+    showStars.className = "rating-stars";
+    var reviewDate = document.createElement('span');
     reviewDate.textContent = theReviews[i].date;
+
     var reviewContent = document.createElement('p');
     reviewContent.textContent = theReviews[i].description;
     reviews.appendChild(reviewBox);
     reviewBox.appendChild(reviewLeft);
     reviewBox.appendChild(reviewRight);
     reviewLeft.appendChild(reviewUser);
-    reviewLeft.appendChild(reviewDate);
+    reviewRight.appendChild(showStars);
+    reviewRight.appendChild(reviewDate);
     reviewRight.appendChild(reviewContent);
   }
 }
