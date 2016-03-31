@@ -11,6 +11,17 @@ function removeAllChild(nodeName){
   }
 }
 
+function toggleClass(target, value){
+  var classes = target.className.split(' ');
+  var position = classes.indexOf(value);
+  if (position === -1 ){
+    classes.push(value);
+  } else {
+    classes.splice(position, 1);
+  }
+  target.className = classes.join(' ');
+}
+
 function clearPage(){
   removeAllChild(main);
   storeDetail.classList.add('hidden');
@@ -37,6 +48,24 @@ document.body.addEventListener('click', function(event){
     var type = event.target.parentNode.getAttribute('data-type');
   }
 
+  if (type==='review-tags'){
+    event.preventDefault();
+    var review = event.target.getAttribute('data-sub-id');
+    var tag = event.target.getAttribute('name');
+    var XHR = new XMLHttpRequest();
+    if (event.target.classList.contains('active')){
+      var change = false;
+    } else {
+      var change = true;
+    }
+    XHR.open('get','/review-tags/' + id + '/' + review + '/' + tag + '/' + change);
+    XHR.send();
+    XHR.onload = function(){
+      var response = JSON.parse(XHR.responseText);
+      toggleClass(event.target, 'active');
+      event.target.textContent = event.target.getAttribute('name');
+    }
+  }
   if (type==='new-user'){
     newUserForm.classList.remove('hidden');
     loginForm.classList.add('hidden');
@@ -262,6 +291,7 @@ function showStoreDetail(target){
   var reviewUserlist = target.reviewers;
   var writable = target.writable;
   var editable = target.editable;
+  var userId = target.currentUserId;
   clearPage();
   storeDetail.classList.remove('hidden');
   var title = document.getElementById('store-title');
@@ -390,10 +420,10 @@ function showStoreDetail(target){
   reviews.appendChild(writingZone);
 
   var theReviews = store.reviews;
-  theReviews = theReviews.reverse();
+  // theReviews = theReviews.reverse();
   for (var i = 0; i < theReviews.length; i++) {
     var reviewBox = document.createElement('div');
-    reviewBox.className = 'row';
+    reviewBox.className = 'row reviews';
     var reviewLeft = document.createElement('div');
     reviewLeft.className ='col-sm-2';
     var reviewRight = document.createElement('div');
@@ -410,6 +440,7 @@ function showStoreDetail(target){
 
     var reviewContent = document.createElement('p');
     reviewContent.textContent = theReviews[i].description;
+
     reviews.appendChild(reviewBox);
     reviewBox.appendChild(reviewLeft);
     reviewBox.appendChild(reviewRight);
@@ -417,5 +448,51 @@ function showStoreDetail(target){
     reviewRight.appendChild(showStars);
     reviewRight.appendChild(reviewDate);
     reviewRight.appendChild(reviewContent);
+    setTagButtons(userId, i, store, theReviews[i], reviewRight);
   }
+}
+
+function setTagButtons(userId, i, store, reviews, location){
+  var buttonUseful = document.createElement('button');
+  buttonUseful.className = 'btn btn-sm btn-default';
+  buttonUseful.setAttribute('name', 'useful');
+  buttonUseful.setAttribute('data-id', store.id);
+  buttonUseful.setAttribute('data-sub-id', i);
+  buttonUseful.setAttribute('data-type', 'review-tags');
+  buttonUseful.textContent = 'useful';
+
+  var buttonFunny = document.createElement('button');
+  buttonFunny.className = 'btn btn-sm btn-default';
+  buttonFunny.setAttribute('name', 'funny');
+  buttonFunny.setAttribute('data-id', store.id);
+  buttonFunny.setAttribute('data-sub-id', i);
+  buttonFunny.setAttribute('data-type', 'review-tags');
+  buttonFunny.textContent = 'funny';
+
+  var buttonCool = document.createElement('button');
+  buttonCool.className = 'btn btn-sm btn-default';
+  buttonCool.setAttribute('name', 'cool');
+  buttonCool.setAttribute('data-id', store.id);
+  buttonCool.setAttribute('data-sub-id', i);
+  buttonCool.setAttribute('data-type', 'review-tags');
+  buttonCool.textContent = 'cool';
+
+  if (userId){
+    var check = _.findWhere(reviews.tags, {userId: userId});
+    if (check.useful){
+      buttonUseful.classList.add('active');
+    }
+    if (check.funny){
+      buttonFunny.classList.add('active');
+    }
+    if (check.cool){
+      buttonCool.classList.add('active');
+    }
+  }
+
+  var buttons = document.createElement('div');
+  buttons.appendChild(buttonUseful);
+  buttons.appendChild(buttonFunny);
+  buttons.appendChild(buttonCool);
+  location.appendChild(buttons);
 }

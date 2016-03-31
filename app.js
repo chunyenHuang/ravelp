@@ -34,14 +34,14 @@ var stores =[
         description: tool.randomText(200),
         date: new Date(),
         rating: 5,
-        tags: {useful: 5, funny: 100, cool: 0},
+        tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: true, funny: true, cool: false}],
         comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }, {
         userId: 2,
         description: tool.randomText(200),
         date: new Date(),
         rating: 3,
-        tags: {useful: 5, funny: 100, cool: 0},
+        tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
         comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }
     ]
@@ -59,25 +59,27 @@ var stores =[
         description: tool.randomText(200),
         date: new Date(),
         rating: 2,
-        tags: {useful: 5, funny: 100, cool: 0},
+        tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
         comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }, {
         userId: 2,
         description: tool.randomText(200),
         date: new Date(),
         rating: 1,
-        tags: {useful: 5, funny: 100, cool: 0},
+        tags: [{userId: 1, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
         comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }
     ]
   }
 ]
 
-function Review(userId, description, rating, date){
+function Review(userId, description, rating, date, tags, comments){
   this.userId = userId;
   this.description = description;
   this.rating = rating;
   this.date = date;
+  this.tags = tags;
+  this.commemts = comments;
 }
 
 // Users Database
@@ -225,6 +227,36 @@ app.post('/search', jsonParser, function(req, res){
   res.json(foundStores);
 })
 
+app.get('/review-tags/:id/:review/:tag/:change', function(req, res){
+  console.log(req.url);
+  emitter.emit('examination', req.cookies.sessionTokenForRavelp);
+  if (matchSession.length>0){
+    var store = _.where(stores, {id: filterInt(req.params.id)});
+    var theReview = store[0].reviews[req.params.review];
+    var tagName = req.params.tag;
+    var change = req.params.change;
+    var theTag = _.where(theReview.tags, {userId: matchSession[0].id});
+    if (theTag.length < 1){
+      var array = theReview.tags;
+      array.push({userId: matchSession[0].id, useful: false, funny: false, cool: false });
+      theTag = _.where(array, {userId: matchSession[0].id});
+    }
+    if (tagName === 'useful'){
+      theTag[0].useful = change;
+    }
+    if (tagName === 'funny'){
+      theTag[0].funny = change;
+    }
+    if (tagName === 'cool'){
+      theTag[0].cool = change;
+    }
+    console.log(theTag[0]);
+    res.send(theTag[0]);
+  } else {
+    res.sendStatus(404);
+  }
+})
+
 app.get('/show-store/:id', function(req, res){
   var store = _.where(stores, {id: filterInt(req.params.id)});
   var reviewUserlist = [];
@@ -239,9 +271,9 @@ app.get('/show-store/:id', function(req, res){
   if (matchSession.length>0){
     var written = _.where(store.reviews, {userId: matchSession[0].id});
     if (written.length>0){
-      res.json({writable: false, editable: true, store: store[0], reviewers: reviewUserlist});
+      res.json({writable: false, editable: true, store: store[0], reviewers: reviewUserlist, currentUserId: matchSession[0].id});
     } else {
-      res.json({writable: true, editable: false, store: store[0], reviewers: reviewUserlist});
+      res.json({writable: true, editable: false, store: store[0], reviewers: reviewUserlist, currentUserId: matchSession[0].id});
     }
   } else {
     res.json({writable: false, editable: false, store: store[0], reviewers: reviewUserlist});
@@ -257,7 +289,9 @@ app.post('/new-review', jsonParser, function(req, res){
   var matchSession = _.where(sessions, {token: currentToken});
   if (matchSession.length>0){
     var store = _.where(stores, {id: id});
-    var addNewReview = new Review(matchSession[0].id, content, rating, date);
+    var tags = [];
+    var comments =[];
+    var addNewReview = new Review(matchSession[0].id, content, rating, date, tags, comments);
     store[0].reviews.push(addNewReview);
     console.log(store[0].reviews);
     var reviewUserlist = [];
