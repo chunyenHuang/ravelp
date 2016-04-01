@@ -24,6 +24,7 @@ function toggleClass(target, value){
 
 function clearPage(){
   removeAllChild(main);
+  removeAllChild(storeReviews);
   storeDetail.classList.add('hidden');
   accountDetail.classList.add('hidden');
   loginForm.classList.add('hidden');
@@ -33,6 +34,7 @@ function clearPage(){
 // Elements
 var main = document.getElementById('main');
 var storeDetail = document.getElementById('store-detail');
+var storeReviews = document.getElementById('store-reviews');
 var accountDetail = document.getElementById('account-detail');
 var navbarUsername = document.getElementById('show-user-name');
 var loginForm = document.getElementById('login-form');
@@ -50,7 +52,10 @@ document.body.addEventListener('click', function(event){
     var id = filterInt(event.target.parentNode.getAttribute('data-id'));
     var type = event.target.parentNode.getAttribute('data-type');
   }
-
+  if (type==='show-login-page'){
+    event.preventDefault();
+    showLoginPage();
+  }
   if (type==='review-tags'){
     event.preventDefault();
     var review = event.target.getAttribute('data-sub-id');
@@ -80,13 +85,14 @@ document.body.addEventListener('click', function(event){
     login.classList.remove('hidden');
     logout.classList.add('hidden');
     profile.classList.add('hidden');
+    navbarUsername.textContent = '';
   }
-  if (type==='login'){
-    var XHR = new XMLHttpRequest();
-    XHR.open('get','/login');
-    clearPage();
-    loginForm.classList.remove('hidden');
-  }
+  // if (type==='login'){
+  //   var XHR = new XMLHttpRequest();
+  //   XHR.open('get','/login');
+  //   clearPage();
+  //   loginForm.classList.remove('hidden');
+  // }
   if (type==='profile'){
     var XHR = new XMLHttpRequest();
     XHR.open('get','/login');
@@ -213,6 +219,11 @@ document.body.addEventListener('submit', function(event){
 
 })
 
+function showLoginPage(){
+  clearPage();
+  loginForm.classList.remove('hidden');
+}
+
 function showUser(user, store, reviews){
   clearPage();
 
@@ -252,7 +263,7 @@ function showUser(user, store, reviews){
   // My Reviews
   var accountReviews = document.getElementById('account-reviews');
   removeAllChild(accountReviews);
-  if (reviews.length>0){
+  if (typeof(reviews)==='object'){
     for (var i = 0; i < reviews.length; i++) {
       var myReviews = reviews[i].review;
       var theStore = reviews[i].store;
@@ -280,14 +291,17 @@ function showUser(user, store, reviews){
       rTextBox.appendChild(rStoreTitle);
       rTextBox.appendChild(rDate);
       rTextBox.appendChild(rContent);
-
     }
+  }
+  else {
+    console.log(reviews);
+    accountReviews.textContent = reviews;
   }
 
   // My Stores
   var accountStore = document.getElementById('account-store');
   removeAllChild(accountStore);
-  if (store.length>0){
+  if (typeof(store)==='object'){
     for (var i = 0; i < store.length; i++) {
       console.log(store[i].thumb);
       var storeBox = document.createElement('div');
@@ -407,8 +421,7 @@ function showStoreDetail(target){
   right.appendChild(description);
 
   // Write Reviews
-  var reviews = document.getElementById('store-reviews');
-  removeAllChild(reviews);
+  removeAllChild(storeReviews);
   var writingZone = document.createElement('div');
   removeAllChild(writingZone);
   if (writable){
@@ -491,12 +504,14 @@ function showStoreDetail(target){
     var msgbox = document.createElement('p');
     msgbox.className="well";
     var msg = document.createElement('a');
-    msg.href='login';
+    msg.href='#';
+    msg.setAttribute('data-type', 'show-login-page');
+    msg.setAttribute('data-id', 'nan');
     msg.textContent = 'You must login for writing review.';
     writingZone.appendChild(msgbox);
     msgbox.appendChild(msg);
   }
-  reviews.appendChild(writingZone);
+  storeReviews.appendChild(writingZone);
 
   var theReviews = store.reviews;
   // theReviews = theReviews.reverse();
@@ -520,7 +535,7 @@ function showStoreDetail(target){
     var reviewContent = document.createElement('p');
     reviewContent.textContent = theReviews[i].description;
 
-    reviews.appendChild(reviewBox);
+    storeReviews.appendChild(reviewBox);
     reviewBox.appendChild(reviewLeft);
     reviewBox.appendChild(reviewRight);
     reviewLeft.appendChild(reviewUser);

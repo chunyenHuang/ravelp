@@ -27,7 +27,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
             <li><p class='navbar-text' id="show-user-name"></p></li>
-            <li><button type="button" class="navbar-btn btn btn-default" id="login-button" data-id="nan" data-type="login">Login</button>
+            <li><button type="button" class="navbar-btn btn btn-default" id="login-button" data-id="nan" data-type="show-login-page">Login</button>
             <li><button type="button" class="navbar-btn btn btn-default hidden" id="logout-button" data-id="nan" data-type="logout">Logout</button>
             <li><button type="button" class="navbar-btn btn btn-default hidden" id="profile-button" data-id="nan" data-type="profile">My Account</button>
           </ul>
@@ -36,7 +36,7 @@
     </nav>
     <div class="container" id='main'>
     </div>
-    <form id="login-form" class="" data-id='nan' data-type='login'>
+    <form id="login-form" class="hidden" data-id='nan' data-type='login'>
       <div class="container">
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -131,7 +131,7 @@
       </div>
     </div>
 
-    <div id="account-detail" class="">
+    <div id="account-detail" class="hidden">
       <div class="container">
         <h3 id="account-title"></h3>
         <ul class="nav nav-tabs" role="tablist">

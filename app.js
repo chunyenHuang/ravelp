@@ -220,7 +220,6 @@ app.get('/login', function(req, res){
         allReviews.push({store: stores[i], review: theReview[0]});
       }
     }
-    console.log(allReviews);
     if (store.length>0){
       var theStore = store;
     } else if (currentUser[0].business){
@@ -231,6 +230,7 @@ app.get('/login', function(req, res){
     if (allReviews.length == 0){
       allReviews = 'You have not written any reviews yet.';
     }
+    console.log(allReviews);
     res.json({user: currentUser[0], store: theStore, reviews: allReviews});
   } else {
     res.redirect('/');
