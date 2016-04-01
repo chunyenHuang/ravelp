@@ -214,7 +214,7 @@ app.use(express.static('./public/images'));
 app.use(cookieParser());
 
 app.get('/', function(req, res){
-  res.redirect('/home');
+  res.sendFile(__dirname + '/public/index.html');
 })
 
 app.get('/home', function(req, res){

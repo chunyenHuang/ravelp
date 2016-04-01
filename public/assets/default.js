@@ -80,6 +80,9 @@ document.body.addEventListener('click', function(event){
     var id = filterInt(event.target.parentNode.getAttribute('data-id'));
     var type = event.target.parentNode.getAttribute('data-type');
   }
+  if (type==='home'){
+    homepage();
+  }
   if (type==='show-login-page'){
     event.preventDefault();
     showLoginPage();
@@ -136,7 +139,6 @@ document.body.addEventListener('click', function(event){
     XHR.send();
     XHR.onload = function(){
       var store = JSON.parse(XHR.responseText);
-      console.log(store);
       editStoreForm.setAttribute('data-id', filterInt(store.id));
       var name = document.getElementById('edit-store-name');
       var description = document.getElementById('edit-store-description');
@@ -212,7 +214,6 @@ document.body.addEventListener('submit', function(event){
       address: address.value,
       business: business.checked,
     };
-    console.log(newUser);
     var payload = JSON.stringify(newUser);
     var XHR = new XMLHttpRequest();
     XHR.open('POST', '/newuser');
@@ -395,7 +396,6 @@ function showUser(user, store, reviews){
     }
   }
   else {
-    console.log(reviews);
     accountReviews.textContent = reviews;
   }
 
@@ -404,7 +404,6 @@ function showUser(user, store, reviews){
   removeAllChild(accountStore);
   if (typeof(store)==='object'){
     for (var i = 0; i < store.length; i++) {
-      console.log(store[i].thumb);
       var storeBox = document.createElement('div');
       storeBox.className = 'row';
       var storeImgBox = document.createElement('div');
@@ -414,7 +413,7 @@ function showUser(user, store, reviews){
       var storeLink = document.createElement('a');
       storeLink.href='#';
       storeLink.setAttribute('data-type', 'show-store');
-      storeLink.setAttribute('data-id', filterInt(store[0].id));
+      storeLink.setAttribute('data-id', filterInt(store[i].id));
       var storeImg = document.createElement('img');
       storeImg.src = store[i].thumb;
       storeImg.className = 'img-responsive';
@@ -563,6 +562,7 @@ function showStoreDetail(target){
   left.className ='col-sm-4';
   var right = document.createElement('div');
   right.className ='col-sm-8';
+
   var link = document.createElement('a');
   link.href = store.id;
   var img = document.createElement('img');
@@ -646,7 +646,6 @@ function showStoreDetail(target){
         content: textarea.value,
         rating: starValue
       }
-      console.log(newReview);
       var payload = JSON.stringify(newReview);
       var XHR = new XMLHttpRequest();
       XHR.open('POST', '/new-review');
@@ -687,7 +686,6 @@ function showStoreDetail(target){
     review.reverse();
     var notShown = _.difference(review, showed);
     var toShow = _.first(notShown, num);
-    console.log(toShow);
     toShow.reverse();
     showedReviews.push(toShow);
     showedReviews = _.flatten(showedReviews);
@@ -729,10 +727,18 @@ function showStoreDetail(target){
   loadMoreReviews(theReviews, showedReviews, 10);
   loadReviews(showedReviews, reviewUserlist, userId, store);
 
+  var expand = document.getElementById('expand-reviews');
+  var expandButton = document.createElement('button');
+  expandButton.className = 'btn btn-sm btn-default btn-block';
+  expandButton.textContent = 'Load more reviews.'
+  expand.appendChild(expandButton);
+  expandButton.addEventListener('click', function(){
+    loadMoreReviews(theReviews, showedReviews, 10);
+    loadReviews(showedReviews, reviewUserlist, userId, store);
+  })
 }
 
 function setTagButtons(userId, store, reviews, location){
-  console.log(reviews);
   var buttonUseful = document.createElement('button');
   buttonUseful.className = 'btn btn-sm btn-success';
   buttonUseful.setAttribute('name', 'useful');
