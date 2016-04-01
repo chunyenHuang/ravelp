@@ -239,6 +239,27 @@ app.post('/new-store', jsonParser, function(req, res){
   }
 })
 
+app.post('/edit-store', jsonParser, function(req, res){
+  emitter.emit('examination', req.cookies.sessionTokenForRavelp);
+  if (matchSession.length>0){
+    var id = req.body.id;
+    var name = req.body.name;
+    var description = req.body.description;
+    var phone = req.body.phone;
+    var address = req.body.address;
+    var userId = matchSession[0].id;
+    var theStore = _.where(stores, {id: id, userId: userId});
+    theStore[0].name = name;
+    theStore[0].description = description;
+    theStore[0].phone = phone;
+    theStore[0].address = address;
+    res.sendStatus('200');
+  }
+  else {
+    res.sendStatus('404');
+  }
+})
+
 app.get('/login', function(req, res){
   emitter.emit('examination', req.cookies.sessionTokenForRavelp);
   if (matchSession.length>0){
@@ -306,6 +327,11 @@ app.get('/review-tags/:id/:review/:tag/:change', function(req, res){
   } else {
     res.sendStatus(404);
   }
+})
+
+app.get('/store-data/:id', function(req, res){
+  var store = _.where(stores, {id: filterInt(req.params.id)});
+  res.json(store[0]);
 })
 
 app.get('/show-store/:id', function(req, res){

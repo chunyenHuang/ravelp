@@ -30,6 +30,7 @@ function clearPage(){
   loginForm.classList.add('hidden');
   newUserForm.classList.add('hidden');
   newStoreForm.classList.add('hidden');
+  editStoreForm.classList.add('hidden');
 }
 
 // Elements
@@ -41,6 +42,7 @@ var navbarUsername = document.getElementById('show-user-name');
 var loginForm = document.getElementById('login-form');
 var newUserForm = document.getElementById('user-application');
 var newStoreForm = document.getElementById('store-application');
+var editStoreForm = document.getElementById('store-edit');
 var login = document.getElementById('login-button');
 var logout = document.getElementById('logout-button');
 var profile = document.getElementById('profile-button');
@@ -100,6 +102,26 @@ document.body.addEventListener('click', function(event){
   if (type==='show-add-store-page'){
     clearPage();
     newStoreForm.classList.remove('hidden');
+  }
+  if (type==='show-edit-store-page'){
+    clearPage();
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', '/store-data/' + id);
+    XHR.send();
+    XHR.onload = function(){
+      var store = JSON.parse(XHR.responseText);
+      console.log(store);
+      editStoreForm.setAttribute('data-id', filterInt(store.id));
+      var name = document.getElementById('edit-store-name');
+      var description = document.getElementById('edit-store-description');
+      var phone = document.getElementById('edit-store-phone');
+      var address = document.getElementById('edit-store-address');
+      name.value = store.name;
+      description.value = store.description;
+      phone.value = store.phone;
+      address.value = store.address;
+      editStoreForm.classList.remove('hidden');
+    }
   }
 })
 
@@ -231,6 +253,33 @@ document.body.addEventListener('submit', function(event){
       }
     }
   }
+  if (type==='edit-store'){
+    var name = document.getElementById('edit-store-name');
+    var description = document.getElementById('edit-store-description');
+    var phone = document.getElementById('edit-store-phone');
+    var address = document.getElementById('edit-store-address');
+    var editStore = {
+      id: id,
+      name: name.value,
+      description: description,
+      phone: phone.value,
+      address: address.value,
+    }
+    var payload = JSON.stringify(editStore);
+    var XHR = new XMLHttpRequest();
+    XHR.open('post', '/edit-store');
+    XHR.setRequestHeader('content-type', 'application/json');
+    XHR.send(payload);
+
+    XHR.onload = function(){
+      if (XHR.status===200){
+        getUserData();
+      }
+      else {
+        clearPage();
+      }
+    }
+  }
 })
 
 function showLoginPage(){
@@ -240,7 +289,7 @@ function showLoginPage(){
 
 function getUserData(){
   var XHR = new XMLHttpRequest();
-  XHR.open('get','/login');
+  XHR.open('get', '/login');
   XHR.send();
   XHR.onload = function(){
     var response = JSON.parse(XHR.responseText);
@@ -334,17 +383,34 @@ function showUser(user, store, reviews){
       storeImgBox.className = 'col-sm-3';
       var storeInfoBox = document.createElement('div');
       storeInfoBox.className = 'col-sm-9';
+      var storeLink = document.createElement('a');
+      storeLink.href='#';
+      storeLink.setAttribute('data-type', 'show-store');
+      storeLink.setAttribute('data-id', filterInt(store[0].id));
       var storeImg = document.createElement('img');
       storeImg.src = store[i].thumb;
       storeImg.className = 'img-responsive';
       var storeTitle = document.createElement('h5');
       storeTitle.textContent = store[i].name;
+      var storeEdit = document.createElement('button');
+      storeEdit.textContent = 'Edit Store';
+      storeEdit.setAttribute('data-type', 'show-edit-store-page');
+      storeEdit.setAttribute('data-id', filterInt(store[i].id));
+      storeEdit.className = 'btn btn-sm btn-default';
       accountStore.appendChild(storeBox);
       storeBox.appendChild(storeImgBox);
       storeBox.appendChild(storeInfoBox);
-      storeImgBox.appendChild(storeImg);
+      storeImgBox.appendChild(storeLink);
+      storeLink.appendChild(storeImg);
       storeInfoBox.appendChild(storeTitle);
+      storeInfoBox.appendChild(storeEdit);
     }
+    var linkNewStore = document.createElement('a');
+    linkNewStore.textContent = 'Add a new store';
+    linkNewStore.href='#';
+    linkNewStore.setAttribute('data-type', 'show-add-store-page');
+    linkNewStore.setAttribute('data-id', 'nan');
+    accountStore.appendChild(linkNewStore);
   }
   else if (user.business){
     var accountStore = document.getElementById('account-store');
