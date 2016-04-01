@@ -31,19 +31,30 @@ var stores =[
     tags: ['coffee', 'restaurant'],
     reviews: [
       {
+        id: 1,
         userId: 3,
         description: tool.randomText(200),
         date: new Date(),
         rating: 5,
-        tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: true, funny: true, cool: false}],
-        comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
+        tags: [{
+          id: 1,
+          userId: 2,
+          useful: true,
+          funny: true,
+          cool: false
+        }],
+        comments: [{
+          id:1,
+          userId: 2,
+          comments: tool.randomText(20)}]
       }, {
+        id: 2,
         userId: 2,
         description: tool.randomText(200),
         date: new Date(),
         rating: 3,
-        tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
-        comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
+        tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},{id:2, userId: 1, useful: false, funny: true, cool: false}],
+        comments: [{id: 1, userId: 3, comments: tool.randomText(20)}, {id: 2, userId: 1, comments: tool.randomText(10)}]
       }
     ]
   }, {
@@ -57,6 +68,7 @@ var stores =[
     tags: ['coffee', 'restaurant'],
     reviews: [
       {
+        id: 1,
         userId: 3,
         description: tool.randomText(200),
         date: new Date(),
@@ -64,6 +76,7 @@ var stores =[
         tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
         comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
       }, {
+        id: 2,
         userId: 2,
         description: tool.randomText(200),
         date: new Date(),
@@ -87,7 +100,8 @@ function Store(id, userId, name, description, phone, address, thumb){
   this.reviews = [];
 }
 
-function Review(userId, description, rating, date, tags, comments){
+function Review(id, userId, description, rating, date, tags, comments){
+  this.id = id;
   this.userId = userId;
   this.description = description;
   this.rating = rating;
@@ -154,15 +168,21 @@ for (var i=3; i<=10; i++){
   var addNewStore = new Store(i, randomeUser[0].id, tool.randomText(2), tool.randomText(50), '123-321-3333', tool.randomText(10), i+'.jpg');
   stores.push(addNewStore);
 }
-for (var i=1; i<=30;i++){
+for (var i=1; i<=3000;i++){
   var randomStore = _.sample(stores, 1);
+  var last = _.last(randomStore[0].reviews);
+  if (typeof(last)==='object'){
+    last = last.id+1
+  } else {
+    last =1;
+  }
   var randomRating = Math.floor(Math.random() * (5)) + 1;
   var randomeUser = _.sample(users, 1);
   var randomYear = Math.floor(Math.random() * (8)) + 2008;
   var randomMonth = Math.floor(Math.random() * (11)) + 1;
   var randomDay = Math.floor(Math.random() * (29)) + 1;
   var randomDate = new Date(randomYear, randomMonth, randomDay);
-  var addNewReview = new Review(randomeUser[0].id, tool.randomText(150), randomRating, randomDate);
+  var addNewReview = new Review(last, randomeUser[0].id, tool.randomText(150), randomRating, randomDate);
   randomStore[0].reviews.push(addNewReview);
 }
 
@@ -339,12 +359,12 @@ app.get('/review-tags/:id/:review/:tag/:change', function(req, res){
   emitter.emit('examination', req.cookies.sessionTokenForRavelp);
   if (matchSession.length>0){
     var store = _.where(stores, {id: filterInt(req.params.id)});
-    var theReview = store[0].reviews[req.params.review];
+    var theReview = _.where(store[0].reviews, {id: filterInt(req.params.review)});
     var tagName = req.params.tag;
     var change = req.params.change;
-    var theTag = _.where(theReview.tags, {userId: matchSession[0].id});
+    var theTag = _.where(theReview[0].tags, {userId: matchSession[0].id});
     if (theTag.length < 1){
-      var array = theReview.tags;
+      var array = theReview[0].tags;
       array.push({userId: matchSession[0].id, useful: false, funny: false, cool: false });
       theTag = _.where(array, {userId: matchSession[0].id});
     }

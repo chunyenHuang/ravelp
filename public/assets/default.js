@@ -94,10 +94,9 @@ document.body.addEventListener('click', function(event){
     } else {
       var change = true;
     }
-    XHR.open('get','/review-tags/' + id + '/' + review + '/' + tag + '/' + change);
+    XHR.open('get','/review-tags/' + id + '/' + filterInt(review) + '/' + tag + '/' + change);
     XHR.send();
     XHR.onload = function(){
-      var response = JSON.parse(XHR.responseText);
       toggleClass(event.target, 'active');
       event.target.textContent = event.target.getAttribute('name');
     }
@@ -502,10 +501,46 @@ function showStores(store){
   box.appendChild(left);
   box.appendChild(right);
   left.appendChild(link);
+  showRating(store, left);
   link.appendChild(img);
   right.appendChild(phone);
   right.appendChild(address);
   right.appendChild(description);
+}
+
+function showRating(store, location){
+  if (store.reviews.length>0){
+    var reviewRating = 0;
+    for (var i=0; i<store.reviews.length; i++){
+      reviewRating = reviewRating + store.reviews[i].rating;
+    }
+    var average = reviewRating/(store.reviews.length);
+    var reviewBox = document.createElement('div');
+    var showReview = document.createElement('img');
+    showReview.src = "rating-" + Math.floor(average) + ".png";
+    showReview.className="rating-stars";
+    var reviewCount = document.createTextNode("("+store.reviews.length+")");
+    reviewBox.appendChild(showReview);
+    reviewBox.appendChild(reviewCount);
+    var hr = document.createElement('hr');
+    reviewBox.appendChild(hr);
+
+    for (var i=5; i>=1; i--){
+      theReviewRatings = _.where(store.reviews, {rating: i});
+      var ratingCount = document.createTextNode("("+theReviewRatings.length+")");
+      var showRating = document.createElement('img');
+      showRating.src = "rating-" + i + ".png";
+      showRating.className="rating-stars";
+      var displayReviews = document.createElement('div');
+      displayReviews.appendChild(showRating);
+      displayReviews.appendChild(ratingCount);
+      reviewBox.appendChild(displayReviews);
+    }
+    location.appendChild(reviewBox);
+  } else {
+    var noReview = document.createTextNode("No Rating yet");
+    location.appendChild(noReview);
+  }
 }
 
 function showStoreDetail(target){
@@ -546,6 +581,7 @@ function showStoreDetail(target){
   box.appendChild(left);
   box.appendChild(right);
   left.appendChild(link);
+  showRating(store, left);
   link.appendChild(img);
   right.appendChild(phone);
   right.appendChild(address);
@@ -645,62 +681,79 @@ function showStoreDetail(target){
   }
   storeReviews.appendChild(writingZone);
 
-  var theReviews = store.reviews;
-  for (var i = (theReviews.length-1); i >= 0; i--) {
-    var reviewBox = document.createElement('div');
-    reviewBox.className = 'row reviews';
-    var reviewLeft = document.createElement('div');
-    reviewLeft.className ='col-sm-2';
-    var reviewRight = document.createElement('div');
-    reviewRight.className ='col-sm-10';
-    var reviewUser = document.createElement('h5');
-    var reviewers = _.where(reviewUserlist, {id: theReviews[i].userId});
-    reviewUser.textContent = reviewers[0].name;
+  var theReviews = _.sortBy(store.reviews, 'date');
+  var showedReviews = [];
+  function loadMoreReviews(review, showed, num){
+    review.reverse();
+    var notShown = _.difference(review, showed);
+    var toShow = _.first(notShown, num);
+    console.log(toShow);
+    toShow.reverse();
+    showedReviews.push(toShow);
+    showedReviews = _.flatten(showedReviews);
+  }
 
-    var showStars = document.createElement('img');
-    showStars.src = "rating-" + theReviews[i].rating + ".png";
-    showStars.className = "rating-stars";
-    var reviewDate = document.createElement('span');
-    reviewDate.textContent = theReviews[i].date;
+  function loadReviews(theReviews, reviewUserlist, userId, store){
+    for (var i = (theReviews.length-1); i >= 0; i--) {
+      var reviewBox = document.createElement('div');
+      reviewBox.className = 'row reviews';
+      var reviewLeft = document.createElement('div');
+      reviewLeft.className ='col-sm-2';
+      var reviewRight = document.createElement('div');
+      reviewRight.className ='col-sm-10';
+      var reviewUser = document.createElement('h5');
+      var reviewers = _.where(reviewUserlist, {id: theReviews[i].userId});
+      reviewUser.textContent = reviewers[0].name;
 
-    var reviewContent = document.createElement('p');
-    reviewContent.textContent = theReviews[i].description;
+      var showStars = document.createElement('img');
+      showStars.src = "rating-" + theReviews[i].rating + ".png";
+      showStars.className = "rating-stars";
+      var reviewDate = document.createElement('span');
+      reviewDate.textContent = theReviews[i].date;
 
-    storeReviews.appendChild(reviewBox);
-    reviewBox.appendChild(reviewLeft);
-    reviewBox.appendChild(reviewRight);
-    reviewLeft.appendChild(reviewUser);
-    reviewRight.appendChild(showStars);
-    reviewRight.appendChild(reviewDate);
-    reviewRight.appendChild(reviewContent);
-    if (typeof(userId)!='undefined'){
-      setTagButtons(userId, i, store, theReviews[i], reviewRight);
+      var reviewContent = document.createElement('p');
+      reviewContent.textContent = theReviews[i].description;
+
+      storeReviews.appendChild(reviewBox);
+      reviewBox.appendChild(reviewLeft);
+      reviewBox.appendChild(reviewRight);
+      reviewLeft.appendChild(reviewUser);
+      reviewRight.appendChild(showStars);
+      reviewRight.appendChild(reviewDate);
+      reviewRight.appendChild(reviewContent);
+      if (typeof(userId)!='undefined'){
+        setTagButtons(userId, store, theReviews[i], reviewRight);
+      }
     }
   }
+  loadMoreReviews(theReviews, showedReviews, 10);
+  loadReviews(showedReviews, reviewUserlist, userId, store);
+
 }
 
-function setTagButtons(userId, i, store, reviews, location){
+function setTagButtons(userId, store, reviews, location){
+  console.log(reviews);
   var buttonUseful = document.createElement('button');
-  buttonUseful.className = 'btn btn-sm btn-default';
+  buttonUseful.className = 'btn btn-sm btn-success';
   buttonUseful.setAttribute('name', 'useful');
   buttonUseful.setAttribute('data-id', store.id);
-  buttonUseful.setAttribute('data-sub-id', i);
+  buttonUseful.setAttribute('data-sub-id', reviews.id);
   buttonUseful.setAttribute('data-type', 'review-tags');
   buttonUseful.textContent = 'useful';
 
   var buttonFunny = document.createElement('button');
-  buttonFunny.className = 'btn btn-sm btn-default';
+  buttonFunny.className = 'btn btn-sm btn-warning';
   buttonFunny.setAttribute('name', 'funny');
   buttonFunny.setAttribute('data-id', store.id);
-  buttonFunny.setAttribute('data-sub-id', i);
+  buttonFunny.setAttribute('data-sub-id', reviews.id);
   buttonFunny.setAttribute('data-type', 'review-tags');
   buttonFunny.textContent = 'funny';
 
   var buttonCool = document.createElement('button');
-  buttonCool.className = 'btn btn-sm btn-default';
+  buttonCool.className = 'btn btn-sm btn-primary';
   buttonCool.setAttribute('name', 'cool');
   buttonCool.setAttribute('data-id', store.id);
-  buttonCool.setAttribute('data-sub-id', i);
+  buttonCool.setAttribute('data-sub-id', reviews.id);
   buttonCool.setAttribute('data-type', 'review-tags');
   buttonCool.textContent = 'cool';
 
