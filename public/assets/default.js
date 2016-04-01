@@ -290,7 +290,7 @@ document.body.addEventListener('submit', function(event){
     var editStore = {
       id: id,
       name: name.value,
-      description: description,
+      description: description.value,
       phone: phone.value,
       address: address.value,
     }
@@ -544,6 +544,7 @@ function showRating(store, location){
 
 function showStoreDetail(target){
   var store = target.store;
+  console.log(store);
   var reviewUserlist = target.reviewers;
   var writable = target.writable;
   var editable = target.editable;
