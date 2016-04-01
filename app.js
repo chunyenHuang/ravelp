@@ -213,6 +213,14 @@ app.get('/login', function(req, res){
   if (matchSession.length>0){
     var currentUser = _.where(users, {id: matchSession[0].id});
     var store = _.where(stores, {userId: matchSession[0].id});
+    var allReviews = [];
+    for (var i = 0; i < stores.length; i++) {
+      var theReview = _.where(stores[i].reviews, {userId: matchSession[0].id});
+      if (theReview.length>0){
+        allReviews.push({store: stores[i], review: theReview[0]});
+      }
+    }
+    console.log(allReviews);
     if (store.length>0){
       var theStore = store;
     } else if (currentUser[0].business){
@@ -220,7 +228,10 @@ app.get('/login', function(req, res){
     } else {
       var theStore = 'You have to register a business account.';
     }
-    res.json({user: currentUser[0], store: theStore});
+    if (allReviews.length == 0){
+      allReviews = 'You have not written any reviews yet.';
+    }
+    res.json({user: currentUser[0], store: theStore, reviews: allReviews});
   } else {
     res.redirect('/');
   }

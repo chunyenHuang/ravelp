@@ -92,7 +92,7 @@ document.body.addEventListener('click', function(event){
     XHR.send();
     XHR.onload = function(){
       var response = JSON.parse(XHR.responseText);
-      showUser(response.user, response.store);
+      showUser(response.user, response.store, response.reviews);
     }
   }
   if (type==='show-store'){
@@ -210,8 +210,9 @@ document.body.addEventListener('submit', function(event){
 
 })
 
-function showUser(user, store){
+function showUser(user, store, reviews){
   clearPage();
+  // My Info
   accountDetail.classList.remove('hidden');
   var heading = document.getElementById('account-title');
   heading.textContent = user.firstname + ' ' + user.lastname;
@@ -244,9 +245,45 @@ function showUser(user, store){
   removeAllChild(accountInfo);
   accountInfo.appendChild(row);
 
+  // My Reviews
+  var accountReviews = document.getElementById('account-reviews');
+  removeAllChild(accountReviews);
+  if (reviews.length>0){
+    for (var i = 0; i < reviews.length; i++) {
+      var myReviews = reviews[i].review;
+      var theStore = reviews[i].store;
+
+      var rBox = document.createElement('div');
+      rBox.className = 'row';
+      var rStoreBox = document.createElement('div');
+      rStoreBox.className = 'col-sm-3';
+      var rTextBox = document.createElement('div');
+      rTextBox.className = 'col-sm-9';
+      var rStoreImg = document.createElement('img');
+      rStoreImg.src = theStore.thumb;
+      rStoreImg.className = 'img-responsive';
+      var rStoreTitle = document.createElement('h5');
+      rStoreTitle.textContent = theStore.name;
+      var rContent = document.createElement('p');
+      rContent.textContent = myReviews.description;
+      var rDate = document.createElement('p');
+      rDate.textContent = 'You wrote @ ' + myReviews.date;
+
+      accountReviews.appendChild(rBox);
+      rBox.appendChild(rStoreBox);
+      rBox.appendChild(rTextBox);
+      rStoreBox.appendChild(rStoreImg);
+      rTextBox.appendChild(rStoreTitle);
+      rTextBox.appendChild(rDate);
+      rTextBox.appendChild(rContent);
+
+    }
+  }
+
+  // My Stores
   var accountStore = document.getElementById('account-store');
   removeAllChild(accountStore);
-  if (store.lenth>0){
+  if (store.length>0){
     for (var i = 0; i < store.length; i++) {
       console.log(store[i].thumb);
       var storeBox = document.createElement('div');
