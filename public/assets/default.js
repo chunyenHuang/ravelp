@@ -33,6 +33,29 @@ function clearPage(){
   editStoreForm.classList.add('hidden');
 }
 
+function homepage(){
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/home');
+  XHR.send();
+  XHR.onload = function(){
+    var response = JSON.parse(XHR.responseText);
+    if (response.login) {
+      clearPage();
+      profile.classList.remove('hidden');
+      logout.classList.remove('hidden');
+      login.classList.add('hidden');
+      profile.setAttribute('data-id', response.user.id);
+      // navbar
+      navbarUsername.textContent = 'Hello~ ' + response.user.firstname;
+    }
+    for (var i = 0; i < response.stores.length; i++) {
+      showStores(response.stores[i]);
+    }
+  }
+}
+
+homepage();
+
 // Elements
 var main = document.getElementById('main');
 var storeDetail = document.getElementById('store-detail');
@@ -86,11 +109,15 @@ document.body.addEventListener('click', function(event){
   if (type==='logout'){
     var XHR = new XMLHttpRequest();
     XHR.open('get','/logout');
+    XHR.send();
     clearPage();
     login.classList.remove('hidden');
     logout.classList.add('hidden');
     profile.classList.add('hidden');
     navbarUsername.textContent = '';
+    XHR.onload = function(){
+      homepage();
+    }
   }
   if (type==='profile'){
     getUserData();
@@ -162,6 +189,7 @@ document.body.addEventListener('submit', function(event){
         profile.setAttribute('data-id', response.id);
         // navbar
         navbarUsername.textContent = 'Hello~ ' + response.firstname;
+        homepage();
       }
     }
   }
@@ -289,7 +317,7 @@ function showLoginPage(){
 
 function getUserData(){
   var XHR = new XMLHttpRequest();
-  XHR.open('get', '/login');
+  XHR.open('get', '/get-user');
   XHR.send();
   XHR.onload = function(){
     var response = JSON.parse(XHR.responseText);

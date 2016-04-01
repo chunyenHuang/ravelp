@@ -164,12 +164,23 @@ emitter.on('examination', function(cookie){
 })
 
 // Routes
+app.use(express.static('./public'));
 app.use(express.static('./public/assets'));
 app.use(express.static('./public/images'));
 app.use(cookieParser());
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/public/index.html');
+  res.redirect('/home');
+})
+
+app.get('/home', function(req, res){
+  emitter.emit('examination', req.cookies.sessionTokenForRavelp);
+  if (matchSession.length>0){
+    var currentUser = _.where(users, {id: matchSession[0].id});
+    res.json({login: true, user: currentUser[0], stores: stores});
+  } else {
+    res.json({login: false, stores: stores});
+  }
 })
 
 app.post('/login', jsonParser, function(req, res){
@@ -260,7 +271,7 @@ app.post('/edit-store', jsonParser, function(req, res){
   }
 })
 
-app.get('/login', function(req, res){
+app.get('/get-user', function(req, res){
   emitter.emit('examination', req.cookies.sessionTokenForRavelp);
   if (matchSession.length>0){
     var currentUser = _.where(users, {id: matchSession[0].id});
@@ -282,16 +293,15 @@ app.get('/login', function(req, res){
     if (allReviews.length == 0){
       allReviews = 'You have not written any reviews yet.';
     }
-    console.log(allReviews);
     res.json({user: currentUser[0], store: theStore, reviews: allReviews});
   } else {
-    res.redirect('/');
+    res.redirect('/home');
   }
 })
 
 app.get('/logout', function(req, res){
   res.clearCookie('sessionTokenForRavelp');
-  res.redirect('/');
+  res.sendStatus(200);
 })
 
 app.post('/search', jsonParser, function(req, res){
