@@ -75,6 +75,18 @@ var stores =[
   }
 ]
 
+function Store(id, userId, name, description, phone, address, thumb){
+  this.id = id;
+  this.userId = userId;
+  this.name = name;
+  this.description = description;
+  this.phone = phone;
+  this.address = address;
+  this.thumb = 'store.jpg';
+  this.tags = [];
+  this.reviews = [];
+}
+
 function Review(userId, description, rating, date, tags, comments){
   this.userId = userId;
   this.description = description;
@@ -181,7 +193,6 @@ app.post('/login', jsonParser, function(req, res){
     res.sendStatus(404);
   }
 })
-
 app.post('/newuser', jsonParser, function(req, res){
   var username = req.body.username;
   var password = req.body.password;
@@ -205,6 +216,26 @@ app.post('/newuser', jsonParser, function(req, res){
     res.cookie('sessionTokenForRavelp', token);
     sessions.push(new Session(token, currentUser[0].id));
     res.json(currentUser[0]);
+  }
+})
+
+app.post('/new-store', jsonParser, function(req, res){
+  emitter.emit('examination', req.cookies.sessionTokenForRavelp);
+  if (matchSession.length>0){
+    var name = req.body.name;
+    var description = req.body.description;
+    var phone = req.body.phone;
+    var address = req.body.address;
+    var userId = matchSession[0].id;
+    var last = _.last(stores);
+    var id = last.id + 1;
+    var newStore = new Store(id, userId, name, description, phone, address);
+    stores.push(newStore);
+    console.log(stores);
+    res.sendStatus('200');
+  }
+  else {
+    res.sendStatus('404');
   }
 })
 

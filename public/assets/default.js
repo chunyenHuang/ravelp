@@ -29,6 +29,7 @@ function clearPage(){
   accountDetail.classList.add('hidden');
   loginForm.classList.add('hidden');
   newUserForm.classList.add('hidden');
+  newStoreForm.classList.add('hidden');
 }
 
 // Elements
@@ -39,6 +40,7 @@ var accountDetail = document.getElementById('account-detail');
 var navbarUsername = document.getElementById('show-user-name');
 var loginForm = document.getElementById('login-form');
 var newUserForm = document.getElementById('user-application');
+var newStoreForm = document.getElementById('store-application');
 var login = document.getElementById('login-button');
 var logout = document.getElementById('logout-button');
 var profile = document.getElementById('profile-button');
@@ -48,7 +50,8 @@ document.body.addEventListener('click', function(event){
   if (event.target.hasAttribute('data-type')){
     var id = filterInt(event.target.getAttribute('data-id'));
     var type = event.target.getAttribute('data-type');
-  } else {
+  }
+  else {
     var id = filterInt(event.target.parentNode.getAttribute('data-id'));
     var type = event.target.parentNode.getAttribute('data-type');
   }
@@ -87,30 +90,16 @@ document.body.addEventListener('click', function(event){
     profile.classList.add('hidden');
     navbarUsername.textContent = '';
   }
-  // if (type==='login'){
-  //   var XHR = new XMLHttpRequest();
-  //   XHR.open('get','/login');
-  //   clearPage();
-  //   loginForm.classList.remove('hidden');
-  // }
   if (type==='profile'){
-    var XHR = new XMLHttpRequest();
-    XHR.open('get','/login');
-    XHR.send();
-    XHR.onload = function(){
-      var response = JSON.parse(XHR.responseText);
-      showUser(response.user, response.store, response.reviews);
-    }
+    getUserData();
   }
   if (type==='show-store'){
     event.preventDefault();
-    var XHR = new XMLHttpRequest();
-    XHR.open('get', '/show-store/'+id);
-    XHR.send();
-    XHR.onload = function(){
-      var response = JSON.parse(XHR.responseText);
-      showStoreDetail(response);
-    }
+    getStoreData(id);
+  }
+  if (type==='show-add-store-page'){
+    clearPage();
+    newStoreForm.classList.remove('hidden');
   }
 })
 
@@ -216,12 +205,47 @@ document.body.addEventListener('submit', function(event){
       }
     }
   }
+  if (type==='new-store'){
+    var name = document.getElementById('new-store-name');
+    var description = document.getElementById('new-store-description');
+    var phone = document.getElementById('new-store-phone');
+    var address = document.getElementById('new-store-address');
+    var newStore = {
+      name: name.value,
+      description: description,
+      phone: phone.value,
+      address: address.value,
+    }
+    var payload = JSON.stringify(newStore);
+    var XHR = new XMLHttpRequest();
+    XHR.open('post', '/new-store');
+    XHR.setRequestHeader('content-type', 'application/json');
+    XHR.send(payload);
 
+    XHR.onload = function(){
+      if (XHR.status===200){
+        getUserData();
+      }
+      else {
+        clearPage();
+      }
+    }
+  }
 })
 
 function showLoginPage(){
   clearPage();
   loginForm.classList.remove('hidden');
+}
+
+function getUserData(){
+  var XHR = new XMLHttpRequest();
+  XHR.open('get','/login');
+  XHR.send();
+  XHR.onload = function(){
+    var response = JSON.parse(XHR.responseText);
+    showUser(response.user, response.store, response.reviews);
+  }
 }
 
 function showUser(user, store, reviews){
@@ -327,6 +351,8 @@ function showUser(user, store, reviews){
     var linkNewStore = document.createElement('a');
     linkNewStore.textContent = store;
     linkNewStore.href='#';
+    linkNewStore.setAttribute('data-type', 'show-add-store-page');
+    linkNewStore.setAttribute('data-id', 'nan');
     accountStore.appendChild(linkNewStore);
   }
   else {
@@ -334,6 +360,16 @@ function showUser(user, store, reviews){
     accountStore.textContent = store;
   }
 
+}
+
+function getStoreData(id){
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/show-store/'+id);
+  XHR.send();
+  XHR.onload = function(){
+    var response = JSON.parse(XHR.responseText);
+    showStoreDetail(response);
+  }
 }
 
 function showStores(store){
