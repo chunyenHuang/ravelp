@@ -34,6 +34,7 @@ function clearPage(){
 var main = document.getElementById('main');
 var storeDetail = document.getElementById('store-detail');
 var accountDetail = document.getElementById('account-detail');
+var navbarUsername = document.getElementById('show-user-name');
 var loginForm = document.getElementById('login-form');
 var newUserForm = document.getElementById('user-application');
 var login = document.getElementById('login-button');
@@ -142,6 +143,8 @@ document.body.addEventListener('submit', function(event){
         logout.classList.remove('hidden');
         login.classList.add('hidden');
         profile.setAttribute('data-id', response.id);
+        // navbar
+        navbarUsername.textContent = 'Hello~ ' + response.firstname;
       }
     }
   }
@@ -212,6 +215,7 @@ document.body.addEventListener('submit', function(event){
 
 function showUser(user, store, reviews){
   clearPage();
+
   // My Info
   accountDetail.classList.remove('hidden');
   var heading = document.getElementById('account-title');
