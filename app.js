@@ -82,7 +82,7 @@ function Store(id, userId, name, description, phone, address, thumb){
   this.description = description;
   this.phone = phone;
   this.address = address;
-  this.thumb = 'store.jpg';
+  this.thumb = thumb;
   this.tags = [];
   this.reviews = [];
 }
@@ -92,8 +92,8 @@ function Review(userId, description, rating, date, tags, comments){
   this.description = description;
   this.rating = rating;
   this.date = date;
-  this.tags = tags;
-  this.commemts = comments;
+  this.tags = [];
+  this.commemts = [];
 }
 
 // Users Database
@@ -140,6 +140,30 @@ function User(id, username, password, firstname, lastname, email, phone, address
   this.email = email;
   this.phone = phone;
   this.business = business;
+}
+
+// Add Random Database
+for (var i=4; i<=500;i++){
+  var firstname = tool.randomText(2);
+  var lastname = tool.randomText(2);
+  var addNewUser = new User(i, 'user', '123', firstname, lastname, 'email@gmail.com', '123-123-1233', 'address', false );
+  users.push(addNewUser);
+}
+for (var i=3; i<=10; i++){
+  var randomeUser = _.sample(users, 1);
+  var addNewStore = new Store(i, randomeUser[0].id, tool.randomText(2), tool.randomText(50), '123-321-3333', tool.randomText(10), i+'.jpg');
+  stores.push(addNewStore);
+}
+for (var i=1; i<=30;i++){
+  var randomStore = _.sample(stores, 1);
+  var randomRating = Math.floor(Math.random() * (5)) + 1;
+  var randomeUser = _.sample(users, 1);
+  var randomYear = Math.floor(Math.random() * (8)) + 2008;
+  var randomMonth = Math.floor(Math.random() * (11)) + 1;
+  var randomDay = Math.floor(Math.random() * (29)) + 1;
+  var randomDate = new Date(randomYear, randomMonth, randomDay);
+  var addNewReview = new Review(randomeUser[0].id, tool.randomText(150), randomRating, randomDate);
+  randomStore[0].reviews.push(addNewReview);
 }
 
 // Sessions
@@ -237,10 +261,11 @@ app.post('/new-store', jsonParser, function(req, res){
     var description = req.body.description;
     var phone = req.body.phone;
     var address = req.body.address;
+    var thumb = req.body.thumb;
     var userId = matchSession[0].id;
     var last = _.last(stores);
     var id = last.id + 1;
-    var newStore = new Store(id, userId, name, description, phone, address);
+    var newStore = new Store(id, userId, name, description, phone, address, thumb);
     stores.push(newStore);
     console.log(stores);
     res.sendStatus('200');
@@ -376,9 +401,7 @@ app.post('/new-review', jsonParser, function(req, res){
   var matchSession = _.where(sessions, {token: currentToken});
   if (matchSession.length>0){
     var store = _.where(stores, {id: id});
-    var tags = [];
-    var comments =[];
-    var addNewReview = new Review(matchSession[0].id, content, rating, date, tags, comments);
+    var addNewReview = new Review(matchSession[0].id, content, rating, date);
     store[0].reviews.push(addNewReview);
     console.log(store[0].reviews);
     var reviewUserlist = [];

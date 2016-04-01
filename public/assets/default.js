@@ -265,6 +265,7 @@ document.body.addEventListener('submit', function(event){
       description: description,
       phone: phone.value,
       address: address.value,
+      thumb: 'store.jpg'
     }
     var payload = JSON.stringify(newStore);
     var XHR = new XMLHttpRequest();
@@ -574,6 +575,7 @@ function showStoreDetail(target){
       starInput.setAttribute('type', 'radio');
       starInput.setAttribute('name', 'star-options');
       starInput.setAttribute('value', i);
+      starInput.setAttribute('required', 'required');
       starLabel.appendChild(starInput);
       starRatings.appendChild(starLabel);
     }
@@ -644,8 +646,7 @@ function showStoreDetail(target){
   storeReviews.appendChild(writingZone);
 
   var theReviews = store.reviews;
-  // theReviews = theReviews.reverse();
-  for (var i = 0; i < theReviews.length; i++) {
+  for (var i = (theReviews.length-1); i >= 0; i--) {
     var reviewBox = document.createElement('div');
     reviewBox.className = 'row reviews';
     var reviewLeft = document.createElement('div');
@@ -672,7 +673,9 @@ function showStoreDetail(target){
     reviewRight.appendChild(showStars);
     reviewRight.appendChild(reviewDate);
     reviewRight.appendChild(reviewContent);
-    setTagButtons(userId, i, store, theReviews[i], reviewRight);
+    if (typeof(userId)!='undefined'){
+      setTagButtons(userId, i, store, theReviews[i], reviewRight);
+    }
   }
 }
 
@@ -703,14 +706,16 @@ function setTagButtons(userId, i, store, reviews, location){
 
   if (userId){
     var check = _.findWhere(reviews.tags, {userId: userId});
-    if (check.useful){
-      buttonUseful.classList.add('active');
-    }
-    if (check.funny){
-      buttonFunny.classList.add('active');
-    }
-    if (check.cool){
-      buttonCool.classList.add('active');
+    if (check){
+      if (check.useful){
+        buttonUseful.classList.add('active');
+      }
+      if (check.funny){
+        buttonFunny.classList.add('active');
+      }
+      if (check.cool){
+        buttonCool.classList.add('active');
+      }
     }
   }
 
