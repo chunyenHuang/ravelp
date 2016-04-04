@@ -11,6 +11,21 @@ function removeAllChild(nodeName){
   }
 }
 
+var currentUser = 0;
+function checkCurrentUser(){
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/check-current-user');
+  XHR.send();
+  XHR.onload = function(){
+    if (XHR.status != 404){
+      var response = JSON.parse(XHR.responseText);
+      currentUser = response.id;
+    } else {
+      console.log('not found');
+    }
+  }
+}
+
 function toggleClass(target, value){
   var classes = target.className.split(' ');
   var position = classes.indexOf(value);
@@ -158,8 +173,10 @@ document.body.addEventListener('click', function(event){
     var XHR = new XMLHttpRequest();
     XHR.open('get', '/get-review/' + id + '/' + subId);
     XHR.send();
-    XHR.onload() = function(){
-      console.log(XHR.responseText);
+    XHR.onload = function(){
+      var response = JSON.parse(XHR.responseText);
+      console.log(response);
+      reviewForm(response.store, response.review, editBox);
     }
   }
 })
@@ -387,6 +404,10 @@ function showUser(user, store, reviews){
       rStoreBox.className = 'col-sm-3';
       var rTextBox = document.createElement('div');
       rTextBox.className = 'col-sm-9';
+      var rLink = document.createElement('a');
+      rLink.href='#';
+      rLink.setAttribute('data-type', 'show-store');
+      rLink.setAttribute('data-id', filterInt(theStore.id));
       var rStoreImg = document.createElement('img');
       rStoreImg.src = theStore.thumb;
       rStoreImg.className = 'img-responsive';
@@ -398,7 +419,8 @@ function showUser(user, store, reviews){
       accountReviews.appendChild(rBox);
       rBox.appendChild(rStoreBox);
       rBox.appendChild(rTextBox);
-      rStoreBox.appendChild(rStoreImg);
+      rStoreBox.appendChild(rLink);
+      rLink.appendChild(rStoreImg)
       rTextBox.appendChild(rStoreTitle);
       rTextBox.appendChild(rField);
       attachReview(theStore, myReviews, rField);
@@ -579,11 +601,11 @@ function showRating(store, location){
 
 function showStoreDetail(target){
   var store = target.store;
-  console.log(store);
   var reviewUserlist = target.reviewers;
+  var theReviews = _.sortBy(store.reviews, 'date');
+  var userId = target.currentUserId;
   var writable = target.writable;
   var editable = target.editable;
-  var userId = target.currentUserId;
   clearPage();
   storeDetail.classList.remove('hidden');
   var title = document.getElementById('store-title');
@@ -626,82 +648,17 @@ function showStoreDetail(target){
   // Write Reviews
   removeAllChild(storeReviews);
   var writingZone = document.createElement('div');
+  writingZone.className = 'writingZone';
   removeAllChild(writingZone);
   if (writable){
-    var formRow = document.createElement('div');
-    formRow.className = 'row';
-    var form = document.createElement('form');
-    form.className = 'form';
-    var leftFromRow = document.createElement('div');
-    leftFromRow.className = 'col-sm-3';
-    var midFromRow = document.createElement('div');
-    midFromRow.className = 'col-sm-6';
-    var rightFromRow = document.createElement('div');
-    rightFromRow.className = 'col-sm-3';
-    var starRatings = document.createElement('div');
-    for (var i = 1; i <= 5; i++) {
-      var starLabel = document.createElement('label');
-      starLabel.className = "radio-inline";
-      starLabel.textContent = i;
-      var starInput = document.createElement('input');
-      starInput.setAttribute('type', 'radio');
-      starInput.setAttribute('name', 'star-options');
-      starInput.setAttribute('value', i);
-      starInput.setAttribute('required', 'required');
-      starLabel.appendChild(starInput);
-      starRatings.appendChild(starLabel);
-    }
-    var textarea = document.createElement('textarea');
-    textarea.className= 'form-control';
-    textarea.setAttribute('id', 'write-review-content')
-    var button = document.createElement('button');
-    button.setAttribute('data-id', store.id);
-    button.setAttribute('date-type', 'write-review');
-    button.setAttribute('type', 'submit');
-    button.className = 'btn btn-default pull-right';
-    button.textContent = "Write My Review";
-    writingZone.appendChild(formRow);
-    formRow.appendChild(form);
-    form.appendChild(leftFromRow);
-    form.appendChild(midFromRow);
-    form.appendChild(rightFromRow);
-    leftFromRow.appendChild(starRatings);
-    midFromRow.appendChild(textarea);
-    rightFromRow.appendChild(button);
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-      var starOptions = document.getElementsByName('star-options');
-      for (var x=0; x<starOptions.length; x++){
-        if (starOptions[x].checked){
-          var starValue = filterInt(starOptions[x].value);
-          break;
-        }
-      }
-      var newReview = {
-        id: store.id,
-        content: textarea.value,
-        rating: starValue
-      }
-      var payload = JSON.stringify(newReview);
-      var XHR = new XMLHttpRequest();
-      XHR.open('POST', '/new-review');
-      XHR.setRequestHeader('content-type', 'application/json');
-      XHR.send(payload);
-
-      XHR.onload = function(){
-        var response = JSON.parse(XHR.responseText);
-        showStoreDetail(response);
-      }
-    })
+    reviewForm(store, 'comments...', writingZone);
   }
   else if (editable) {
-    var msgbox = document.createElement('p');
-    msgbox.className="well";
-    var msg = document.createElement('a');
-    msg.href='login';
-    msg.textContent = 'You can edit';
+    var myReview = _.where(theReviews, {userId: userId});
+    var msgbox = document.createElement('div');
     writingZone.appendChild(msgbox);
-    msgbox.appendChild(msg);
+    msgbox.setAttribute('id', 'myReview-' + store.id + '-' + myReview[0].id);
+    attachReview(store, myReview[0], msgbox);
   }
   else  {
     var msgbox = document.createElement('p');
@@ -713,10 +670,10 @@ function showStoreDetail(target){
     msg.textContent = 'You must login for writing review.';
     writingZone.appendChild(msgbox);
     msgbox.appendChild(msg);
+
   }
   storeReviews.appendChild(writingZone);
 
-  var theReviews = _.sortBy(store.reviews, 'date');
   var showedReviews = [];
   function loadMoreReviews(review, showed, num){
     review.reverse();
@@ -727,7 +684,7 @@ function showStoreDetail(target){
     showedReviews = _.flatten(showedReviews);
   }
 
-  function loadReviews(theReviews, reviewUserlist, userId, store){
+  function loadReviews(theReviews, reviewUserlist, userId, store, location){
     for (var i = (theReviews.length-1); i >= 0; i--) {
       var reviewBox = document.createElement('div');
       reviewBox.className = 'row reviews';
@@ -745,7 +702,7 @@ function showStoreDetail(target){
       var reviewContent = document.createElement('p');
       reviewContent.textContent = theReviews[i].description;
 
-      storeReviews.appendChild(reviewBox);
+      location.appendChild(reviewBox);
       reviewBox.appendChild(reviewLeft);
       reviewBox.appendChild(reviewRight);
       reviewLeft.appendChild(reviewUser);
@@ -757,10 +714,12 @@ function showStoreDetail(target){
       }
     }
   }
+
   loadMoreReviews(theReviews, showedReviews, 10);
-  loadReviews(showedReviews, reviewUserlist, userId, store);
+  loadReviews(showedReviews, reviewUserlist, userId, store, storeReviews);
 
   var expand = document.getElementById('expand-reviews');
+  removeAllChild(expand);
   var expandButton = document.createElement('button');
   expandButton.className = 'btn btn-sm btn-default btn-block';
   expandButton.textContent = 'Load more reviews.'
@@ -773,7 +732,7 @@ function showStoreDetail(target){
 
 function setTagButtons(userId, store, reviews, location){
   var buttonUseful = document.createElement('button');
-  buttonUseful.className = 'btn btn-sm btn-success';
+  buttonUseful.className = 'btn btn-sm btn-default';
   buttonUseful.setAttribute('name', 'useful');
   buttonUseful.setAttribute('data-id', store.id);
   buttonUseful.setAttribute('data-sub-id', reviews.id);
@@ -781,7 +740,7 @@ function setTagButtons(userId, store, reviews, location){
   buttonUseful.textContent = 'useful';
 
   var buttonFunny = document.createElement('button');
-  buttonFunny.className = 'btn btn-sm btn-warning';
+  buttonFunny.className = 'btn btn-sm btn-default';
   buttonFunny.setAttribute('name', 'funny');
   buttonFunny.setAttribute('data-id', store.id);
   buttonFunny.setAttribute('data-sub-id', reviews.id);
@@ -789,7 +748,7 @@ function setTagButtons(userId, store, reviews, location){
   buttonFunny.textContent = 'funny';
 
   var buttonCool = document.createElement('button');
-  buttonCool.className = 'btn btn-sm btn-primary';
+  buttonCool.className = 'btn btn-sm btn-default';
   buttonCool.setAttribute('name', 'cool');
   buttonCool.setAttribute('data-id', store.id);
   buttonCool.setAttribute('data-sub-id', reviews.id);
@@ -816,4 +775,84 @@ function setTagButtons(userId, store, reviews, location){
   buttons.appendChild(buttonFunny);
   buttons.appendChild(buttonCool);
   location.appendChild(buttons);
+}
+
+function reviewForm(store, review, location){
+  var formRow = document.createElement('div');
+  formRow.className = 'row';
+  var form = document.createElement('form');
+  form.className = 'form';
+  var leftFromRow = document.createElement('div');
+  leftFromRow.className = 'col-sm-3';
+  var midFromRow = document.createElement('div');
+  midFromRow.className = 'col-sm-6';
+  var rightFromRow = document.createElement('div');
+  rightFromRow.className = 'col-sm-3';
+  var starRatings = document.createElement('div');
+  for (var i = 1; i <= 5; i++) {
+    var starLabel = document.createElement('label');
+    starLabel.className = "radio-inline";
+    starLabel.textContent = i;
+    var starInput = document.createElement('input');
+    starInput.setAttribute('type', 'radio');
+    starInput.setAttribute('name', 'star-options');
+    starInput.setAttribute('value', i);
+    starInput.setAttribute('required', 'required');
+    starLabel.appendChild(starInput);
+    starRatings.appendChild(starLabel);
+  }
+  var textarea = document.createElement('textarea');
+  textarea.className= 'form-control';
+  textarea.setAttribute('id', 'write-review-content')
+  if (typeof(review.description) != 'undefined'){
+    textarea.value = review.description;
+  }
+  var button = document.createElement('button');
+  button.setAttribute('data-id', store.id);
+  button.setAttribute('date-type', 'write-review');
+  button.setAttribute('type', 'submit');
+  button.className = 'btn btn-sm btn-default pull-right';
+  if (typeof(review.description) != 'undefined'){
+    button.textContent = "Update My Review";
+    var buttonCancel = document.createElement('button');
+    buttonCancel.className = 'btn btn-sm btn-default pull-right';
+    buttonCancel.textContent = "Cancel";
+    rightFromRow.appendChild(buttonCancel);
+  } else {
+    button.textContent = "Write My Review";
+  }
+
+  location.appendChild(formRow);
+  formRow.appendChild(form);
+  form.appendChild(leftFromRow);
+  form.appendChild(midFromRow);
+  form.appendChild(rightFromRow);
+  leftFromRow.appendChild(starRatings);
+  midFromRow.appendChild(textarea);
+  rightFromRow.appendChild(button);
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var starOptions = document.getElementsByName('star-options');
+    for (var x=0; x<starOptions.length; x++){
+      if (starOptions[x].checked){
+        var starValue = filterInt(starOptions[x].value);
+        break;
+      }
+    }
+    var newReview = {
+      id: store.id,
+      content: textarea.value,
+      rating: starValue
+    }
+    var payload = JSON.stringify(newReview);
+    var XHR = new XMLHttpRequest();
+    XHR.open('POST', '/new-review');
+    XHR.setRequestHeader('content-type', 'application/json');
+    XHR.send(payload);
+
+    XHR.onload = function(){
+      var response = JSON.parse(XHR.responseText);
+      showStoreDetail(response);
+    }
+  })
 }

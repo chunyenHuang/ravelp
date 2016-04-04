@@ -3,6 +3,7 @@ var constructor = require('./constructor.js');
 var _ = require('underscore');
 
 function database(){
+  var sessions = [];
   // Stores Database
   var stores =[
     {
@@ -58,7 +59,8 @@ function database(){
           description: tool.randomText(200),
           date: new Date(),
           rating: 2,
-          tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
+          tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},
+                 {id: 2, userId: 1, useful: false, funny: true, cool: false}],
           comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
         }, {
           id: 2,
@@ -66,7 +68,8 @@ function database(){
           description: tool.randomText(200),
           date: new Date(),
           rating: 1,
-          tags: [{userId: 1, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
+          tags: [{id: 1, userId: 1, useful: true, funny: true, cool: false},
+                 {id: 2, userId: 1, useful: false, funny: true, cool: false}],
           comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
         }
       ]
@@ -139,7 +142,8 @@ function database(){
   }
   return {
     stores: stores,
-    users: users
+    users: users,
+    sessions: sessions
   }
 }
 

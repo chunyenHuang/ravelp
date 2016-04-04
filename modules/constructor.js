@@ -29,10 +29,15 @@ function constructor() {
     this.phone = phone;
     this.business = business;
   }
+  function Session(token, id){
+    this.token = token;
+    this.id = id;
+  }
   return {
     Store: Store,
     Review: Review,
     User: User,
+    Session: Session
   }
 }
 
