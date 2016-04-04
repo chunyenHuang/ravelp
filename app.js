@@ -1,9 +1,10 @@
 // Modules
 var express = require('express');
 var database = require('./modules/database.js');
+// var authorization = require('./modules/authorization.js');
+// var session = require('./modules/session.js');
 var tool = require('./modules/tool.js');
 var search = require('./modules/search.js');
-var session = require('./modules/session.js');
 var constructor = require('./modules/constructor.js');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
@@ -23,6 +24,10 @@ function Session(token, id){
   this.token = token;
   this.id = id;
 }
+emitter.on('examination', function(cookie){
+  matchSession = [];
+  matchSession = _.where(sessions, {token: cookie});
+})
 
 // Search EventEmitter
 var foundStores = [];
@@ -31,19 +36,14 @@ emitter.on('search', function(name, location){
   search.target(name, location, stores, foundStores);
 })
 
-// Examination Evmiiter
-var matchSession = [];
-emitter.on('examination', function(cookie){
-  matchSession = [];
-  matchSession = _.where(sessions, {token: cookie});
-})
-
 // Routes
+app.use(cookieParser());
+// app.use(session());
 app.use(express.static('./public'));
 app.use(express.static('./public/assets'));
 app.use(express.static('./public/images'));
-app.use(cookieParser());
 
+// CRUD
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/index.html');
 })
