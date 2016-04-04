@@ -371,7 +371,7 @@ function showUser(user, store, reviews){
       var theStore = reviews[i].store;
 
       var rBox = document.createElement('div');
-      rBox.className = 'row';
+      rBox.className = 'row reviews';
       var rStoreBox = document.createElement('div');
       rStoreBox.className = 'col-sm-3';
       var rTextBox = document.createElement('div');
@@ -385,6 +385,9 @@ function showUser(user, store, reviews){
       rContent.textContent = myReviews.description;
       var rDate = document.createElement('p');
       rDate.textContent = 'You wrote @ ' + myReviews.date;
+      var rRating = document.createElement('p');
+      rRating.textContent = 'Your rating: '
+      showRatingStars(myReviews, rRating);
 
       accountReviews.appendChild(rBox);
       rBox.appendChild(rStoreBox);
@@ -392,6 +395,7 @@ function showUser(user, store, reviews){
       rStoreBox.appendChild(rStoreImg);
       rTextBox.appendChild(rStoreTitle);
       rTextBox.appendChild(rDate);
+      rTextBox.appendChild(rRating);
       rTextBox.appendChild(rContent);
     }
   }
@@ -405,7 +409,7 @@ function showUser(user, store, reviews){
   if (typeof(store)==='object'){
     for (var i = 0; i < store.length; i++) {
       var storeBox = document.createElement('div');
-      storeBox.className = 'row';
+      storeBox.className = 'row reviews';
       var storeImgBox = document.createElement('div');
       storeImgBox.className = 'col-sm-3';
       var storeInfoBox = document.createElement('div');
@@ -452,7 +456,6 @@ function showUser(user, store, reviews){
     var accountStore = document.getElementById('account-store');
     accountStore.textContent = store;
   }
-
 }
 
 function getStoreData(id){
@@ -505,6 +508,13 @@ function showStores(store){
   right.appendChild(phone);
   right.appendChild(address);
   right.appendChild(description);
+}
+
+function showRatingStars(target, location){
+  var showStars = document.createElement('img');
+  showStars.src = "rating-" + target.rating + ".png";
+  showStars.className = "rating-stars";
+  location.appendChild(showStars);
 }
 
 function showRating(store, location){
@@ -704,9 +714,6 @@ function showStoreDetail(target){
       var reviewers = _.where(reviewUserlist, {id: theReviews[i].userId});
       reviewUser.textContent = reviewers[0].name;
 
-      var showStars = document.createElement('img');
-      showStars.src = "rating-" + theReviews[i].rating + ".png";
-      showStars.className = "rating-stars";
       var reviewDate = document.createElement('span');
       reviewDate.textContent = theReviews[i].date;
 
@@ -717,7 +724,7 @@ function showStoreDetail(target){
       reviewBox.appendChild(reviewLeft);
       reviewBox.appendChild(reviewRight);
       reviewLeft.appendChild(reviewUser);
-      reviewRight.appendChild(showStars);
+      showRatingStars(theReviews[i], reviewRight);
       reviewRight.appendChild(reviewDate);
       reviewRight.appendChild(reviewContent);
       if (typeof(userId)!='undefined'){
