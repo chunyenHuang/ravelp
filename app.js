@@ -1,8 +1,10 @@
 // Modules
 var express = require('express');
+var database = require('./modules/database.js');
 var tool = require('./modules/tool.js');
 var search = require('./modules/search.js');
 var session = require('./modules/session.js');
+var constructor = require('./modules/constructor.js');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 var _ = require('underscore');
@@ -12,180 +14,8 @@ var emitter = new events.EventEmitter();
 var port = 3000;
 var app = express();
 
-function filterInt(value) {
-  if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
-    return Number(value);
-  }
-  return NaN;
-}
-
-// Stores Database
-var stores =[
-  {
-    id: 1,
-    userId: 2,
-    name: 'Starbucks',
-    thumb: '1.jpg',
-    description: tool.randomText(150),
-    phone: '(123) 123-1233',
-    address: '105 Research Drive, Irvine, CA93023',
-    tags: ['coffee', 'restaurant'],
-    reviews: [
-      {
-        id: 1,
-        userId: 3,
-        description: tool.randomText(200),
-        date: new Date(),
-        rating: 5,
-        tags: [{
-          id: 1,
-          userId: 2,
-          useful: true,
-          funny: true,
-          cool: false
-        }],
-        comments: [{
-          id:1,
-          userId: 2,
-          comments: tool.randomText(20)}]
-      }, {
-        id: 2,
-        userId: 2,
-        description: tool.randomText(200),
-        date: new Date(),
-        rating: 3,
-        tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},{id:2, userId: 1, useful: false, funny: true, cool: false}],
-        comments: [{id: 1, userId: 3, comments: tool.randomText(20)}, {id: 2, userId: 1, comments: tool.randomText(10)}]
-      }
-    ]
-  }, {
-    id: 2,
-    userId: 2,
-    name: 'Tomo Cafe',
-    thumb: '2.jpg',
-    phone: '(123) 123-1233',
-    description: tool.randomText(150),
-    address: '321 Culver Ave., Irvine, CA93023',
-    tags: ['coffee', 'restaurant'],
-    reviews: [
-      {
-        id: 1,
-        userId: 3,
-        description: tool.randomText(200),
-        date: new Date(),
-        rating: 2,
-        tags: [{userId: 2, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
-        comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
-      }, {
-        id: 2,
-        userId: 2,
-        description: tool.randomText(200),
-        date: new Date(),
-        rating: 1,
-        tags: [{userId: 1, useful: true, funny: true, cool: false},{userId: 1, useful: false, funny: true, cool: false}],
-        comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
-      }
-    ]
-  }
-]
-
-function Store(id, userId, name, description, phone, address, thumb){
-  this.id = id;
-  this.userId = userId;
-  this.name = name;
-  this.description = description;
-  this.phone = phone;
-  this.address = address;
-  this.thumb = thumb;
-  this.tags = [];
-  this.reviews = [];
-}
-
-function Review(id, userId, description, rating, date, tags, comments){
-  this.id = id;
-  this.userId = userId;
-  this.description = description;
-  this.rating = rating;
-  this.date = date;
-  this.tags = [];
-  this.commemts = [];
-}
-
-// Users Database
-var users = [
-  {
-    id: 1,
-    username: "test",
-    password: "123",
-    firstname: "Tesla",
-    lastname: 'Ola',
-    email: '123123@gmail.com',
-    phone: '123-123-1233',
-    address: '100 JD St., Irvine, CA92603',
-    business: false
-  }, {
-    id: 2,
-    username: "business",
-    password: "123",
-    firstname: "Steve",
-    lastname: 'Ma',
-    email: '123123@gmail.com',
-    phone: '123-123-1233',
-    address: '100 JD St., Irvine, CA92603',
-    business: true
-  }, {
-    id: 3,
-    username: "new",
-    password: "123",
-    firstname: "Helena",
-    lastname: 'Kim',
-    email: '123123@gmail.com',
-    phone: '123-123-1233',
-    address: '100 JD St., Irvine, CA92603',
-    business: true
-  }
-];
-
-function User(id, username, password, firstname, lastname, email, phone, address, business){
-  this.id = id;
-  this.username = username;
-  this.password = password;
-  this.firstname = firstname;
-  this.lastname = lastname;
-  this.email = email;
-  this.phone = phone;
-  this.business = business;
-}
-
-// Add Random Database
-for (var i=4; i<=500;i++){
-  var firstname = tool.randomText(2);
-  var lastname = tool.randomText(2);
-  var addNewUser = new User(i, 'user', '123', firstname, lastname, 'email@gmail.com', '123-123-1233', 'address', false );
-  users.push(addNewUser);
-}
-for (var i=3; i<=10; i++){
-  var randomeUser = _.sample(users, 1);
-  var addNewStore = new Store(i, randomeUser[0].id, tool.randomText(2), tool.randomText(50), '123-321-3333', tool.randomText(10), i+'.jpg');
-  stores.push(addNewStore);
-}
-for (var i=1; i<=3000;i++){
-  var randomStore = _.sample(stores, 1);
-  var last = _.last(randomStore[0].reviews);
-  if (typeof(last)==='object'){
-    last = last.id+1
-  } else {
-    last =1;
-  }
-  var randomRating = Math.floor(Math.random() * (5)) + 1;
-  var randomeUser = _.sample(users, 1);
-  var randomYear = Math.floor(Math.random() * (8)) + 2008;
-  var randomMonth = Math.floor(Math.random() * (11)) + 1;
-  var randomDay = Math.floor(Math.random() * (29)) + 1;
-  var randomDate = new Date(randomYear, randomMonth, randomDay);
-  var addNewReview = new Review(last, randomeUser[0].id, tool.randomText(150), randomRating, randomDate);
-  randomStore[0].reviews.push(addNewReview);
-}
+var users = database.users;
+var stores = database.stores;
 
 // Sessions
 var sessions =[];
@@ -359,8 +189,8 @@ app.get('/review-tags/:id/:review/:tag/:change', function(req, res){
   console.log(req.url);
   emitter.emit('examination', req.cookies.sessionTokenForRavelp);
   if (matchSession.length>0){
-    var store = _.where(stores, {id: filterInt(req.params.id)});
-    var theReview = _.where(store[0].reviews, {id: filterInt(req.params.review)});
+    var store = _.where(stores, {id: tool.filterInt(req.params.id)});
+    var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
     var tagName = req.params.tag;
     var change = req.params.change;
     var theTag = _.where(theReview[0].tags, {userId: matchSession[0].id});
@@ -386,12 +216,12 @@ app.get('/review-tags/:id/:review/:tag/:change', function(req, res){
 })
 
 app.get('/store-data/:id', function(req, res){
-  var store = _.where(stores, {id: filterInt(req.params.id)});
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
   res.json(store[0]);
 })
 
 app.get('/show-store/:id', function(req, res){
-  var store = _.where(stores, {id: filterInt(req.params.id)});
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
   var reviewUserlist = [];
   for (var i = 0; i < store[0].reviews.length; i++) {
     var user = _.where(users, {id: store[0].reviews[i].userId});
