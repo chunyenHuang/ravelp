@@ -151,6 +151,17 @@ document.body.addEventListener('click', function(event){
       editStoreForm.classList.remove('hidden');
     }
   }
+  if (type==='edit-review'){
+    var subId = filterInt(event.target.getAttribute('data-sub-id'));
+    var editBox = document.getElementById('myReview-' + id + '-' + subId);
+    removeAllChild(editBox);
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', '/get-review/' + id + '/' + subId);
+    XHR.send();
+    XHR.onload() = function(){
+      console.log(XHR.responseText);
+    }
+  }
 })
 
 document.body.addEventListener('submit', function(event){
@@ -381,22 +392,16 @@ function showUser(user, store, reviews){
       rStoreImg.className = 'img-responsive';
       var rStoreTitle = document.createElement('h5');
       rStoreTitle.textContent = theStore.name;
-      var rContent = document.createElement('p');
-      rContent.textContent = myReviews.description;
-      var rDate = document.createElement('p');
-      rDate.textContent = 'You wrote @ ' + myReviews.date;
-      var rRating = document.createElement('p');
-      rRating.textContent = 'Your rating: '
-      showRatingStars(myReviews, rRating);
+      var rField = document.createElement('div');
+      rField.setAttribute('id', 'myReview-' + theStore.id + '-' + myReviews.id);
 
       accountReviews.appendChild(rBox);
       rBox.appendChild(rStoreBox);
       rBox.appendChild(rTextBox);
       rStoreBox.appendChild(rStoreImg);
       rTextBox.appendChild(rStoreTitle);
-      rTextBox.appendChild(rDate);
-      rTextBox.appendChild(rRating);
-      rTextBox.appendChild(rContent);
+      rTextBox.appendChild(rField);
+      attachReview(theStore, myReviews, rField);
     }
   }
   else {
@@ -456,6 +461,26 @@ function showUser(user, store, reviews){
     var accountStore = document.getElementById('account-store');
     accountStore.textContent = store;
   }
+}
+
+function attachReview(store, review, location){
+  var editReview = document.createElement('button');
+  editReview.className = 'btn btn-sm btn-default pull-right';
+  editReview.textContent = 'Update My Review'
+  editReview.setAttribute('data-id', store.id);
+  editReview.setAttribute('data-sub-id', review.id);
+  editReview.setAttribute('data-type', 'edit-review');
+  var rContent = document.createElement('p');
+  rContent.textContent = review.description;
+  var rDate = document.createElement('p');
+  rDate.textContent = 'You wrote @ ' + review.date;
+  var rRating = document.createElement('p');
+  rRating.textContent = 'Your rating: '
+  showRatingStars(review, rRating);
+  location.appendChild(editReview);
+  location.appendChild(rDate);
+  location.appendChild(rRating);
+  location.appendChild(rContent);
 }
 
 function getStoreData(id){

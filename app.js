@@ -1,7 +1,8 @@
 // Modules
 var express = require('express');
-var tool = require('./tool.js');
-var search = require('./search.js');
+var tool = require('./modules/tool.js');
+var search = require('./modules/search.js');
+var session = require('./modules/session.js');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 var _ = require('underscore');
@@ -435,6 +436,10 @@ app.post('/new-review', jsonParser, function(req, res){
   } else {
     res.sendStatus(404);
   }
+})
+
+app.get('/get-review/:id/:subId', function(req, res){
+  res.send('you can edit');
 })
 
 app.listen(port, function(){
