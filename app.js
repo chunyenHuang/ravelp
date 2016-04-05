@@ -3,7 +3,9 @@ var express = require('express');
 var database = require('./modules/database.js');
 var authorization = require('./modules/authorization.js');
 var session = require('./modules/session.js');
+var loginStatus = require('./modules/loginStatus.js');
 var tool = require('./modules/tool.js');
+var statistic = require('./modules/statistic.js');
 var search = require('./modules/search.js');
 var constructor = require('./modules/constructor.js');
 var bodyParser = require('body-parser');
@@ -130,29 +132,7 @@ app.post('/edit-store', session, jsonParser, function(req, res){
   theStore[0].address = address;
   res.sendStatus('200');
 })
-app.get('/get-user', session, function(req, res){
-  var matchUser = req.matchUser;
-  var currentUser = _.where(users, {id: matchUser.id});
-  var store = _.where(stores, {userId: matchUser.id});
-  var allReviews = [];
-  for (var i = 0; i < stores.length; i++) {
-    var theReview = _.where(stores[i].reviews, {userId: matchUser.id});
-    if (theReview.length>0){
-      allReviews.push({store: stores[i], review: theReview[0]});
-    }
-  }
-  if (store.length>0){
-    var theStore = store;
-  } else if (currentUser[0].business){
-    var theStore = 'Add your store.';
-  } else {
-    var theStore = 'You have to register a business account.';
-  }
-  if (allReviews.length == 0){
-    allReviews = 'You have not written any reviews yet.';
-  }
-  res.json({user: currentUser[0], store: theStore, reviews: allReviews});
-})
+
 app.get('/logout', function(req, res){
   res.clearCookie('sessionTokenForRavelp');
   res.sendStatus(200);
@@ -166,6 +146,56 @@ app.get('/store-data/:id', function(req, res){
   var store = _.where(stores, {id: tool.filterInt(req.params.id)});
   res.json(store[0]);
 })
+app.get('/get-currentUser', session, function(req, res){
+  var matchUser = req.matchUser;
+  var id = matchUser.id;
+  var currentUser = _.where(users, {id: id});
+  var store = _.where(stores, {userId: id});
+  var userReviews = statistic.reviews(id);
+  var followers = statistic.followers(id);
+
+  if (store.length>0){
+    var theStore = store;
+  }
+  else if (currentUser[0].business){
+    var theStore = 'Add your store.';
+  }
+  else {
+    var theStore = 'You have to register a business account.';
+  }
+  if (userReviews.length == 0){
+    userReviews = 'You have not written any reviews yet.';
+  }
+
+  var others = {
+    followers: followers,
+  }
+  res.json({
+    user: currentUser[0],
+    store: theStore,
+    reviews: userReviews,
+    others: others
+  });
+})
+
+app.get('/user-data/:id', loginStatus, function(req, res){
+  var currentUser = _.where(users, {id: req.matchUser.id});
+  var id = tool.filterInt(req.params.id);
+  var user = _.where(users, {id: id});
+  var userReviews = statistic.reviews(id);
+  var followers = statistic.followers(id);
+
+  if (_.contains(followers, currentUser[0])) {
+    var followed = true;
+  } else {
+    var followed = false;
+  }
+  var others = {
+    followers: followers,
+    followed: followed,
+  }
+  res.json({user: user[0], reviews: userReviews, others: others});
+})
 
 app.get('/show-store/:id', function(req, res){
   var store = _.where(stores, {id: tool.filterInt(req.params.id)});
@@ -173,7 +203,8 @@ app.get('/show-store/:id', function(req, res){
   for (var i = 0; i < store[0].reviews.length; i++) {
     var user = _.where(users, {id: store[0].reviews[i].userId});
     if (user.length>0){
-      reviewUserlist.push({id: user[0].id, name: user[0].firstname});
+      reviewUserlist.push(user[0]);
+      // reviewUserlist.push({id: user[0].id, name: user[0].firstname});
     }
   }
   var matchSession = _.where(sessions, {token: req.cookies.sessionTokenForRavelp});
@@ -187,6 +218,21 @@ app.get('/show-store/:id', function(req, res){
   } else {
     res.json({writable: false, editable: false, store: store[0], reviewers: reviewUserlist});
   }
+})
+
+app.get('/follow-user/:id', session, function(req, res){
+  var matchUser = _.where(users, {id: req.matchUser.id});
+  var id = tool.filterInt(req.params.id);
+  var user = _.where(users, {id: id});
+  var position = _.indexOf(matchUser[0].following, id);
+  if (position != -1) {
+    matchUser[0].following.splice(position, 1);
+    res.json({id: user[0].id});
+  } else {
+    matchUser[0].following.push(id);
+    res.json({id: user[0].id});
+  }
+  console.log(matchUser[0].following);
 })
 
 app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
@@ -223,18 +269,25 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
 app.post('/new-review', session, jsonParser, function(req, res){
   var matchUser = req.matchUser;
   var id = req.body.id;
-  var content = req.body.content;
+  var description = req.body.content;
   var rating = req.body.rating;
   var date = new Date();
   var store = _.where(stores, {id: id});
-  var last = _.where(store[0].reviews);
-  if (last.id > 0){
-    var newId = last.id + 1;
+  var check = _.where(store[0].reviews, {userId: matchUser.id});
+  if (check.length > 0){
+    check[0].description = description;
+    check[0].rating = rating;
+    check[0].date = date;
   } else {
-    var newId = 1;
+    var last = _.last(store[0].reviews);
+    if (last.id > 0){
+      var newId = last.id + 1;
+    } else {
+      var newId = 1;
+    }
+    var addNewReview = new constructor.Review(newId, matchUser.id, content, rating, date);
+    store[0].reviews.push(addNewReview);
   }
-  var addNewReview = new constructor.Review(newId, matchUser.id, content, rating, date);
-  store[0].reviews.push(addNewReview);
   var reviewUserlist = [];
   for (var i = 0; i < store[0].reviews.length; i++) {
     var user = _.where(users, {id: store[0].reviews[i].userId});

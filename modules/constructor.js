@@ -19,15 +19,17 @@ function constructor() {
     this.tags = [];
     this.commemts = [];
   }
-  function User(id, username, password, firstname, lastname, email, phone, address, business) {
+  function User(id, username, password, firstname, lastname, thumb, email, phone, address, business, following) {
     this.id = id;
     this.username = username;
     this.password = password;
     this.firstname = firstname;
     this.lastname = lastname;
+    this.thumb = thumb;
     this.email = email;
     this.phone = phone;
     this.business = business;
+    this.following = following;
   }
   function Session(token, id){
     this.token = token;

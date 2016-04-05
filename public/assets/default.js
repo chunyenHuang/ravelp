@@ -137,7 +137,7 @@ document.body.addEventListener('click', function(event){
     }
   }
   if (type==='profile'){
-    getUserData();
+    getCurrentUser();
   }
   if (type==='show-store'){
     event.preventDefault();
@@ -177,6 +177,18 @@ document.body.addEventListener('click', function(event){
       var response = JSON.parse(XHR.responseText);
       console.log(response);
       reviewForm(response.store, response.review, editBox);
+    }
+  }
+  if (type==='follow-user') {
+    event.preventDefault();
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', '/follow-user/' + id);
+    XHR.send();
+    XHR.onload = function(){
+      var appendBox = document.getElementById('review-left-'+id);
+      removeAllChild(appendBox);
+      var response = JSON.parse(XHR.responseText);
+      displayUser(response.id, true, appendBox);
     }
   }
 })
@@ -344,19 +356,22 @@ function showLoginPage(){
   loginForm.classList.remove('hidden');
 }
 
-function getUserData(){
+function getCurrentUser(){
   var XHR = new XMLHttpRequest();
-  XHR.open('get', '/get-user');
+  XHR.open('get', '/get-currentUser');
   XHR.send();
   XHR.onload = function(){
     var response = JSON.parse(XHR.responseText);
-    showUser(response.user, response.store, response.reviews);
+    showUser(response);
   }
 }
 
-function showUser(user, store, reviews){
+function showUser(object){
   clearPage();
-
+  var user = object.user;
+  var store = object.store;
+  var reviews = object.reviews;
+  var followers = object.others.followers;
   // My Info
   accountDetail.classList.remove('hidden');
   var heading = document.getElementById('account-title');
@@ -690,11 +705,12 @@ function showStoreDetail(target){
       reviewBox.className = 'row reviews';
       var reviewLeft = document.createElement('div');
       reviewLeft.className ='col-sm-2';
+      reviewLeft.setAttribute('id', 'review-left-' + theReviews[i].userId);
       var reviewRight = document.createElement('div');
       reviewRight.className ='col-sm-10';
-      var reviewUser = document.createElement('h5');
+
       var reviewers = _.where(reviewUserlist, {id: theReviews[i].userId});
-      reviewUser.textContent = reviewers[0].name;
+      displayUser(theReviews[i].userId, true, reviewLeft);
 
       var reviewDate = document.createElement('span');
       reviewDate.textContent = theReviews[i].date;
@@ -705,7 +721,6 @@ function showStoreDetail(target){
       location.appendChild(reviewBox);
       reviewBox.appendChild(reviewLeft);
       reviewBox.appendChild(reviewRight);
-      reviewLeft.appendChild(reviewUser);
       showRatingStars(theReviews[i], reviewRight);
       reviewRight.appendChild(reviewDate);
       reviewRight.appendChild(reviewContent);
@@ -726,7 +741,7 @@ function showStoreDetail(target){
   expand.appendChild(expandButton);
   expandButton.addEventListener('click', function(){
     loadMoreReviews(theReviews, showedReviews, 10);
-    loadReviews(showedReviews, reviewUserlist, userId, store);
+    loadReviews(showedReviews, reviewUserlist, userId, store, storeReviews);
   })
 }
 
@@ -855,4 +870,60 @@ function reviewForm(store, review, location){
       showStoreDetail(response);
     }
   })
+}
+
+function showUserProfileThumb(object, location){
+  var user = object.user;
+  var reviews = object.reviews;
+  var followers = object.others.followers;
+  var followed = object.others.followed;
+  var box = document.createElement('div');
+  box.className = 'user-thumb-box';
+  var name = document.createElement('h5');
+  name.textContent = user.firstname;
+  var link = document.createElement('a');
+  link.href="#";
+  var thumb = document.createElement('img');
+  thumb.src = user.thumb;
+  thumb.className = 'img-responsive img-rounded';
+  link.appendChild(thumb);
+  var followLink = document.createElement('button');
+  followLink.className = 'btn btn-xs btn-default';
+  followLink.setAttribute('data-id', user.id);
+  followLink.setAttribute('data-type', 'follow-user');
+  if (followed) {
+    followLink.classList.add('active');
+    followLink.textContent = 'Unfollow ' + user.firstname;
+  } else {
+    followLink.textContent = 'Follow ' + user.firstname;
+  }
+
+  var totalReviewCounts = document.createElement('p');
+  totalReviewCounts.textContent = reviews.length + ' Reviews';
+  var totalFollowers = document.createElement('p');
+  totalFollowers.textContent = followers.length + ' Followers';
+  box.appendChild(link);
+  box.appendChild(name);
+  box.appendChild(totalReviewCounts);
+  box.appendChild(totalFollowers);
+  box.appendChild(followLink);
+  location.appendChild(box);
+}
+
+function showUserProfile(user){
+  console.log('user');
+}
+//
+function displayUser(id, thumb, location){
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/user-data/' + id);
+  XHR.send()
+  XHR.onload = function(){
+    var response = JSON.parse(XHR.responseText);
+    if (thumb) {
+      showUserProfileThumb(response, location);
+    } else {
+      showUserProfile(response, location);
+    }
+  }
 }

@@ -84,30 +84,36 @@ function database(){
       password: "123",
       firstname: "Tesla",
       lastname: 'Ola',
+      thumb: 'p1.jpg',
       email: '123123@gmail.com',
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
-      business: false
+      business: false,
+      following: [2, 3, 5, 10, 31, 23, 123, 200, 10]
     }, {
       id: 2,
       username: "business",
       password: "123",
       firstname: "Steve",
       lastname: 'Ma',
+      thumb: 'p2.jpg',
       email: '123123@gmail.com',
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
-      business: true
+      business: true,
+      following: [1, 3, 5, 10, 31, 23, 123, 200, 10]
     }, {
       id: 3,
       username: "new",
       password: "123",
       firstname: "Helena",
       lastname: 'Kim',
+      thumb: 'p3.jpg',
       email: '123123@gmail.com',
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
-      business: true
+      business: true,
+      following: [1, 2, 5, 10, 31, 23, 123, 200, 10]
     }
   ];
 
@@ -115,7 +121,16 @@ function database(){
   for (var i=4; i<=500;i++){
     var firstname = tool.randomText(2);
     var lastname = tool.randomText(2);
-    var addNewUser = new constructor.User(i, 'user', '123', firstname, lastname, 'email@gmail.com', '123-123-1233', 'address', false );
+    var count = Math.floor(Math.random() * (10)) + 1;
+    var thumb = 'p'+count+'.jpg';
+    var following = [];
+    var randomOtherUsers = _.sample(users, 50);
+    for (var x = 0; x < randomOtherUsers.length; x++) {
+      if (randomOtherUsers[x] != i){
+        following.push(randomOtherUsers[x].id);
+      }
+    }
+    var addNewUser = new constructor.User(i, 'user', '123', firstname, lastname, thumb, 'email@gmail.com', '123-123-1233', 'address', false, following);
     users.push(addNewUser);
   }
   for (var i=3; i<=10; i++){
