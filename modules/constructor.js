@@ -16,7 +16,7 @@ function constructor() {
     this.description = description;
     this.rating = rating;
     this.date = date;
-    this.tags = [];
+    this.tags = tags;
     this.commemts = [];
   }
   function User(id, username, password, firstname, lastname, thumb, email, phone, address, business, following) {
@@ -31,6 +31,13 @@ function constructor() {
     this.business = business;
     this.following = following;
   }
+  function Tags(id, userId, useful, funny, cool){
+    this.id = id;
+    this.userId = userId;
+    this.useful = useful;
+    this.funny = funny;
+    this.cool = cool;
+  }
   function Session(token, id){
     this.token = token;
     this.id = id;
@@ -39,7 +46,8 @@ function constructor() {
     Store: Store,
     Review: Review,
     User: User,
-    Session: Session
+    Session: Session,
+    Tags: Tags,
   }
 }
 

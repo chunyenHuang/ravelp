@@ -40,6 +40,22 @@ function statistic(){
     var count = _.countBy(userReviewsRating);
     return count;
   }
+  function tagCount(userId) {
+    var tagCount = {
+      useful: 0,
+      funny: 0,
+      cool: 0,
+    };
+    for (var i = 0; i < stores.length; i++) {
+      var review = _.where(stores[i].reviews, {userId: userId});
+      if (review.length>0){
+        tagCount.useful = tagCount.useful + countTag(review[0], 'useful');
+        tagCount.funny = tagCount.funny + countTag(review[0], 'funny');
+        tagCount.cool = tagCount.cool + countTag(review[0], 'cool');
+      }
+    }
+    return tagCount;
+  }
   function countTag(review, tagName){
     if (tagName === 'useful') {
       var count = _.where(review.tags, {useful: true});
@@ -50,12 +66,18 @@ function statistic(){
     if (tagName === 'cool') {
       var count = _.where(review.tags, {cool: true});
     }
-    return count.length;
+    if (count.length > 0){
+      return count.length;
+    } else {
+      return 0;
+    }
   }
+
   return {
     reviews: reviews, // [{store, review}, {}...]
     followers: followers, // [id, ids...]
     ratingCount: ratingCount,
+    tagCount: tagCount,
     countTag: countTag,
   }
 }

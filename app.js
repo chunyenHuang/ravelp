@@ -195,6 +195,7 @@ app.get('/user-data/:id', loginStatus, function(req, res){
     followers: followers,
     followed: followed,
     ratingCount: statistic.ratingCount(id),
+    tagCount: statistic.tagCount(id),
   }
   res.json({user: user[0], reviews: userReviews, others: others});
 })

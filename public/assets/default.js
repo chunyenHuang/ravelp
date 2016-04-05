@@ -958,7 +958,7 @@ function showUserProfile(object, location){
   var followers = object.others.followers;
   var followed = object.others.followed;
   var ratingCount = object.others.ratingCount;
-  console.log(ratingCount);
+  var tagCount = object.others.tagCount;
 
   var row = document.createElement('div');
   row.className = 'row';
@@ -1031,12 +1031,13 @@ function showUserProfile(object, location){
   titleBox.appendChild(name);
   titleBox.appendChild(countlist);
   mid.appendChild(titleBox);
-  // Mid2
+  // Mid2 stars distribution
   var body = document.createElement('div');
+
+  var ratingHeader = document.createElement('h4');
+  ratingHeader.textContent = 'Rating Distribution';
   var ratingCountsBox = document.createElement('div');
   var totalRating = 0;
-  console.log(ratingCount);
-  console.log(ratingCount[1]);
   for (var i=1; i<= 5; i++) {
     if (typeof(ratingCount[i]) != 'undefined'){
       totalRating = totalRating + ratingCount[i];
@@ -1065,7 +1066,28 @@ function showUserProfile(object, location){
     progressTitle.appendChild(progress);
     ratingCountsBox.appendChild(progressTitle);
   }
+  // Mid3 tag counts
+  tagCountArray = _.pairs(tagCount);
+  var tagRow = document.createElement('div');
+  tagRow.className = 'row';
+  var tagHeader = document.createElement('h4');
+  tagHeader.textContent = 'Review Votes';
+  for (var i = 0; i < tagCountArray.length; i++) {
+    tagCol = document.createElement('div');
+    tagCol.className = 'col-md-4 text-center';
+    tagBtn = document.createElement('button');
+    tagBtn.className = 'btn btn-lg btn-default';
+    tagBtn.textContent = tagCountArray[i][0] + ': ' + tagCountArray[i][1];
+    tagCol.appendChild(tagBtn);
+    tagRow.appendChild(tagCol);
+  }
+
+  var hr = document.createElement('hr');
+  body.appendChild(ratingHeader);
   body.appendChild(ratingCountsBox);
+  body.appendChild(hr);
+  body.appendChild(tagHeader);
+  body.appendChild(tagRow);
   mid.appendChild(body);
   // All
   row.appendChild(left);
