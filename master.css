@@ -17,5 +17,9 @@ body {
 .writingZone {
   padding-top: 15px;
   padding-bottom: 15px;
-  
+}
+
+.padding-top-bottom {
+  padding-top: 15px;
+  padding-bottom: 15px;
 }

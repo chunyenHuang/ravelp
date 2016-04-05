@@ -89,7 +89,7 @@ function database(){
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
       business: false,
-      following: [2, 3, 5, 10, 31, 23, 123, 200, 10]
+      following: [2, 3, 5, 10, 31, 23, 123, 200]
     }, {
       id: 2,
       username: "business",
@@ -101,7 +101,7 @@ function database(){
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
       business: true,
-      following: [1, 3, 5, 10, 31, 23, 123, 200, 10]
+      following: [1, 3, 5, 10, 31, 23, 123, 200]
     }, {
       id: 3,
       username: "new",
@@ -113,7 +113,7 @@ function database(){
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
       business: true,
-      following: [1, 2, 5, 10, 31, 23, 123, 200, 10]
+      following: [1, 2, 5, 10, 31, 23, 123, 200]
     }
   ];
 

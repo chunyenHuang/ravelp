@@ -4,6 +4,7 @@ var database = require('./database.js');
 var _ = require('underscore');
 var session = express.Router();
 var matchSession = [];
+
 session.use(cookieParser());
 session.use(function(req, res, next){
   matchSession = [];

@@ -185,7 +185,7 @@ document.body.addEventListener('click', function(event){
     XHR.open('get', '/follow-user/' + id);
     XHR.send();
     XHR.onload = function(){
-      var appendBox = document.getElementById('review-left-'+id);
+      var appendBox = document.getElementById('user-thumb-box-'+id);
       removeAllChild(appendBox);
       var response = JSON.parse(XHR.responseText);
       displayUser(response.id, true, appendBox);
@@ -230,7 +230,7 @@ document.body.addEventListener('submit', function(event){
         profile.setAttribute('data-id', response.id);
         // navbar
         navbarUsername.textContent = 'Hello~ ' + response.firstname;
-        homepage();
+        getCurrentUser();
       }
     }
   }
@@ -342,7 +342,7 @@ document.body.addEventListener('submit', function(event){
 
     XHR.onload = function(){
       if (XHR.status===200){
-        getUserData();
+        getCurrentUser();
       }
       else {
         clearPage();
@@ -497,6 +497,28 @@ function showUser(object){
   else {
     var accountStore = document.getElementById('account-store');
     accountStore.textContent = store;
+  }
+
+  // My Following
+  var accountFollowing = document.getElementById('account-following');
+  if (user.following.length>0) {
+    var followingRow = document.createElement('div');
+    followingRow.className = 'row';
+    for (var i = 0; i < user.following.length; i++) {
+      var followingCol = document.createElement('div');
+      followingCol.className = 'col-xs-4 col-sm-3 col-md-2 padding-top-bottom';
+      var followingBox = document.createElement('div');
+      // followingBox.className = 'user-thumb-box';
+      followingBox.setAttribute('id', 'user-thumb-box-' + user.following[i]);
+      followingCol.appendChild(followingBox);
+      followingRow.appendChild(followingCol);
+      displayUser(user.following[i], true, followingBox);
+    }
+    accountFollowing.appendChild(followingRow)
+  } else {
+    var msgFollowing = document.createElement('p');
+    msgFollowing.textContent = 'You did not follow anyone.'
+    accountFollowing.appendChild(msgFollowing);
   }
 }
 
@@ -705,7 +727,7 @@ function showStoreDetail(target){
       reviewBox.className = 'row reviews';
       var reviewLeft = document.createElement('div');
       reviewLeft.className ='col-sm-2';
-      reviewLeft.setAttribute('id', 'review-left-' + theReviews[i].userId);
+      reviewLeft.setAttribute('id', 'user-thumb-box-' + theReviews[i].userId);
       var reviewRight = document.createElement('div');
       reviewRight.className ='col-sm-10';
 
@@ -893,9 +915,9 @@ function showUserProfileThumb(object, location){
   followLink.setAttribute('data-type', 'follow-user');
   if (followed) {
     followLink.classList.add('active');
-    followLink.textContent = 'Unfollow ' + user.firstname;
+    followLink.textContent = 'Unfollow';
   } else {
-    followLink.textContent = 'Follow ' + user.firstname;
+    followLink.textContent = 'Follow';
   }
 
   var totalReviewCounts = document.createElement('p');
