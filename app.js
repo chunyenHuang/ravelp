@@ -243,6 +243,11 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
   var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
   var tagName = req.params.tag;
   var change = req.params.change;
+  if (change === 'true'){
+    change = true;
+  } else {
+    change = false;
+  }
   var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
   if (theTag.length < 1){
     var array = theReview[0].tags;
@@ -265,7 +270,11 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
     theTag[0].cool = change;
   }
   console.log(theTag[0]);
-  res.send(theTag[0]);
+  var response = {
+    tag: theTag[0],
+    tagCount: statistic.countTag(theReview[0], tagName),
+  }
+  res.json(response);
 })
 
 app.post('/new-review', session, jsonParser, function(req, res){

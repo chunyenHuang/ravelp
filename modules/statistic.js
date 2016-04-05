@@ -40,11 +40,23 @@ function statistic(){
     var count = _.countBy(userReviewsRating);
     return count;
   }
-
+  function countTag(review, tagName){
+    if (tagName === 'useful') {
+      var count = _.where(review.tags, {useful: true});
+    }
+    if (tagName === 'funny') {
+      var count = _.where(review.tags, {funny: true});
+    }
+    if (tagName === 'cool') {
+      var count = _.where(review.tags, {cool: true});
+    }
+    return count.length;
+  }
   return {
     reviews: reviews, // [{store, review}, {}...]
     followers: followers, // [id, ids...]
     ratingCount: ratingCount,
+    countTag: countTag,
   }
 }
 module.exports = statistic();

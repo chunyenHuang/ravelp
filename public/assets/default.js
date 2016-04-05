@@ -115,8 +115,9 @@ document.body.addEventListener('click', function(event){
     XHR.open('get','/review-tags/' + id + '/' + filterInt(review) + '/' + tag + '/' + change);
     XHR.send();
     XHR.onload = function(){
+      var response = JSON.parse(XHR.response);
       toggleClass(event.target, 'active');
-      event.target.textContent = event.target.getAttribute('name');
+      event.target.textContent = event.target.getAttribute('name') + ' ' + response.tagCount ;
     }
   }
   if (type==='new-user'){
