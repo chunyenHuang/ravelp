@@ -23,3 +23,21 @@ body {
   padding-top: 15px;
   padding-bottom: 15px;
 }
+
+.text-center {
+  text-align: center;
+}
+
+.profile-title {
+  margin: 0px;
+  padding: 5px;
+  border-bottom: 1px solid rgb(230, 230, 230);
+}
+.profile-list {
+  color: rgb(172, 62, 0);
+  font-size: 1.5em;
+}
+
+.profile-list i{
+  color: rgb(244, 115, 43);
+}

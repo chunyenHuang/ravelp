@@ -181,15 +181,27 @@ document.body.addEventListener('click', function(event){
   }
   if (type==='follow-user') {
     event.preventDefault();
+    var value = event.target.getAttribute('data-value');
     var XHR = new XMLHttpRequest();
     XHR.open('get', '/follow-user/' + id);
     XHR.send();
     XHR.onload = function(){
-      var appendBox = document.getElementById('user-thumb-box-'+id);
-      removeAllChild(appendBox);
       var response = JSON.parse(XHR.responseText);
-      displayUser(response.id, true, appendBox);
+      if (value === 'true'){
+        var location = document.getElementById('user-thumb-box-'+id);
+        removeAllChild(location);
+        displayUser(response.id, true, location);
+      } else {
+        var locationId = event.target.getAttribute('saved-location');
+        var location = document.getElementById(locationId);
+        displayUser(response.id, false, location);
+      }
     }
+  }
+  if (type==='show-user') {
+    event.preventDefault();
+    clearPage();
+    displayUser(id, false, main);
   }
 })
 
@@ -372,38 +384,40 @@ function showUser(object){
   var store = object.store;
   var reviews = object.reviews;
   var followers = object.others.followers;
-  // My Info
   accountDetail.classList.remove('hidden');
-  var heading = document.getElementById('account-title');
-  heading.textContent = user.firstname + ' ' + user.lastname;
-  var row = document.createElement('div');
-  row.className = "row";
-  var body = document.createElement('div');
-  body.className = 'col-md-12';
-  var ul = document.createElement('ul');
-  var li1 = document.createElement('li');
-  var li2 = document.createElement('li');
-  var li3 = document.createElement('li');
-  var li4 = document.createElement('li');
-  var li5 = document.createElement('li');
-  var li6 = document.createElement('li');
-  li1.textContent = user.username;
-  li2.textContent = user.firstname + ' ' + user.lastname;
-  li3.textContent = user.email;
-  li4.textContent = user.phone;
-  li5.textContent = user.address;
-  li6.textContent = 'business: ' + user.business;
-  ul.appendChild(li1);
-  ul.appendChild(li2);
-  ul.appendChild(li3);
-  ul.appendChild(li4);
-  ul.appendChild(li5);
-  ul.appendChild(li6);
-  row.appendChild(body);
-  body.appendChild(ul);
+
+  // My Info
+  // var heading = document.getElementById('account-title');
+  // heading.textContent = '';
+  // var row = document.createElement('div');
+  // row.className = "row";
+  // var body = document.createElement('div');
+  // body.className = 'col-md-12';
+  // var ul = document.createElement('ul');
+  // var li1 = document.createElement('li');
+  // var li2 = document.createElement('li');
+  // var li3 = document.createElement('li');
+  // var li4 = document.createElement('li');
+  // var li5 = document.createElement('li');
+  // var li6 = document.createElement('li');
+  // li1.textContent = user.username;
+  // li2.textContent = user.firstname + ' ' + user.lastname;
+  // li3.textContent = user.email;
+  // li4.textContent = user.phone;
+  // li5.textContent = user.address;
+  // li6.textContent = 'business: ' + user.business;
+  // ul.appendChild(li1);
+  // ul.appendChild(li2);
+  // ul.appendChild(li3);
+  // ul.appendChild(li4);
+  // ul.appendChild(li5);
+  // ul.appendChild(li6);
+  // row.appendChild(body);
+  // body.appendChild(ul);
   var accountInfo = document.getElementById('account-info');
   removeAllChild(accountInfo);
-  accountInfo.appendChild(row);
+  showUserProfile(object, accountInfo);
+  // accountInfo.appendChild(row);
 
   // My Reviews
   var accountReviews = document.getElementById('account-reviews');
@@ -908,11 +922,15 @@ function showUserProfileThumb(object, location){
   var thumb = document.createElement('img');
   thumb.src = user.thumb;
   thumb.className = 'img-responsive img-rounded';
+  thumb.setAttribute('data-id', user.id);
+  thumb.setAttribute('data-type', 'show-user');
   link.appendChild(thumb);
   var followLink = document.createElement('button');
   followLink.className = 'btn btn-xs btn-default';
   followLink.setAttribute('data-id', user.id);
   followLink.setAttribute('data-type', 'follow-user');
+  followLink.setAttribute('data-value', true);
+  followLink.setAttribute('saved-location', location);
   if (followed) {
     followLink.classList.add('active');
     followLink.textContent = 'Unfollow';
@@ -932,8 +950,88 @@ function showUserProfileThumb(object, location){
   location.appendChild(box);
 }
 
-function showUserProfile(user){
-  console.log('user');
+function showUserProfile(object, location){
+  removeAllChild(location);
+  var user = object.user;
+  var reviews = object.reviews;
+  var followers = object.others.followers;
+  var followed = object.others.followed;
+
+  var row = document.createElement('div');
+  row.className = 'row';
+  var left = document.createElement('div');
+  left.className = 'col-md-3 text-center';
+  var mid = document.createElement('div');
+  mid.className = 'col-md-9';
+  // Left
+  var img = document.createElement('img');
+  img.src = user.thumb;
+  img.setAttribute('width', '100%');
+  var btnGroup = document.createElement('div');
+  btnGroup.className = "btn-group-vertical padding-top-bottom";
+  btnGroup.setAttribute('role', 'group');
+  var btnOverview = document.createElement('div');
+  btnOverview.className = 'btn btn-default';
+  btnOverview.textContent = 'Overview';
+  var btnReviews = document.createElement('div');
+  btnReviews.className = 'btn btn-default';
+  btnReviews.textContent = 'Reviews';
+  var btnFollowers = document.createElement('div');
+  btnFollowers.className = 'btn btn-default';
+  btnFollowers.textContent = 'Followers';
+
+  btnGroup.appendChild(btnOverview);
+  btnGroup.appendChild(btnReviews);
+  btnGroup.appendChild(btnFollowers);
+  left.appendChild(img);
+  left.appendChild(btnGroup);
+  // Mid
+  var titleBox = document.createElement('div');
+  titleBox.className ='profile-title';
+
+  var followLink = document.createElement('button');
+  if (followed){
+    followLink.textContent = 'Unfollow ' + user.firstname;
+  } else {
+    followLink.textContent = 'Follow ' + user.firstname;
+  }
+  followLink.className = 'btn btn-default pull-right';
+  followLink.setAttribute('data-id', user.id);
+  followLink.setAttribute('data-type', 'follow-user');
+  followLink.setAttribute('data-value', false);
+  followLink.setAttribute('saved-location', location.getAttribute('id'));
+  var name = document.createElement('h1');
+  name.textContent = user.firstname + ' ' + user.lastname;
+
+  var countlist = document.createElement('ul');
+  countlist.className = 'list-inline list-unstyled profile-list';
+
+  var list1 = document.createElement('li');
+  var list1text = document.createElement('span');
+  list1text.textContent = ' ' + reviews.length + ' Reviews';
+  var list1icon = document.createElement('i');
+  list1icon.className = "fa fa-star-o";
+
+  var list2 = document.createElement('li');
+  var list2text = document.createElement('span');
+  list2text.textContent = ' ' + followers.length + ' Followers';
+  var list2icon = document.createElement('i');
+  list2icon.className = "fa fa-users fa";
+
+  list1.appendChild(list1icon);
+  list1.appendChild(list1text);
+  list2.appendChild(list2icon);
+  list2.appendChild(list2text);
+  countlist.appendChild(list1);
+  countlist.appendChild(list2);
+  titleBox.appendChild(followLink);
+  titleBox.appendChild(name);
+  titleBox.appendChild(countlist);
+  mid.appendChild(titleBox);
+  // All
+  row.appendChild(left);
+  row.appendChild(mid);
+  location.appendChild(row);
 }
 //
 function displayUser(id, thumb, location){
