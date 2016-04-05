@@ -15,34 +15,34 @@ function database(){
       phone: '(123) 123-1233',
       address: '105 Research Drive, Irvine, CA93023',
       tags: ['coffee', 'restaurant'],
-      reviews: [
-        {
-          id: 1,
-          userId: 3,
-          description: tool.randomText(200),
-          date: new Date(),
-          rating: 5,
-          tags: [{
-            id: 1,
-            userId: 2,
-            useful: true,
-            funny: true,
-            cool: false
-          }],
-          comments: [{
-            id:1,
-            userId: 2,
-            comments: tool.randomText(20)}]
-        }, {
-          id: 2,
-          userId: 2,
-          description: tool.randomText(200),
-          date: new Date(),
-          rating: 3,
-          tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},{id:2, userId: 1, useful: false, funny: true, cool: false}],
-          comments: [{id: 1, userId: 3, comments: tool.randomText(20)}, {id: 2, userId: 1, comments: tool.randomText(10)}]
-        }
-      ]
+      reviews: []
+      //   {
+      //     id: 1,
+      //     userId: 3,
+      //     description: tool.randomText(200),
+      //     date: new Date(),
+      //     rating: 5,
+      //     tags: [{
+      //       id: 1,
+      //       userId: 2,
+      //       useful: true,
+      //       funny: true,
+      //       cool: false
+      //     }],
+      //     comments: [{
+      //       id:1,
+      //       userId: 2,
+      //       comments: tool.randomText(20)}]
+      //   }, {
+      //     id: 2,
+      //     userId: 2,
+      //     description: tool.randomText(200),
+      //     date: new Date(),
+      //     rating: 3,
+      //     tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},{id:2, userId: 1, useful: false, funny: true, cool: false}],
+      //     comments: [{id: 1, userId: 3, comments: tool.randomText(20)}, {id: 2, userId: 1, comments: tool.randomText(10)}]
+      //   }
+      // ]
     }, {
       id: 2,
       userId: 2,
@@ -52,27 +52,27 @@ function database(){
       description: tool.randomText(150),
       address: '321 Culver Ave., Irvine, CA93023',
       tags: ['coffee', 'restaurant'],
-      reviews: [
-        {
-          id: 1,
-          userId: 3,
-          description: tool.randomText(200),
-          date: new Date(),
-          rating: 2,
-          tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},
-                 {id: 2, userId: 1, useful: false, funny: true, cool: false}],
-          comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
-        }, {
-          id: 2,
-          userId: 2,
-          description: tool.randomText(200),
-          date: new Date(),
-          rating: 1,
-          tags: [{id: 1, userId: 1, useful: true, funny: true, cool: false},
-                 {id: 2, userId: 1, useful: false, funny: true, cool: false}],
-          comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
-        }
-      ]
+      reviews: []
+      //   {
+      //     id: 1,
+      //     userId: 3,
+      //     description: tool.randomText(200),
+      //     date: new Date(),
+      //     rating: 2,
+      //     tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},
+      //            {id: 2, userId: 1, useful: false, funny: true, cool: false}],
+      //     comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
+      //   }, {
+      //     id: 2,
+      //     userId: 2,
+      //     description: tool.randomText(200),
+      //     date: new Date(),
+      //     rating: 1,
+      //     tags: [{id: 1, userId: 1, useful: true, funny: true, cool: false},
+      //            {id: 2, userId: 1, useful: false, funny: true, cool: false}],
+      //     comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
+      //   }
+      // ]
     }
   ]
 
@@ -89,7 +89,7 @@ function database(){
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
       business: false,
-      following: [2, 3, 5, 10, 31, 23, 123, 200]
+      following: [2, 3, 5, 10, 11, 12, 13, 20]
     }, {
       id: 2,
       username: "business",
@@ -101,7 +101,7 @@ function database(){
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
       business: true,
-      following: [1, 3, 5, 10, 31, 23, 123, 200]
+      following: [1, 3, 5, 10, 15, 16, 17, 18, 19, 20]
     }, {
       id: 3,
       username: "new",
@@ -113,16 +113,16 @@ function database(){
       phone: '123-123-1233',
       address: '100 JD St., Irvine, CA92603',
       business: true,
-      following: [1, 2, 5, 10, 31, 23, 123, 200]
+      following: [1, 2, 5, 10]
     }
   ];
 
   // Add Random Database
   for (var i=4; i<=20;i++){
-    var firstname = tool.randomText(2);
-    var lastname = tool.randomText(2);
-    var count = Math.floor(Math.random() * (10)) + 1;
-    var thumb = 'p'+count+'.jpg';
+    var firstname = tool.randomText(1);
+    var lastname = tool.randomText(1);
+    // var count = Math.floor(Math.random() * (10)) + 1;
+    var thumb = 'p'+i+'.jpg';
     var following = [];
     var randomOtherUsers = _.sample(users, 50);
     for (var x = 0; x < randomOtherUsers.length; x++) {
