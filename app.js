@@ -169,6 +169,7 @@ app.get('/get-currentUser', session, function(req, res){
 
   var others = {
     followers: followers,
+    ratingCount: statistic.ratingCount(id),
   }
   res.json({
     user: currentUser[0],
@@ -193,6 +194,7 @@ app.get('/user-data/:id', loginStatus, function(req, res){
   var others = {
     followers: followers,
     followed: followed,
+    ratingCount: statistic.ratingCount(id),
   }
   res.json({user: user[0], reviews: userReviews, others: others});
 })

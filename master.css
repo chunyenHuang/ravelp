@@ -41,3 +41,8 @@ body {
 .profile-list i{
   color: rgb(244, 115, 43);
 }
+
+.text-left {
+  text-align: left;
+  float: left;
+}

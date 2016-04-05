@@ -956,6 +956,8 @@ function showUserProfile(object, location){
   var reviews = object.reviews;
   var followers = object.others.followers;
   var followed = object.others.followed;
+  var ratingCount = object.others.ratingCount;
+  console.log(ratingCount);
 
   var row = document.createElement('div');
   row.className = 'row';
@@ -1028,6 +1030,42 @@ function showUserProfile(object, location){
   titleBox.appendChild(name);
   titleBox.appendChild(countlist);
   mid.appendChild(titleBox);
+  // Mid2
+  var body = document.createElement('div');
+  var ratingCountsBox = document.createElement('div');
+  var totalRating = 0;
+  console.log(ratingCount);
+  console.log(ratingCount[1]);
+  for (var i=1; i<= 5; i++) {
+    if (typeof(ratingCount[i]) != 'undefined'){
+      totalRating = totalRating + ratingCount[i];
+    }
+  }
+  for (var i=5; i>= 1; i--) {
+    var progressTitle =document.createElement('div');
+    if (typeof(ratingCount[i]) != 'undefined'){
+      progressTitle.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
+    } else {
+      progressTitle.textContent = ' ' + i + ' Stars: 0';
+    }
+
+    var progress = document.createElement('div');
+    progress.className = 'progress';
+
+    var progressBar = document.createElement('div');
+    progressBar.className = 'progress-bar progress-bar-success text-left';
+    progressBar.setAttribute('role', 'progressbar');
+    progressBar.setAttribute('aria-valuemin', '0');
+    progressBar.setAttribute('aria-valuemax', '100');
+    progressBar.setAttribute('aria-valuenow', Math.floor(ratingCount[i]*100/totalRating));
+    progressBar.setAttribute('style', 'width:' + Math.floor(ratingCount[i]*100/totalRating) +'%');
+    // progressBar.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
+    progress.appendChild(progressBar);
+    progressTitle.appendChild(progress);
+    ratingCountsBox.appendChild(progressTitle);
+  }
+  body.appendChild(ratingCountsBox);
+  mid.appendChild(body);
   // All
   row.appendChild(left);
   row.appendChild(mid);
