@@ -26,7 +26,8 @@ function constructor() {
     this.tags = tags;
     this.commemts = [];
   }
-  function User(id, username, password, firstname, lastname, thumb, email, phone, address, business, following) {
+  function User(id, username, password, firstname, lastname, thumb,
+                email, phone, address, business, following) {
     this.id = id;
     this.username = username;
     this.password = password;
@@ -35,6 +36,7 @@ function constructor() {
     this.thumb = thumb;
     this.email = email;
     this.phone = phone;
+    this.address = address;
     this.business = business;
     this.following = following;
   }

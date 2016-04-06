@@ -83,24 +83,32 @@ app.post('/newuser', jsonParser, function(req, res){
   var password = req.body.password;
   var firstname = req.body.firstname;
   var lastname = req.body.lastname;
+  var thumb = 'p1.jpg';
   var email = req.body.email;
   var phone = req.body.phone;
-  var address = req.body.address;
+  var address = {
+    address: req.body.address,
+    city: req.body.city,
+    state: req.body.state,
+    zipCode: req.body.zipCode,
+  }
   var business = req.body.business;
+  var following = [];
   var match = _.where(users, {username: username});
   if (match.length>0){
     res.sendStatus(403);
   } else {
     var last = _.last(users);
     var id = last.id + 1;
-    var newUser = new User(id, username, password, firstname, lastname, email, phone, address, business);
+    var newUser = new constructor.User(id, username, password, firstname,
+      lastname, thumb, email, phone, address, business, following);
     users.push(newUser);
-    console.log(users);
+    console.log(newUser);
     var currentUser = _.where(users, {username: username});
     var token = tool.sessionToken(50);
     res.cookie('sessionTokenForRavelp', token);
-    sessions.push(new Session(token, currentUser[0].id));
-    res.json(currentUser[0]);
+    sessions.push(new constructor.Session(token, currentUser[0].id));
+    res.sendStatus(200);
   }
 })
 

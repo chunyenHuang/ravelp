@@ -286,6 +286,9 @@ document.body.addEventListener('submit', function(event){
     var email = document.getElementById('new-email');
     var phone = document.getElementById('new-phone');
     var address = document.getElementById('new-address');
+    var city = document.getElementById('new-city');
+    var state = document.getElementById('new-state');
+    var zipCode = document.getElementById('new-zipCode');
     var business = document.getElementById('new-business');
 
     var newUser = {
@@ -295,7 +298,12 @@ document.body.addEventListener('submit', function(event){
       lastname: lastname.value,
       email: email.value,
       phone: phone.value,
-      address: address.value,
+      address: {
+        address: address.value,
+        city: city.value,
+        state: state.value,
+        zipCode: zipCode.value,
+      },
       business: business.checked,
     };
     var payload = JSON.stringify(newUser);
@@ -309,12 +317,7 @@ document.body.addEventListener('submit', function(event){
       if (XHR.status === 403) {
         msg.textContent = '(username is already taken)';
       } else {
-        var response = JSON.parse(XHR.responseText);
-        clearPage();
-        profile.classList.remove('hidden');
-        logout.classList.remove('hidden');
-        login.classList.add('hidden');
-        profile.setAttribute('data-id', response.id);
+        getCurrentUser();
       }
     }
   }
@@ -406,6 +409,11 @@ function getCurrentUser(){
   XHR.send();
   XHR.onload = function(){
     var response = JSON.parse(XHR.responseText);
+    clearPage();
+    profile.classList.remove('hidden');
+    logout.classList.remove('hidden');
+    login.classList.add('hidden');
+    profile.setAttribute('data-id', response.user.id);
     showUser(response);
   }
 }
@@ -453,8 +461,7 @@ function showUser(object){
 
   // My Reviews
   var accountReviews = document.getElementById('account-reviews');
-  var myReviewsCount = document.getElementById('my-reviews-count');
-  myReviewsCount.textContent = reviews.length;
+
   removeAllChild(accountReviews);
   if (typeof(reviews)==='object'){
     for (var i = 0; i < reviews.length; i++) {
@@ -495,8 +502,7 @@ function showUser(object){
 
   // My Stores
   var accountStore = document.getElementById('account-store');
-  var myStoresCount = document.getElementById('my-stores-count');
-  myStoresCount.textContent = store.length;
+
   removeAllChild(accountStore);
   if (typeof(store)==='object'){
     // for (var i = 0; i < store.length; i++) {
@@ -554,8 +560,7 @@ function showUser(object){
 
   // My Following
   var accountFollowing = document.getElementById('account-following');
-  var myFollowingCount = document.getElementById('my-following-count');
-  myFollowingCount.textContent = user.following.length;
+
   removeAllChild(accountFollowing);
   if (user.following.length>0) {
     var followingRow = document.createElement('div');
@@ -579,8 +584,7 @@ function showUser(object){
 
   // My Followers
   var accountFollowers = document.getElementById('account-followers');
-  var myFollowersCount = document.getElementById('my-followers-count');
-  myFollowersCount.textContent = followers.length;
+
   showFollowers(object ,accountFollowers);
 }
 
