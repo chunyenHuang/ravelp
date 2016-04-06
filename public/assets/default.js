@@ -587,19 +587,13 @@ function getStoreData(id){
 }
 
 function showStores(store){
-  var panel = document.createElement('div');
-  panel.className = "panel panel-default";
-  var heading = document.createElement('div');
-  heading.className = 'panel-heading';
-  heading.textContent = store.name;
-  var body = document.createElement('div');
-  body.className = 'panel-body';
-  var box = document.createElement('div');
-  box.className = 'row';
-  var left = document.createElement('div');
-  left.className ='col-sm-4';
-  var right = document.createElement('div');
-  right.className ='col-sm-8';
+  var row = document.createElement('div');
+  row.className = "row with-border padding-top-bottom";
+  var col4 = document.createElement('div');
+  col4.className = 'col-md-4';
+  var col8 = document.createElement('div');
+  col8.className = 'col-md-8';
+
   var link = document.createElement('a');
   link.href = store.id;
   var img = document.createElement('img');
@@ -607,25 +601,30 @@ function showStores(store){
   img.setAttribute('width', '100%');
   img.setAttribute('data-id', store.id);
   img.setAttribute('data-type', 'show-store');
+
+  var name = document.createElement('h5');
+  name.textContent = store.name;
   var phone = document.createElement('h5');
   phone.textContent = store.phone;
   var address = document.createElement('h5');
   address.textContent = store.address;
+  var ratings = document.createElement('div');
+  showRating(store, false, ratings);
   var description = document.createElement('p');
+  description.className = 'padding-top'
   description.textContent = store.description;
 
-  main.appendChild(panel);
-  panel.appendChild(heading);
-  panel.appendChild(body);
-  body.appendChild(box);
-  box.appendChild(left);
-  box.appendChild(right);
-  left.appendChild(link);
-  showRating(store, left);
+  main.appendChild(row);
+  row.appendChild(col4);
+  row.appendChild(col8);
+  col4.appendChild(link);
   link.appendChild(img);
-  right.appendChild(phone);
-  right.appendChild(address);
-  right.appendChild(description);
+
+  col8.appendChild(name);
+  col8.appendChild(phone);
+  col8.appendChild(address);
+  col8.appendChild(ratings);
+  col8.appendChild(description);
 }
 
 function showRatingStars(review, location){
@@ -635,7 +634,7 @@ function showRatingStars(review, location){
   location.appendChild(showStars);
 }
 
-function showRating(store, location){
+function showRating(store, all,location){
   if (store.reviews.length>0){
     var reviewRating = 0;
     for (var i=0; i<store.reviews.length; i++){
@@ -649,19 +648,21 @@ function showRating(store, location){
     var reviewCount = document.createTextNode("("+store.reviews.length+")");
     reviewBox.appendChild(showReview);
     reviewBox.appendChild(reviewCount);
-    var hr = document.createElement('hr');
-    reviewBox.appendChild(hr);
+    if (all){
+      var hr = document.createElement('hr');
+      reviewBox.appendChild(hr);
 
-    for (var i=5; i>=1; i--){
-      theReviewRatings = _.where(store.reviews, {rating: i});
-      var ratingCount = document.createTextNode("("+theReviewRatings.length+")");
-      var showRating = document.createElement('img');
-      showRating.src = "rating-" + i + ".png";
-      showRating.className="rating-stars";
-      var displayReviews = document.createElement('div');
-      displayReviews.appendChild(showRating);
-      displayReviews.appendChild(ratingCount);
-      reviewBox.appendChild(displayReviews);
+      for (var i=5; i>=1; i--){
+        theReviewRatings = _.where(store.reviews, {rating: i});
+        var ratingCount = document.createTextNode("("+theReviewRatings.length+")");
+        var showRating = document.createElement('img');
+        showRating.src = "rating-" + i + ".png";
+        showRating.className="rating-stars";
+        var displayReviews = document.createElement('div');
+        displayReviews.appendChild(showRating);
+        displayReviews.appendChild(ratingCount);
+        reviewBox.appendChild(displayReviews);
+      }
     }
     location.appendChild(reviewBox);
   } else {
@@ -710,7 +711,7 @@ function showStoreDetail(target){
   box.appendChild(left);
   box.appendChild(right);
   left.appendChild(link);
-  showRating(store, left);
+  showRating(store, true, left);
   link.appendChild(img);
   right.appendChild(phone);
   right.appendChild(address);
