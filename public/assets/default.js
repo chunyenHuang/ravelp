@@ -46,7 +46,6 @@ function toggleClass(target, value){
 
 function clearPage(){
   removeAllChild(main);
-  removeAllChild(storeReviews);
   storeDetail.classList.add('hidden');
   accountDetail.classList.add('hidden');
   loginForm.classList.add('hidden');
@@ -71,7 +70,7 @@ function homepage(){
       navbarUsername.textContent = 'Hello~ ' + response.user.firstname;
     }
     for (var i = 0; i < response.stores.length; i++) {
-      showStores(response.stores[i]);
+      showStores(response.stores[i], main);
     }
   }
 }
@@ -81,7 +80,6 @@ homepage();
 // Elements
 var main = document.getElementById('main');
 var storeDetail = document.getElementById('store-detail');
-var storeReviews = document.getElementById('store-reviews');
 var accountDetail = document.getElementById('account-detail');
 var navbarUsername = document.getElementById('show-user-name');
 var loginForm = document.getElementById('login-form');
@@ -222,7 +220,7 @@ document.body.addEventListener('click', function(event){
       clearPage();
       var stores = response.stores;
       for (var i = 0; i < stores.length; i++) {
-        showStores(stores[i])
+        showStores(stores[i], main)
       }
     }
   }
@@ -326,7 +324,7 @@ document.body.addEventListener('submit', function(event){
       var store = JSON.parse(XHR.responseText);
       clearPage();
       for (var i=0; i<store.length; i++){
-        showStores(store[i]);
+        showStores(store[i], main);
       }
     }
   }
@@ -602,13 +600,15 @@ function getStoreData(id){
   }
 }
 
-function showStores(store){
+function showStores(store, location){
   var row = document.createElement('div');
   row.className = "row with-border padding-top-bottom";
   var col4 = document.createElement('div');
   col4.className = 'col-md-4';
-  var col8 = document.createElement('div');
-  col8.className = 'col-md-8';
+  var col6 = document.createElement('div');
+  col6.className = 'col-md-6';
+  var col2 = document.createElement('div');
+  col2.className = 'col-md-2';
 
   var link = document.createElement('a');
   link.href = store.id;
@@ -624,7 +624,7 @@ function showStores(store){
   phone.textContent = store.phone;
   var address = document.createElement('p');
   address.textContent = store.address + ', ' + store.city + ', ' + store.state + ' ' + store.zipCode;
-  var catetoryField = document.createElement('p');
+  var categoryField = document.createElement('p');
   var priceRange = document.createElement('span');
   priceRange.textContent = store.price + ' - ';
   var categoryLink = document.createElement('a');
@@ -633,27 +633,43 @@ function showStores(store){
   categoryLink.setAttribute('data-id', 0);
   categoryLink.setAttribute('data-type', 'search-for');
   categoryLink.setAttribute('data-content', store.category[0])
-
-  catetoryField.appendChild(priceRange);
-  catetoryField.appendChild(categoryLink);
+  categoryField.appendChild(priceRange);
+  categoryField.appendChild(categoryLink);
   var ratings = document.createElement('div');
   showRating(store, false, ratings);
   var description = document.createElement('p');
   description.className = 'padding-top'
-  // description.textContent = store.description;
+  description.textContent = store.description;
 
-  main.appendChild(row);
+  var hours = document.createElement('ul');
+  hours.className = 'list-unstyled';
+  var hoursArray = _.pairs(store.hours);
+  console.log(hoursArray);
+
+  for (var i = 0; i < hoursArray.length; i++) {
+    var li = document.createElement('li');
+    li.textContent = hoursArray[i][0] + ' - ';
+    var span = document.createElement('span');
+    span.className = 'pull-right';
+    span.textContent = hoursArray[i][1][0] + ':' + hoursArray[i][1][1] + ' - ' + hoursArray[i][1][2] + ':' + hoursArray[i][1][3];
+    li.appendChild(span);
+    hours.appendChild(li);
+  }
+
+  location.appendChild(row);
   row.appendChild(col4);
-  row.appendChild(col8);
+  row.appendChild(col6);
+  row.appendChild(col2);
   col4.appendChild(link);
   link.appendChild(img);
 
-  col8.appendChild(name);
-  col8.appendChild(phone);
-  col8.appendChild(address);
-  col8.appendChild(catetoryField);
-  col8.appendChild(ratings);
-  col8.appendChild(description);
+  col6.appendChild(name);
+  col6.appendChild(phone);
+  col6.appendChild(address);
+  col6.appendChild(categoryField);
+  col6.appendChild(ratings);
+  col6.appendChild(description);
+  col2.appendChild(hours);
 }
 
 function showRatingStars(review, location){
@@ -707,73 +723,79 @@ function showStoreDetail(target){
   var userId = target.currentUserId;
   var writable = target.writable;
   var editable = target.editable;
+
+  // var storeImg = document.getElementById('store-img');
+  var storeInfo = document.getElementById('store-info');
+  var storeReviewsStat = document.getElementById('store-review-statistic');
+  var storeReviews = document.getElementById('store-reviews');
+
   clearPage();
   storeDetail.classList.remove('hidden');
-  var title = document.getElementById('store-title');
-  title.textContent = store.name;
-
+  // removeAllChild(storeImg);
+  removeAllChild(storeInfo);
+  removeAllChild(storeReviewsStat);
+  removeAllChild(storeReviews);
+  showStores(store, storeInfo);
   // Store info
-  var info = document.getElementById('store-info');
-  removeAllChild(info);
-  var box = document.createElement('div');
-  box.className = 'row padding-top-bottom';
-  var left = document.createElement('div');
-  left.className ='col-sm-4';
-  var right = document.createElement('div');
-  right.className ='col-sm-8';
+  // storeImg.src = store.thumb;
+  // storeImg.setAttribute('width', '100%');
+  // var name = document.createElement('h3');
+  // name.textContent = store.name;
+  // var phone = document.createElement('h5');
+  // phone.textContent = store.phone;
+  // var address = document.createElement('h5');
+  // address.textContent = store.address + ', ' + store.city + ', ' + store.state + ' ' + store.zipCode;
+  // var categoryField = document.createElement('p');
+  // var priceRange = document.createElement('span');
+  // priceRange.textContent = store.price + ' - ';
+  // var categoryLink = document.createElement('a');
+  // categoryLink.textContent = store.category[0];
+  // categoryLink.href = 'search-for?category=' + store.category[0];
+  // categoryLink.setAttribute('data-id', 0);
+  // categoryLink.setAttribute('data-type', 'search-for');
+  // categoryLink.setAttribute('data-content', store.category[0])
+  // categoryField.appendChild(priceRange);
+  // categoryField.appendChild(categoryLink);
+  // var ratings = document.createElement('div');
+  // showRating(store, false, ratings);
+  // var description = document.createElement('p');
+  // description.className = 'padding-top';
+  // description.textContent = store.description;
+  //
+  // storeInfo.appendChild(name);
+  // storeInfo.appendChild(phone);
+  // storeInfo.appendChild(address);
+  // storeInfo.appendChild(categoryField);
+  // storeInfo.appendChild(description);
 
-  var link = document.createElement('a');
-  link.href = store.id;
-  var img = document.createElement('img');
-  img.src = store.thumb;
-  img.setAttribute('width', '100%');
-  img.setAttribute('data-id', store.id);
-  img.setAttribute('data-type', 'show-store');
-  var phone = document.createElement('h5');
-  phone.textContent = store.phone;
-  var address = document.createElement('h5');
-  address.textContent = store.address;
-  var description = document.createElement('p');
-  description.textContent = store.description;
-
-  info.appendChild(box);
-  box.appendChild(left);
-  box.appendChild(right);
-  left.appendChild(link);
-  showRating(store, true, left);
-  link.appendChild(img);
-  right.appendChild(phone);
-  right.appendChild(address);
-  right.appendChild(description);
+  showRating(store, true, storeReviewsStat);
 
   // Write Reviews
   removeAllChild(storeReviews);
-  var writingZone = document.createElement('div');
-  writingZone.className = 'writingZone';
-  removeAllChild(writingZone);
-  if (writable){
-    reviewForm(store, 'comments...', writingZone);
-  }
-  else if (editable) {
-    var myReview = _.where(theReviews, {userId: userId});
-    var msgbox = document.createElement('div');
-    writingZone.appendChild(msgbox);
-    msgbox.setAttribute('id', 'myReview-' + store.id + '-' + myReview[0].id);
-    attachReview(store, myReview[0], msgbox);
-  }
-  else  {
-    var msgbox = document.createElement('p');
-    msgbox.className="well";
-    var msg = document.createElement('a');
-    msg.href='#';
-    msg.setAttribute('data-type', 'show-login-page');
-    msg.setAttribute('data-id', 'nan');
-    msg.textContent = 'You must login for writing review.';
-    writingZone.appendChild(msgbox);
-    msgbox.appendChild(msg);
-
-  }
-  storeReviews.appendChild(writingZone);
+  writeReview(store, storeReviews);
+  // if (writable){
+  //   reviewForm(store, 'comments...', writingZone);
+  // }
+  // else if (editable) {
+  //   var myReview = _.where(theReviews, {userId: userId});
+  //   var msgbox = document.createElement('div');
+  //   writingZone.appendChild(msgbox);
+  //   msgbox.setAttribute('id', 'myReview-' + store.id + '-' + myReview[0].id);
+  //   attachReview(store, myReview[0], msgbox);
+  // }
+  // else  {
+  //   var msgbox = document.createElement('p');
+  //   msgbox.className="well";
+  //   var msg = document.createElement('a');
+  //   msg.href='#';
+  //   msg.setAttribute('data-type', 'show-login-page');
+  //   msg.setAttribute('data-id', 'nan');
+  //   msg.textContent = 'You must login for writing review.';
+  //   writingZone.appendChild(msgbox);
+  //   msgbox.appendChild(msg);
+  //
+  // }
+  // storeReviews.appendChild(writingZone);
 
   var showedReviews = [];
   function loadMoreReviews(review, showed, num){
@@ -822,7 +844,7 @@ function showStoreDetail(target){
   var expand = document.getElementById('expand-reviews');
   removeAllChild(expand);
   var expandButton = document.createElement('button');
-  expandButton.className = 'btn btn-sm btn-default btn-block';
+  expandButton.className = 'btn btn-sm btn-default btn-block margin-top-bottom';
   expandButton.textContent = 'Load more reviews.'
   expand.appendChild(expandButton);
   expandButton.addEventListener('click', function(){
@@ -1290,4 +1312,37 @@ function showFollowers(object, location) {
     location.appendChild(msg);
   }
 
+}
+
+function writeReview(store, location){
+  var writingZone = document.createElement('div');
+  writingZone.className = 'writingZone';
+  removeAllChild(writingZone);
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/check-review-post/' + store.id);
+  XHR.send()
+  XHR.onload = function(){
+    if (XHR.status === 404){
+      var msgbox = document.createElement('p');
+      msgbox.className="well";
+      var msg = document.createElement('a');
+      msg.href='#';
+      msg.setAttribute('data-type', 'show-login-page');
+      msg.setAttribute('data-id', 'nan');
+      msg.textContent = 'Login and Write My Review.';
+      writingZone.appendChild(msgbox);
+      msgbox.appendChild(msg);
+    } else {
+      var response = JSON.parse(XHR.responseText);
+      if (typeof(response.review.id) === 'undefined'){
+        reviewForm(store, 'comments...', writingZone);
+      } else {
+        var msgbox = document.createElement('div');
+        msgbox.setAttribute('id', 'myReview-' + store.id + '-' + response.review.id);
+        attachReview(store, response.review, msgbox);
+        writingZone.appendChild(msgbox);
+      }
+    }
+  }
+  location.appendChild(writingZone);
 }

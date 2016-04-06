@@ -354,6 +354,17 @@ app.get('/search-for', function(req, res){
   }
   res.json({stores: found});
 })
+
+app.get('/check-review-post/:storeId', session, function(req, res){
+  console.log(req.url);
+  var userId = req.matchUser.id;
+  var storeId = tool.filterInt(req.params.storeId);
+  var store = _.where(stores, {id: storeId});
+  var review = _.where(store[0].reviews, {userId: userId});
+  console.log(review[0].id);
+  res.json({review: review[0]});
+})
+
 app.listen(port, function(){
   console.log('listening to port: ' + port);
 })

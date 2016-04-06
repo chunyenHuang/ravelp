@@ -14,18 +14,18 @@ function database(){
       category: ['Cafe'],
       price: '$',
       hours: {
-        mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],
-        tue: [['9', '00', '6', '30']],
-        wed: [['9', '00', '6', '30']],
-        thu: [['9', '00', '6', '30']],
-        fri: [['9', '00', '6', '30']]
+        mon: ['9', '00', '2', '30'],
+        tue: ['9', '00', '6', '30'],
+        wed: ['9', '00', '6', '30'],
+        thu: ['9', '00', '6', '30'],
+        fri: ['9', '00', '6', '30']
       },
       description: tool.randomText(20),
       phone: '123-123-1233',
       address: '105 Research Drive',
       city: 'Irvine',
       state: 'CA',
-      zipcode: '90012',
+      zipCode: 90012,
       reviews: []
       //   {
       //     id: 1,
@@ -53,18 +53,18 @@ function database(){
       category: ['Cafe'],
       price: '$',
       hours: {
-        mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],
-        tue: [['9', '00', '6', '30']],
-        wed: [['9', '00', '6', '30']],
-        thu: [['9', '00', '6', '30']],
-        fri: [['9', '00', '6', '30']]
+        mon: ['9', '00', '2', '30'],
+        tue: ['9', '00', '6', '30'],
+        wed: ['9', '00', '6', '30'],
+        thu: ['9', '00', '6', '30'],
+        fri: ['9', '00', '6', '30']
       },
       phone: '890-123-1233',
       description: tool.randomText(20),
       address: '321 Culver Ave.',
       city: 'Irvine',
       state: 'CA',
-      zipcode: '90012',
+      zipCode: 90203,
       reviews: []
     }
   ]
@@ -167,11 +167,11 @@ function database(){
     var randomPrice = pickPrice();
     var randomPhone = Faker.PhoneNumber.phoneNumber();
     var randomHours = {
-      mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],
-      tue: [['9', '00', '6', '30']],
-      wed: [['9', '00', '6', '30']],
-      thu: [['9', '00', '6', '30']],
-      fri: [['9', '00', '6', '30']]
+      mon: ['9', '00', '2', '30'],
+      tue: ['9', '00', '6', '30'],
+      wed: ['9', '00', '6', '30'],
+      thu: ['9', '00', '6', '30'],
+      fri: ['9', '00', '6', '30']
     };
     var randomAddress = {
       address: Faker.Address.streetName(),
