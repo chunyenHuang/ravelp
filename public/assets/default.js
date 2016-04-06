@@ -5,6 +5,12 @@ function filterInt(value) {
   return NaN;
 }
 
+function timeStamp(date) {
+  // var showDate = [ date.getMonth() + 1, date.getDate(), date.getFullYear() ];
+  var showDate = [ date[1], date[2], date[0]];
+  return showDate.join("/");
+}
+
 function removeAllChild(nodeName){
   while (nodeName.firstChild) {
       nodeName.removeChild(nodeName.firstChild);
@@ -422,6 +428,8 @@ function showUser(object){
 
   // My Reviews
   var accountReviews = document.getElementById('account-reviews');
+  var myReviewsCount = document.getElementById('my-reviews-count');
+  myReviewsCount.textContent = reviews.length;
   removeAllChild(accountReviews);
   if (typeof(reviews)==='object'){
     for (var i = 0; i < reviews.length; i++) {
@@ -462,6 +470,8 @@ function showUser(object){
 
   // My Stores
   var accountStore = document.getElementById('account-store');
+  var myStoresCount = document.getElementById('my-stores-count');
+  myStoresCount.textContent = store.length;
   removeAllChild(accountStore);
   if (typeof(store)==='object'){
     for (var i = 0; i < store.length; i++) {
@@ -516,6 +526,8 @@ function showUser(object){
 
   // My Following
   var accountFollowing = document.getElementById('account-following');
+  var myFollowingCount = document.getElementById('my-following-count');
+  myFollowingCount.textContent = user.following.length;
   removeAllChild(accountFollowing);
   if (user.following.length>0) {
     var followingRow = document.createElement('div');
@@ -536,6 +548,12 @@ function showUser(object){
     msgFollowing.textContent = 'You did not follow anyone.'
     accountFollowing.appendChild(msgFollowing);
   }
+
+  // My Followers
+  var accountFollowers = document.getElementById('account-followers');
+  var myFollowersCount = document.getElementById('my-followers-count');
+  myFollowersCount.textContent = followers.length;
+  showFollowers(object ,accountFollowers);
 }
 
 function attachReview(store, review, location){
@@ -548,7 +566,7 @@ function attachReview(store, review, location){
   var rContent = document.createElement('p');
   rContent.textContent = review.description;
   var rDate = document.createElement('p');
-  rDate.textContent = 'You wrote @ ' + review.date;
+  rDate.textContent = 'You wrote @ ' + timeStamp(review.date);
   var rRating = document.createElement('p');
   rRating.textContent = 'Your rating: '
   showRatingStars(review, rRating);
@@ -751,7 +769,7 @@ function showStoreDetail(target){
       displayUser(theReviews[i].userId, true, reviewLeft);
 
       var reviewDate = document.createElement('span');
-      reviewDate.textContent = theReviews[i].date;
+      reviewDate.textContent = timeStamp(theReviews[i].date);
 
       var reviewContent = document.createElement('p');
       reviewContent.textContent = theReviews[i].description;
@@ -1155,7 +1173,7 @@ function showUserProfile(object, location){
       content1.className = 'padding-top';
       showRatingStars(reviews[i].review, content1);
       var dateField = document.createElement('span');
-      dateField.textContent = reviews[i].review.date;
+      dateField.textContent = timeStamp(reviews[i].review.date);
       content1.appendChild(dateField);
       var content2 = document.createElement('p');
       content2.textContent = reviews[i].review.description;
@@ -1178,20 +1196,7 @@ function showUserProfile(object, location){
     location.appendChild(header);
     location.appendChild(row);
   }
-  function showFollowers(object, location) {
-    removeAllChild(location);
-    var user = object.user;
-    var reviews = object.reviews;
-    var followers = object.others.followers;
-    var followed = object.others.followed;
-    var ratingCount = object.others.ratingCount;
-    var tagCount = object.others.tagCount;
 
-    var header = document.createElement('h4');
-    header.textContent = 'Followers';
-
-    location.appendChild(header);
-  }
   overview(object, body);
 
   btnOverview.addEventListener('click', function(event){
@@ -1220,4 +1225,39 @@ function displayUser(id, thumb, location){
       showUserProfile(response, location);
     }
   }
+}
+
+function showFollowers(object, location) {
+  removeAllChild(location);
+  var user = object.user;
+  var reviews = object.reviews;
+  var followers = object.others.followers;
+  var followed = object.others.followed;
+  var ratingCount = object.others.ratingCount;
+  var tagCount = object.others.tagCount;
+  // console.log(followers);
+  // var header = document.createElement('h4');
+  // header.textContent = 'Followers';
+  // location.appendChild(header);
+
+  if (followers.length>0) {
+    var followingRow = document.createElement('div');
+    followingRow.className = 'row';
+    for (var i = 0; i < followers.length; i++) {
+      var followingCol = document.createElement('div');
+      followingCol.className = 'col-xs-4 col-sm-3 col-md-2 padding-top-bottom';
+      var followingBox = document.createElement('div');
+      followingBox.className = 'user-thumb-box';
+      followingBox.setAttribute('id', 'user-thumb-box-' + followers[i].id);
+      followingCol.appendChild(followingBox);
+      followingRow.appendChild(followingCol);
+      displayUser(followers[i].id, true, followingBox);
+    }
+    location.appendChild(followingRow)
+  } else {
+    var msg = document.createElement('p');
+    msg.textContent = user.firstname +  'doesn not have any follower.'
+    location.appendChild(msg);
+  }
+
 }

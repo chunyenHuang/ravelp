@@ -151,7 +151,8 @@ function database(){
     var randomYear = Math.floor(Math.random() * (8)) + 2008;
     var randomMonth = Math.floor(Math.random() * (11)) + 1;
     var randomDay = Math.floor(Math.random() * (29)) + 1;
-    var randomDate = new Date(randomYear, randomMonth, randomDay);
+    // var randomDate = new Date(randomYear, randomMonth, randomDay);
+    var randomDate = [randomYear, randomMonth, randomDay];
     var randomTagsArray = [];
     for (var x = 1; x <= 50; x++) {
       var tf1 = Math.floor(Math.random() * (2)) + 1;
