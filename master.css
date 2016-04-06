@@ -14,6 +14,11 @@ body {
   border: 1px solid rgb(230, 230, 230);
 }
 
+.with-border {
+  border: 1px solid rgb(230, 230, 230);
+  margin: 5px;
+}
+
 .writingZone {
   padding-top: 15px;
   padding-bottom: 15px;
@@ -22,6 +27,10 @@ body {
 .padding-top-bottom {
   padding-top: 15px;
   padding-bottom: 15px;
+}
+
+.padding-top {
+  padding-top: 15px;
 }
 
 .text-center {
@@ -45,4 +54,8 @@ body {
 .text-left {
   text-align: left;
   float: left;
+}
+
+.user-thumb-box {
+  height: 280px;
 }

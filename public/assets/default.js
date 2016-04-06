@@ -516,6 +516,7 @@ function showUser(object){
 
   // My Following
   var accountFollowing = document.getElementById('account-following');
+  removeAllChild(accountFollowing);
   if (user.following.length>0) {
     var followingRow = document.createElement('div');
     followingRow.className = 'row';
@@ -523,7 +524,7 @@ function showUser(object){
       var followingCol = document.createElement('div');
       followingCol.className = 'col-xs-4 col-sm-3 col-md-2 padding-top-bottom';
       var followingBox = document.createElement('div');
-      // followingBox.className = 'user-thumb-box';
+      followingBox.className = 'user-thumb-box';
       followingBox.setAttribute('id', 'user-thumb-box-' + user.following[i]);
       followingCol.appendChild(followingBox);
       followingRow.appendChild(followingCol);
@@ -609,9 +610,9 @@ function showStores(store){
   right.appendChild(description);
 }
 
-function showRatingStars(target, location){
+function showRatingStars(review, location){
   var showStars = document.createElement('img');
-  showStars.src = "rating-" + target.rating + ".png";
+  showStars.src = "rating-" + review.rating + ".png";
   showStars.className = "rating-stars";
   location.appendChild(showStars);
 }
@@ -782,51 +783,62 @@ function showStoreDetail(target){
   })
 }
 
-function setTagButtons(userId, store, reviews, location){
-  var buttonUseful = document.createElement('button');
-  buttonUseful.className = 'btn btn-sm btn-default';
-  buttonUseful.setAttribute('name', 'useful');
-  buttonUseful.setAttribute('data-id', store.id);
-  buttonUseful.setAttribute('data-sub-id', reviews.id);
-  buttonUseful.setAttribute('data-type', 'review-tags');
-  buttonUseful.textContent = 'useful';
+function setTagButtons(userId, store, review, location){
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/review-tags-count/' + store.id + '/' + review.id);
+  XHR.send();
+  XHR.onload = function (){
+    if (XHR.stats != 404){
+      var response = JSON.parse(XHR.responseText);
+      var buttonUseful = document.createElement('button');
+      buttonUseful.className = 'btn btn-sm btn-default';
+      buttonUseful.setAttribute('name', 'useful');
+      buttonUseful.setAttribute('data-id', store.id);
+      buttonUseful.setAttribute('data-sub-id', review.id);
+      buttonUseful.setAttribute('data-type', 'review-tags');
+      buttonUseful.textContent = 'useful ' + response.useful;
 
-  var buttonFunny = document.createElement('button');
-  buttonFunny.className = 'btn btn-sm btn-default';
-  buttonFunny.setAttribute('name', 'funny');
-  buttonFunny.setAttribute('data-id', store.id);
-  buttonFunny.setAttribute('data-sub-id', reviews.id);
-  buttonFunny.setAttribute('data-type', 'review-tags');
-  buttonFunny.textContent = 'funny';
+      var buttonFunny = document.createElement('button');
+      buttonFunny.className = 'btn btn-sm btn-default';
+      buttonFunny.setAttribute('name', 'funny');
+      buttonFunny.setAttribute('data-id', store.id);
+      buttonFunny.setAttribute('data-sub-id', review.id);
+      buttonFunny.setAttribute('data-type', 'review-tags');
+      buttonFunny.textContent = 'funny ' + response.funny;
 
-  var buttonCool = document.createElement('button');
-  buttonCool.className = 'btn btn-sm btn-default';
-  buttonCool.setAttribute('name', 'cool');
-  buttonCool.setAttribute('data-id', store.id);
-  buttonCool.setAttribute('data-sub-id', reviews.id);
-  buttonCool.setAttribute('data-type', 'review-tags');
-  buttonCool.textContent = 'cool';
+      var buttonCool = document.createElement('button');
+      buttonCool.className = 'btn btn-sm btn-default';
+      buttonCool.setAttribute('name', 'cool');
+      buttonCool.setAttribute('data-id', store.id);
+      buttonCool.setAttribute('data-sub-id', review.id);
+      buttonCool.setAttribute('data-type', 'review-tags');
+      buttonCool.textContent = 'cool ' + response.cool;
 
-  if (userId){
-    var check = _.findWhere(reviews.tags, {userId: userId});
-    if (check){
-      if (check.useful){
-        buttonUseful.classList.add('active');
+      if (userId){
+        var check = _.findWhere(review.tags, {userId: userId});
+        if (check){
+          if (check.useful){
+            buttonUseful.classList.add('active');
+          }
+          if (check.funny){
+            buttonFunny.classList.add('active');
+          }
+          if (check.cool){
+            buttonCool.classList.add('active');
+          }
+        }
       }
-      if (check.funny){
-        buttonFunny.classList.add('active');
-      }
-      if (check.cool){
-        buttonCool.classList.add('active');
-      }
+
+      var buttons = document.createElement('div');
+      var header = document.createElement('h5');
+      header.textContent = 'Was this review …?';
+      buttons.appendChild(header);
+      buttons.appendChild(buttonUseful);
+      buttons.appendChild(buttonFunny);
+      buttons.appendChild(buttonCool);
+      location.appendChild(buttons);
     }
   }
-
-  var buttons = document.createElement('div');
-  buttons.appendChild(buttonUseful);
-  buttons.appendChild(buttonFunny);
-  buttons.appendChild(buttonCool);
-  location.appendChild(buttons);
 }
 
 function reviewForm(store, review, location){
@@ -1031,70 +1043,171 @@ function showUserProfile(object, location){
   titleBox.appendChild(name);
   titleBox.appendChild(countlist);
   mid.appendChild(titleBox);
+
   // Mid2 stars distribution
   var body = document.createElement('div');
-
-  var ratingHeader = document.createElement('h4');
-  ratingHeader.textContent = 'Rating Distribution';
-  var ratingCountsBox = document.createElement('div');
-  var totalRating = 0;
-  for (var i=1; i<= 5; i++) {
-    if (typeof(ratingCount[i]) != 'undefined'){
-      totalRating = totalRating + ratingCount[i];
-    }
-  }
-  for (var i=5; i>= 1; i--) {
-    var progressTitle =document.createElement('div');
-    if (typeof(ratingCount[i]) != 'undefined'){
-      progressTitle.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
-    } else {
-      progressTitle.textContent = ' ' + i + ' Stars: 0';
-    }
-
-    var progress = document.createElement('div');
-    progress.className = 'progress';
-
-    var progressBar = document.createElement('div');
-    progressBar.className = 'progress-bar progress-bar-success text-left';
-    progressBar.setAttribute('role', 'progressbar');
-    progressBar.setAttribute('aria-valuemin', '0');
-    progressBar.setAttribute('aria-valuemax', '100');
-    progressBar.setAttribute('aria-valuenow', Math.floor(ratingCount[i]*100/totalRating));
-    progressBar.setAttribute('style', 'width:' + Math.floor(ratingCount[i]*100/totalRating) +'%');
-    // progressBar.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
-    progress.appendChild(progressBar);
-    progressTitle.appendChild(progress);
-    ratingCountsBox.appendChild(progressTitle);
-  }
-  // Mid3 tag counts
-  tagCountArray = _.pairs(tagCount);
-  var tagRow = document.createElement('div');
-  tagRow.className = 'row';
-  var tagHeader = document.createElement('h4');
-  tagHeader.textContent = 'Review Votes';
-  for (var i = 0; i < tagCountArray.length; i++) {
-    tagCol = document.createElement('div');
-    tagCol.className = 'col-md-4 text-center';
-    tagBtn = document.createElement('button');
-    tagBtn.className = 'btn btn-lg btn-default';
-    tagBtn.textContent = tagCountArray[i][0] + ': ' + tagCountArray[i][1];
-    tagCol.appendChild(tagBtn);
-    tagRow.appendChild(tagCol);
-  }
-
-  var hr = document.createElement('hr');
-  body.appendChild(ratingHeader);
-  body.appendChild(ratingCountsBox);
-  body.appendChild(hr);
-  body.appendChild(tagHeader);
-  body.appendChild(tagRow);
   mid.appendChild(body);
-  // All
   row.appendChild(left);
   row.appendChild(mid);
   location.appendChild(row);
+
+  function overview(object, location){
+    removeAllChild(location);
+    var user = object.user;
+    var reviews = object.reviews;
+    var followers = object.others.followers;
+    var followed = object.others.followed;
+    var ratingCount = object.others.ratingCount;
+    var tagCount = object.others.tagCount;
+
+    var ratingHeader = document.createElement('h4');
+    ratingHeader.textContent = 'Rating Distribution';
+    var ratingCountsBox = document.createElement('div');
+    var totalRating = 0;
+    for (var i=1; i<= 5; i++) {
+      if (typeof(ratingCount[i]) != 'undefined'){
+        totalRating = totalRating + ratingCount[i];
+      }
+    }
+    for (var i=5; i>= 1; i--) {
+      var progressTitle =document.createElement('div');
+      if (typeof(ratingCount[i]) != 'undefined'){
+        progressTitle.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
+      } else {
+        progressTitle.textContent = ' ' + i + ' Stars: 0';
+      }
+
+      var progress = document.createElement('div');
+      progress.className = 'progress';
+
+      var progressBar = document.createElement('div');
+      progressBar.className = 'progress-bar progress-bar-success text-left';
+      progressBar.setAttribute('role', 'progressbar');
+      progressBar.setAttribute('aria-valuemin', '0');
+      progressBar.setAttribute('aria-valuemax', '100');
+      progressBar.setAttribute('aria-valuenow', Math.floor(ratingCount[i]*100/totalRating));
+      progressBar.setAttribute('style', 'width:' + Math.floor(ratingCount[i]*100/totalRating) +'%');
+      // progressBar.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
+      progress.appendChild(progressBar);
+      progressTitle.appendChild(progress);
+      ratingCountsBox.appendChild(progressTitle);
+    }
+    // Mid3 tag counts
+    tagCountArray = _.pairs(tagCount);
+    var tagRow = document.createElement('div');
+    tagRow.className = 'row';
+    var tagHeader = document.createElement('h4');
+    tagHeader.textContent = 'People vote for ' + user.firstname + "'s review:'";
+    for (var i = 0; i < tagCountArray.length; i++) {
+      tagCol = document.createElement('div');
+      tagCol.className = 'col-md-4 text-center';
+      tagBtn = document.createElement('button');
+      tagBtn.className = 'btn btn-lg btn-default';
+      tagBtn.textContent = tagCountArray[i][0] + ': ' + tagCountArray[i][1];
+      tagCol.appendChild(tagBtn);
+      tagRow.appendChild(tagCol);
+    }
+
+    var hr = document.createElement('hr');
+    location.appendChild(ratingHeader);
+    location.appendChild(ratingCountsBox);
+    location.appendChild(hr);
+    location.appendChild(tagHeader);
+    location.appendChild(tagRow);
+  }
+  function showReviews(object, location) {
+    removeAllChild(location);
+    console.log(object.reviews[0]);
+    var user = object.user;
+    var reviews = object.reviews;
+    var followers = object.others.followers;
+    var followed = object.others.followed;
+    var ratingCount = object.others.ratingCount;
+    var tagCount = object.others.tagCount;
+
+    var header = document.createElement('h4');
+    header.textContent = 'Reviews';
+
+    var row = document.createElement('div');
+    row.className = 'row';
+    for (var i = 0; i < reviews.length; i++) {
+      var col = document.createElement('div');
+      col.className = 'col-md-12 padding-top-bottom with-border';
+      var media = document.createElement('div');
+      media.className = 'media';
+      var left = document.createElement('div');
+      left.className = 'media-left';
+      var link = document.createElement('a');
+      link.href = '#';
+      var img = document.createElement('img');
+      img.className = 'media-object';
+      img.src = reviews[i].store.thumb;
+      img.setAttribute('width', '100px');
+      var body = document.createElement('div');
+      body.className = 'media-body';
+      var heading = document.createElement('h4');
+      heading.className = 'media-heading';
+      heading.textContent = reviews[i].store.name;
+      var address = document.createElement('p');
+      address.textContent = reviews[i].store.address;
+
+      var content1 = document.createElement('p');
+      content1.className = 'padding-top';
+      showRatingStars(reviews[i].review, content1);
+      var dateField = document.createElement('span');
+      dateField.textContent = reviews[i].review.date;
+      content1.appendChild(dateField);
+      var content2 = document.createElement('p');
+      content2.textContent = reviews[i].review.description;
+      var tags = document.createElement('div');
+
+      setTagButtons(user.id, reviews[i].store, reviews[i].review, tags);
+
+      row.appendChild(col);
+      col.appendChild(media);
+      media.appendChild(left);
+      media.appendChild(body);
+      left.appendChild(link);
+      link.appendChild(img);
+      body.appendChild(heading);
+      body.appendChild(address);
+      col.appendChild(content1);
+      col.appendChild(content2);
+      col.appendChild(tags);
+    }
+    location.appendChild(header);
+    location.appendChild(row);
+  }
+  function showFollowers(object, location) {
+    removeAllChild(location);
+    var user = object.user;
+    var reviews = object.reviews;
+    var followers = object.others.followers;
+    var followed = object.others.followed;
+    var ratingCount = object.others.ratingCount;
+    var tagCount = object.others.tagCount;
+
+    var header = document.createElement('h4');
+    header.textContent = 'Followers';
+
+    location.appendChild(header);
+  }
+  overview(object, body);
+
+  btnOverview.addEventListener('click', function(event){
+    event.preventDefault();
+    overview(object, body);
+  })
+  btnReviews.addEventListener('click', function(event){
+    event.preventDefault();
+    showReviews(object, body);
+  })
+  btnFollowers.addEventListener('click', function(event){
+    event.preventDefault();
+    showFollowers(object, body);
+  })
 }
-//
+
 function displayUser(id, thumb, location){
   var XHR = new XMLHttpRequest();
   XHR.open('get', '/user-data/' + id);

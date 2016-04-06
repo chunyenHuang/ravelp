@@ -14,7 +14,7 @@ var _ = require('underscore');
 var cookieParser = require('cookie-parser');
 var events = require('events');
 var emitter = new events.EventEmitter();
-var port = 3000;
+var port = process.env.PORT || 1337;
 var app = express();
 
 var users = database.users;
@@ -197,7 +197,6 @@ app.get('/user-data/:id', loginStatus, function(req, res){
     ratingCount: statistic.ratingCount(id),
     tagCount: statistic.tagCount(id),
   }
-  console.log(user[0].firstname);
   res.json({
     user: user[0],
     reviews: userReviews,
@@ -279,6 +278,18 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
   var response = {
     tag: theTag[0],
     tagCount: statistic.countTag(theReview[0], tagName),
+  }
+  res.json(response);
+})
+app.get('/review-tags-count/:id/:review/', session, function(req, res){
+  var matchUser = req.matchUser;
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
+  var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
+  var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
+  var response = {
+    useful: statistic.countTag(theReview[0], 'useful'),
+    funny: statistic.countTag(theReview[0], 'funny'),
+    cool: statistic.countTag(theReview[0], 'cool'),
   }
   res.json(response);
 })
