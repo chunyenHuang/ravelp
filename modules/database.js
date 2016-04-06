@@ -11,7 +11,7 @@ function database(){
       userId: 2,
       name: 'Starbucks',
       thumb: '1.jpg',
-      category: ['cafe'],
+      category: ['Cafe'],
       price: '$',
       hours: {
         mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],
@@ -50,7 +50,7 @@ function database(){
       userId: 2,
       name: 'Tomo Cafe',
       thumb: '2.jpg',
-      category: ['cafe'],
+      category: ['Cafe'],
       price: '$',
       hours: {
         mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],

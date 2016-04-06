@@ -211,6 +211,21 @@ document.body.addEventListener('click', function(event){
     clearPage();
     displayUser(id, false, main);
   }
+  if (type==='search-for'){
+    event.preventDefault();
+    var query = event.target.getAttribute('data-content');
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', '/search-for?category=' + query);
+    XHR.send();
+    XHR.onload = function(){
+      var response = JSON.parse(XHR.responseText);
+      clearPage();
+      var stores = response.stores;
+      for (var i = 0; i < stores.length; i++) {
+        showStores(stores[i])
+      }
+    }
+  }
 })
 
 document.body.addEventListener('submit', function(event){
@@ -597,7 +612,6 @@ function showStores(store){
 
   var link = document.createElement('a');
   link.href = store.id;
-  link.className = 'pull-right';
   var img = document.createElement('img');
   img.src = store.thumb;
   img.setAttribute('width', '100%');
@@ -610,8 +624,18 @@ function showStores(store){
   phone.textContent = store.phone;
   var address = document.createElement('p');
   address.textContent = store.address + ', ' + store.city + ', ' + store.state + ' ' + store.zipCode;
-  var priceRange = document.createElement('h5');
-  priceRange.textContent = 'price range: ' + store.price;
+  var catetoryField = document.createElement('p');
+  var priceRange = document.createElement('span');
+  priceRange.textContent = store.price + ' - ';
+  var categoryLink = document.createElement('a');
+  categoryLink.textContent = store.category[0];
+  categoryLink.href = 'search-for?category=' + store.category[0];
+  categoryLink.setAttribute('data-id', 0);
+  categoryLink.setAttribute('data-type', 'search-for');
+  categoryLink.setAttribute('data-content', store.category[0])
+
+  catetoryField.appendChild(priceRange);
+  catetoryField.appendChild(categoryLink);
   var ratings = document.createElement('div');
   showRating(store, false, ratings);
   var description = document.createElement('p');
@@ -627,7 +651,7 @@ function showStores(store){
   col8.appendChild(name);
   col8.appendChild(phone);
   col8.appendChild(address);
-  col8.appendChild(priceRange);
+  col8.appendChild(catetoryField);
   col8.appendChild(ratings);
   col8.appendChild(description);
 }
@@ -692,7 +716,7 @@ function showStoreDetail(target){
   var info = document.getElementById('store-info');
   removeAllChild(info);
   var box = document.createElement('div');
-  box.className = 'row';
+  box.className = 'row padding-top-bottom';
   var left = document.createElement('div');
   left.className ='col-sm-4';
   var right = document.createElement('div');

@@ -343,6 +343,17 @@ app.get('/check-current-user', session, function(req, res){
   res.json({id: req.matchUser.id});
 })
 
+app.get('/search-for', function(req, res){
+  var category = req.query.category;
+  var found = [];
+  for (var i = 0; i < stores.length; i++) {
+    var check = _.contains(stores[i].category, category);
+    if (check){
+      found.push(stores[i]);
+    }
+  }
+  res.json({stores: found});
+})
 app.listen(port, function(){
   console.log('listening to port: ' + port);
 })
