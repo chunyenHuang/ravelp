@@ -162,13 +162,24 @@ document.body.addEventListener('click', function(event){
       var store = JSON.parse(XHR.responseText);
       editStoreForm.setAttribute('data-id', filterInt(store.id));
       var name = document.getElementById('edit-store-name');
+      var category = document.getElementById('edit-store-category');
+      var price = document.getElementById('edit-store-price');
       var description = document.getElementById('edit-store-description');
       var phone = document.getElementById('edit-store-phone');
       var address = document.getElementById('edit-store-address');
+      var city = document.getElementById('edit-store-city');
+      var state = document.getElementById('edit-store-state');
+      var zipCode = document.getElementById('edit-store-zipCode');
+
       name.value = store.name;
+      category.value = store.category[0];
+      price.value = store.price;
       description.value = store.description;
       phone.value = store.phone;
       address.value = store.address;
+      city.value = store.city;
+      state.value = store.state;
+      zipCode.value = store.zipCode;
       editStoreForm.classList.remove('hidden');
     }
   }
