@@ -36,7 +36,7 @@ emitter.on('search', function(name, location){
 
 // Routes
 app.use(cookieParser());
-// app.use(session);
+app.use('/', loginStatus);
 app.use(express.static('./public'));
 app.use(express.static('./public/assets'));
 app.use(express.static('./public/images'));
@@ -77,6 +77,7 @@ app.post('/login', jsonParser, function(req, res){
     res.sendStatus(404);
   }
 })
+
 app.post('/newuser', jsonParser, function(req, res){
   var username = req.body.username;
   var password = req.body.password;
@@ -102,6 +103,7 @@ app.post('/newuser', jsonParser, function(req, res){
     res.json(currentUser[0]);
   }
 })
+
 app.post('/new-store', session, jsonParser, function(req, res){
   var matchUser = req.matchUser;
   var name = req.body.name;
@@ -117,6 +119,7 @@ app.post('/new-store', session, jsonParser, function(req, res){
   console.log(stores);
   res.sendStatus('200');
 })
+
 app.post('/edit-store', session, jsonParser, function(req, res){
   var matchUser = req.matchUser;
   var id = req.body.id;
@@ -137,6 +140,7 @@ app.get('/logout', function(req, res){
   res.clearCookie('sessionTokenForRavelp');
   res.sendStatus(200);
 })
+
 app.post('/search', jsonParser, function(req, res){
   emitter.emit('search', req.body.content, req.body.location);
   res.json(foundStores);
@@ -146,6 +150,7 @@ app.get('/store-data/:id', function(req, res){
   var store = _.where(stores, {id: tool.filterInt(req.params.id)});
   res.json(store[0]);
 })
+
 app.get('/get-currentUser', session, function(req, res){
   var matchUser = req.matchUser;
   var id = matchUser.id;
@@ -281,6 +286,7 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
   }
   res.json(response);
 })
+
 app.get('/review-tags-count/:id/:review/', session, function(req, res){
   var matchUser = req.matchUser;
   var store = _.where(stores, {id: tool.filterInt(req.params.id)});

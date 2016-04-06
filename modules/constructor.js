@@ -1,13 +1,20 @@
 function constructor() {
-  function Store(id, userId, name, description, phone, address, thumb) {
+  function Store(id, userId, name, category, price, hours,
+                 description, phone, address, thumb) {
+    //address = {};
     this.id = id;
     this.userId = userId;
     this.name = name;
+    this.category = category;
+    this.price = price;
+    this.hours = hours;
     this.description = description;
     this.phone = phone;
-    this.address = address;
+    this.address = address.address;
+    this.city = address.city;
+    this.state = address.state;
+    this.zipCode = address.zipCode;
     this.thumb = thumb;
-    this.tags = [];
     this.reviews = [];
   }
   function Review(id, userId, description, rating, date, tags, comments) {

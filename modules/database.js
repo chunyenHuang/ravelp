@@ -1,7 +1,7 @@
 var tool = require('./tool.js');
 var constructor = require('./constructor.js');
 var _ = require('underscore');
-
+var Faker = require('Faker');
 function database(){
   var sessions = [];
   // Stores Database
@@ -11,10 +11,21 @@ function database(){
       userId: 2,
       name: 'Starbucks',
       thumb: '1.jpg',
-      description: tool.randomText(150),
-      phone: '(123) 123-1233',
-      address: '105 Research Drive, Irvine, CA93023',
-      tags: ['coffee', 'restaurant'],
+      category: ['cafe'],
+      price: '$',
+      hours: {
+        mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],
+        tue: [['9', '00', '6', '30']],
+        wed: [['9', '00', '6', '30']],
+        thu: [['9', '00', '6', '30']],
+        fri: [['9', '00', '6', '30']]
+      },
+      description: tool.randomText(20),
+      phone: '123-123-1233',
+      address: '105 Research Drive',
+      city: 'Irvine',
+      state: 'CA',
+      zipcode: '90012',
       reviews: []
       //   {
       //     id: 1,
@@ -33,46 +44,28 @@ function database(){
       //       id:1,
       //       userId: 2,
       //       comments: tool.randomText(20)}]
-      //   }, {
-      //     id: 2,
-      //     userId: 2,
-      //     description: tool.randomText(200),
-      //     date: new Date(),
-      //     rating: 3,
-      //     tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},{id:2, userId: 1, useful: false, funny: true, cool: false}],
-      //     comments: [{id: 1, userId: 3, comments: tool.randomText(20)}, {id: 2, userId: 1, comments: tool.randomText(10)}]
       //   }
-      // ]
     }, {
       id: 2,
       userId: 2,
       name: 'Tomo Cafe',
       thumb: '2.jpg',
-      phone: '(123) 123-1233',
-      description: tool.randomText(150),
-      address: '321 Culver Ave., Irvine, CA93023',
-      tags: ['coffee', 'restaurant'],
+      category: ['cafe'],
+      price: '$',
+      hours: {
+        mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],
+        tue: [['9', '00', '6', '30']],
+        wed: [['9', '00', '6', '30']],
+        thu: [['9', '00', '6', '30']],
+        fri: [['9', '00', '6', '30']]
+      },
+      phone: '890-123-1233',
+      description: tool.randomText(20),
+      address: '321 Culver Ave.',
+      city: 'Irvine',
+      state: 'CA',
+      zipcode: '90012',
       reviews: []
-      //   {
-      //     id: 1,
-      //     userId: 3,
-      //     description: tool.randomText(200),
-      //     date: new Date(),
-      //     rating: 2,
-      //     tags: [{id: 1, userId: 2, useful: true, funny: true, cool: false},
-      //            {id: 2, userId: 1, useful: false, funny: true, cool: false}],
-      //     comments: [{userId: 2, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
-      //   }, {
-      //     id: 2,
-      //     userId: 2,
-      //     description: tool.randomText(200),
-      //     date: new Date(),
-      //     rating: 1,
-      //     tags: [{id: 1, userId: 1, useful: true, funny: true, cool: false},
-      //            {id: 2, userId: 1, useful: false, funny: true, cool: false}],
-      //     comments: [{userId: 3, comments: tool.randomText(20)}, {userId: 1, comments: tool.randomText(10)}]
-      //   }
-      // ]
     }
   ]
 
@@ -117,27 +110,80 @@ function database(){
     }
   ];
 
-  // Add Random Database
+  // Add Random Users
   for (var i=4; i<=20;i++){
-    var firstname = tool.randomText(1);
-    var lastname = tool.randomText(1);
-    // var count = Math.floor(Math.random() * (10)) + 1;
-    var thumb = 'p'+i+'.jpg';
+    var username = Faker.Name.findName();
+    var firstname = Faker.Name.firstName();
+    var lastname = Faker.Name.lastName();
+    var email = Faker.Internet.email();
+    var phone = Faker.PhoneNumber.phoneNumber();
+    var address = {
+      address: Faker.Address.streetAddress(),
+      city: Faker.Address.city(),
+      state: Faker.Address.usState(),
+      zipCode: Faker.Address.zipCode(),
+    }
+    var thumb = Faker.Image.avatar();
     var following = [];
     var randomOtherUsers = _.sample(users, 50);
     for (var x = 0; x < randomOtherUsers.length; x++) {
-      if (randomOtherUsers[x] != i){
-        following.push(randomOtherUsers[x].id);
-      }
+      following.push(randomOtherUsers[x].id);
     }
-    var addNewUser = new constructor.User(i, 'user', '123', firstname, lastname, thumb, 'email@gmail.com', '123-123-1233', 'address', false, following);
+    var addNewUser = new constructor.User(i, username, '123', firstname, lastname, thumb, email, phone, address, false, following);
     users.push(addNewUser);
   }
+
+  // Add Random Stores
+  function pickCatetory(){
+    var categorys = [
+      'Restaurants',
+      'Cafe',
+      'Shopping',
+      'Home & Garden',
+      'Fashion',
+      'Pet Stores',
+      'Automotive',
+      'Sporting Goods',
+    ];
+    var random = Math.floor(Math.random() * (categorys.length));
+    var picked = [categorys[random]];
+    return picked;
+  };
+  function pickPrice(){
+    var price = [
+      '$',
+      '$$',
+      '$$$',
+      '$$$$'
+    ];
+    var random = Math.floor(Math.random() * (price.length));
+    var picked = [price[random]];
+    return picked;
+  };
   for (var i=3; i<=10; i++){
     var randomeUser = _.sample(users, 1);
-    var addNewStore = new constructor.Store(i, randomeUser[0].id, tool.randomText(2), tool.randomText(50), '123-321-3333', tool.randomText(10), i+'.jpg');
+    var randomName = Faker.Company.companyName();
+    var randomCategory = pickCatetory();
+    var randomPrice = pickPrice();
+    var randomPhone = Faker.PhoneNumber.phoneNumber();
+    var randomHours = {
+      mon: [['9', '00', '2', '30'], ['4', '00', '6', '30']],
+      tue: [['9', '00', '6', '30']],
+      wed: [['9', '00', '6', '30']],
+      thu: [['9', '00', '6', '30']],
+      fri: [['9', '00', '6', '30']]
+    };
+    var randomAddress = {
+      address: Faker.Address.streetName(),
+      city: Faker.Address.city(),
+      state: Faker.Address.usState(),
+      zipCode: Faker.Address.zipCode(),
+    }
+    var addNewStore = new constructor.Store(i, randomeUser[0].id, randomName, randomCategory, randomPrice, randomHours,
+       tool.randomText(20), randomPhone, randomAddress, i+'.jpg');
     stores.push(addNewStore);
   }
+  // Add Random Reviews
   for (var i=1; i<=300;i++){
     var randomStore = _.sample(stores, 1);
     var last = _.last(randomStore[0].reviews);

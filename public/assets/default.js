@@ -1,3 +1,4 @@
+
 function filterInt(value) {
   if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
     return Number(value);
@@ -596,6 +597,7 @@ function showStores(store){
 
   var link = document.createElement('a');
   link.href = store.id;
+  link.className = 'pull-right';
   var img = document.createElement('img');
   img.src = store.thumb;
   img.setAttribute('width', '100%');
@@ -604,15 +606,17 @@ function showStores(store){
 
   var name = document.createElement('h5');
   name.textContent = store.name;
-  var phone = document.createElement('h5');
+  var phone = document.createElement('p');
   phone.textContent = store.phone;
-  var address = document.createElement('h5');
-  address.textContent = store.address;
+  var address = document.createElement('p');
+  address.textContent = store.address + ', ' + store.city + ', ' + store.state + ' ' + store.zipCode;
+  var priceRange = document.createElement('h5');
+  priceRange.textContent = 'price range: ' + store.price;
   var ratings = document.createElement('div');
   showRating(store, false, ratings);
   var description = document.createElement('p');
   description.className = 'padding-top'
-  description.textContent = store.description;
+  // description.textContent = store.description;
 
   main.appendChild(row);
   row.appendChild(col4);
@@ -623,6 +627,7 @@ function showStores(store){
   col8.appendChild(name);
   col8.appendChild(phone);
   col8.appendChild(address);
+  col8.appendChild(priceRange);
   col8.appendChild(ratings);
   col8.appendChild(description);
 }
@@ -645,7 +650,7 @@ function showRating(store, all,location){
     var showReview = document.createElement('img');
     showReview.src = "rating-" + Math.floor(average) + ".png";
     showReview.className="rating-stars";
-    var reviewCount = document.createTextNode("("+store.reviews.length+")");
+    var reviewCount = document.createTextNode(" "+store.reviews.length+" reviews");
     reviewBox.appendChild(showReview);
     reviewBox.appendChild(reviewCount);
     if (all){
