@@ -343,6 +343,17 @@ app.get('/check-current-user', session, function(req, res){
   res.json({id: req.matchUser.id});
 })
 
+app.get('/check-own-store/:storeId', session, function(req, res){
+  var userId = req.matchUser.id;
+  var storeId = tool.filterInt(req.params.storeId);
+  var store = _.where(stores, {id: storeId});
+  if (store[0].userId === userId){
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
+})
+
 app.get('/search-for', function(req, res){
   var category = req.query.category;
   var found = [];

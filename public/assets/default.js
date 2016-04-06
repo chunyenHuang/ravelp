@@ -488,41 +488,44 @@ function showUser(object){
   myStoresCount.textContent = store.length;
   removeAllChild(accountStore);
   if (typeof(store)==='object'){
+    // for (var i = 0; i < store.length; i++) {
+    //   var storeBox = document.createElement('div');
+    //   storeBox.className = 'row reviews';
+    //   var storeImgBox = document.createElement('div');
+    //   storeImgBox.className = 'col-sm-3';
+    //   var storeInfoBox = document.createElement('div');
+    //   storeInfoBox.className = 'col-sm-9';
+    //   var storeLink = document.createElement('a');
+    //   storeLink.href='#';
+    //   storeLink.setAttribute('data-type', 'show-store');
+    //   storeLink.setAttribute('data-id', filterInt(store[i].id));
+    //   var storeImg = document.createElement('img');
+    //   storeImg.src = store[i].thumb;
+    //   storeImg.className = 'img-responsive';
+    //   var storeTitle = document.createElement('h5');
+    //   storeTitle.textContent = store[i].name;
+    //   var storeEdit = document.createElement('button');
+    //   storeEdit.textContent = 'Edit Store';
+    //   storeEdit.setAttribute('data-type', 'show-edit-store-page');
+    //   storeEdit.setAttribute('data-id', filterInt(store[i].id));
+    //   storeEdit.className = 'btn btn-sm btn-default';
+    //   accountStore.appendChild(storeBox);
+    //   storeBox.appendChild(storeImgBox);
+    //   storeBox.appendChild(storeInfoBox);
+    //   storeImgBox.appendChild(storeLink);
+    //   storeLink.appendChild(storeImg);
+    //   storeInfoBox.appendChild(storeTitle);
+    //   storeInfoBox.appendChild(storeEdit);
+    // }
+    // var linkNewStore = document.createElement('a');
+    // linkNewStore.textContent = 'Add a new store';
+    // linkNewStore.href='#';
+    // linkNewStore.setAttribute('data-type', 'show-add-store-page');
+    // linkNewStore.setAttribute('data-id', 'nan');
+    // accountStore.appendChild(linkNewStore);
     for (var i = 0; i < store.length; i++) {
-      var storeBox = document.createElement('div');
-      storeBox.className = 'row reviews';
-      var storeImgBox = document.createElement('div');
-      storeImgBox.className = 'col-sm-3';
-      var storeInfoBox = document.createElement('div');
-      storeInfoBox.className = 'col-sm-9';
-      var storeLink = document.createElement('a');
-      storeLink.href='#';
-      storeLink.setAttribute('data-type', 'show-store');
-      storeLink.setAttribute('data-id', filterInt(store[i].id));
-      var storeImg = document.createElement('img');
-      storeImg.src = store[i].thumb;
-      storeImg.className = 'img-responsive';
-      var storeTitle = document.createElement('h5');
-      storeTitle.textContent = store[i].name;
-      var storeEdit = document.createElement('button');
-      storeEdit.textContent = 'Edit Store';
-      storeEdit.setAttribute('data-type', 'show-edit-store-page');
-      storeEdit.setAttribute('data-id', filterInt(store[i].id));
-      storeEdit.className = 'btn btn-sm btn-default';
-      accountStore.appendChild(storeBox);
-      storeBox.appendChild(storeImgBox);
-      storeBox.appendChild(storeInfoBox);
-      storeImgBox.appendChild(storeLink);
-      storeLink.appendChild(storeImg);
-      storeInfoBox.appendChild(storeTitle);
-      storeInfoBox.appendChild(storeEdit);
+      showStores(store[i], accountStore);
     }
-    var linkNewStore = document.createElement('a');
-    linkNewStore.textContent = 'Add a new store';
-    linkNewStore.href='#';
-    linkNewStore.setAttribute('data-type', 'show-add-store-page');
-    linkNewStore.setAttribute('data-id', 'nan');
-    accountStore.appendChild(linkNewStore);
   }
   else if (user.business){
     var accountStore = document.getElementById('account-store');
@@ -654,6 +657,19 @@ function showStores(store, location){
     span.textContent = hoursArray[i][1][0] + ':' + hoursArray[i][1][1] + ' - ' + hoursArray[i][1][2] + ':' + hoursArray[i][1][3];
     li.appendChild(span);
     hours.appendChild(li);
+  }
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/check-own-store/'+store.id);
+  XHR.send();
+  XHR.onload = function(){
+    if (XHR.status==200){
+      var storeEdit = document.createElement('button');
+      storeEdit.textContent = 'Edit My Store';
+      storeEdit.setAttribute('data-type', 'show-edit-store-page');
+      storeEdit.setAttribute('data-id', store.id);
+      storeEdit.className = 'btn btn-sm btn-default pull-right';
+      name.appendChild(storeEdit);
+    }
   }
 
   location.appendChild(row);
