@@ -400,6 +400,16 @@ app.get('/check-review-post/:storeId', session, function(req, res){
   }
 })
 
+app.get('/compliment-user/:id/:content', session, function(req, res){
+  console.log(req.url);
+  var currentUserId = req.matchUser.id;
+  var id = tool.filterInt(req.params.id);
+  var content = req.params.content;
+  var compliment = new constructor.Compliment(currentUserId, id, content);
+  compliments.push(compliment);
+  res.sendStatus(200);
+})
+
 app.listen(port, function(){
   console.log('listening to port: ' + port);
 })

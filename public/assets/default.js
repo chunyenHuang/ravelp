@@ -1,4 +1,3 @@
-
 function filterInt(value) {
   if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
     return Number(value);
@@ -48,8 +47,8 @@ function clearPage(){
   removeAllChild(main);
   storeDetail.classList.add('hidden');
   accountDetail.classList.add('hidden');
-  loginForm.classList.add('hidden');
-  newUserForm.classList.add('hidden');
+  // loginForm.classList.add('hidden');
+  // newUserForm.classList.add('hidden');
   newStoreForm.classList.add('hidden');
   editStoreForm.classList.add('hidden');
 }
@@ -103,10 +102,10 @@ document.body.addEventListener('click', function(event){
   if (type==='home'){
     homepage();
   }
-  if (type==='show-login-page'){
-    event.preventDefault();
-    showLoginPage();
-  }
+  // if (type==='show-login-page'){
+  //   event.preventDefault();
+  //   showLoginPage();
+  // }
   if (type==='review-tags'){
     event.preventDefault();
     var review = event.target.getAttribute('data-sub-id');
@@ -125,10 +124,10 @@ document.body.addEventListener('click', function(event){
       event.target.textContent = event.target.getAttribute('name') + ' ' + response.tagCount ;
     }
   }
-  if (type==='new-user'){
-    newUserForm.classList.remove('hidden');
-    loginForm.classList.add('hidden');
-  }
+  // if (type==='new-user'){
+  //   newUserForm.classList.remove('hidden');
+  //   loginForm.classList.add('hidden');
+  // }
   if (type==='logout'){
     var XHR = new XMLHttpRequest();
     XHR.open('get','/logout');
@@ -266,15 +265,17 @@ document.body.addEventListener('submit', function(event){
       } else if (XHR.status === 403){
         msg.textContent = '(wrong password)';
       } else {
+        $('#login-window').modal('hide');
         var response = JSON.parse(XHR.responseText);
-        clearPage();
+        // navbar
         profile.classList.remove('hidden');
         logout.classList.remove('hidden');
         login.classList.add('hidden');
         profile.setAttribute('data-id', response.id);
-        // navbar
         navbarUsername.textContent = 'Hello~ ' + response.firstname;
-        getCurrentUser();
+
+        // clearPage();
+        // getCurrentUser();
       }
     }
   }
@@ -317,6 +318,7 @@ document.body.addEventListener('submit', function(event){
       if (XHR.status === 403) {
         msg.textContent = '(username is already taken)';
       } else {
+        $('#new-user-window').modal('hide');
         getCurrentUser();
       }
     }
@@ -393,6 +395,27 @@ document.body.addEventListener('submit', function(event){
       }
       else {
         clearPage();
+      }
+    }
+  }
+  if (type==='compliment-user') {
+    var content = document.getElementById('compliment-content');
+    var msgbox = document.getElementById('compliment-success-msg');
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', '/compliment-user/' + id + '/' + content.value);
+    XHR.send();
+    XHR.onload = function(){
+      if (XHR.status===200) {
+        var msg = document.createElement('span');
+        msg.textContent = 'Thanks for your compliment! '
+        msgbox.appendChild(msg);
+        var close = function(){
+          $('#com-window').modal('hide');
+        }
+        setInterval(close, 1000);
+      } else {
+        var msg = document.createElement('compliment-success-msg');
+        msg.textContent = 'You must login first!'
       }
     }
   }
@@ -1103,6 +1126,13 @@ function showUserProfile(object, location){
   left.appendChild(img);
   left.appendChild(btnGroup);
   // Mid
+  var headrow = document.createElement('div');
+  headrow.className = 'row';
+  var headcol1 = document.createElement('div');
+  headcol1.className = 'col-sm-8 col-md-9';
+  var headcol2 = document.createElement('div');
+  headcol2.className = 'col-sm-4 col-md-3';
+
   var titleBox = document.createElement('div');
   titleBox.className ='profile-title';
 
@@ -1112,22 +1142,32 @@ function showUserProfile(object, location){
   } else {
     followLink.textContent = 'Follow ' + user.firstname;
   }
-  followLink.className = 'btn btn-default pull-right';
+  followLink.className = 'btn btn-default btn-block pull-right';
   followLink.setAttribute('data-id', user.id);
   followLink.setAttribute('data-type', 'follow-user');
   followLink.setAttribute('data-value', false);
   followLink.setAttribute('saved-location', location.getAttribute('id'));
 
+  var comIcon = document.createElement('i');
+  comIcon.className = "fa fa-angellist fa-lg";
   var complimentLink = document.createElement('button');
   if (complimented){
-    complimentLink.textContent = 'UnCompliment ' + user.firstname;
+    complimentLink.textContent = 'UnCompliment ';
   } else {
-    complimentLink.textContent = 'Compliment ' + user.firstname;
+    complimentLink.textContent = 'Compliment ';
   }
-  complimentLink.className = 'btn btn-default pull-right';
+  complimentLink.appendChild(comIcon);
+  complimentLink.className = 'btn btn-default btn-block pull-right';
+  complimentLink.setAttribute('type', 'button');
+  complimentLink.setAttribute('data-toggle', 'modal');
+  complimentLink.setAttribute('data-target', '#com-window');
   complimentLink.setAttribute('data-id', user.id);
-  complimentLink.setAttribute('data-type', 'compliment-user');
-  complimentLink.setAttribute('data-value', false);
+  complimentLink.setAttribute('data-name', user.firstname);
+  var form = document.getElementById('compliment-form');
+  form.setAttribute('data-id', user.id);
+  form.setAttribute('data-type', 'compliment-user');
+  var span = document.getElementById('receiver-name');
+  span.textContent = user.firstname;
 
   var name = document.createElement('h1');
   name.textContent = user.firstname + ' ' + user.lastname;
@@ -1162,11 +1202,14 @@ function showUserProfile(object, location){
   countlist.appendChild(list1);
   countlist.appendChild(list2);
   countlist.appendChild(list3);
-  titleBox.appendChild(followLink);
-  titleBox.appendChild(complimentLink);
   titleBox.appendChild(name);
   titleBox.appendChild(countlist);
-  mid.appendChild(titleBox);
+  headcol1.appendChild(titleBox);
+  headcol2.appendChild(followLink);
+  headcol2.appendChild(complimentLink);
+  headrow.appendChild(headcol1);
+  headrow.appendChild(headcol2);
+  mid.appendChild(headrow);
 
   // Mid2 stars distribution
   var body = document.createElement('div');
@@ -1333,7 +1376,6 @@ function displayUser(id, thumb, location){
   }
 }
 
-
 function showFollowers(object, location) {
   removeAllChild(location);
   var user = object.user;
@@ -1382,9 +1424,9 @@ function writeReview(store, location){
       msgbox.className="well";
       var msg = document.createElement('a');
       msg.href='#';
-      msg.setAttribute('data-type', 'show-login-page');
-      msg.setAttribute('data-id', 'nan');
-      msg.textContent = 'Login and Write My Review.';
+      msg.setAttribute('data-target', '#login-window');
+      msg.setAttribute('data-toggle', 'modal');
+      msg.textContent = 'Login and Write Your Review.';
       writingZone.appendChild(msgbox);
       msgbox.appendChild(msg);
     } else if (XHR.status === 205){
