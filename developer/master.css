@@ -1,6 +1,51 @@
 body {
   margin: auto;
 }
+.star-rating-box {
+  width: 100px;
+  height: 25px;
+  background-color: black;
+}
+.star-rating-1 {
+  position: absolute;
+  left: 0px;
+  width: 20px;
+  height: 25px;
+  background-color: red;
+  z-index: 100;
+}
+.star-rating-2 {
+  position: absolute;
+  left: 20px;
+  width: 20px;
+  height: 25px;
+  background-color: white;
+  z-index: 100;
+}
+.star-rating-3 {
+  position: absolute;
+  left: 40px;
+  width: 20px;
+  height: 25px;
+  background-color: blue;
+  z-index: 100;
+}
+.star-rating-4 {
+  position: absolute;
+  left: 60px;
+  width: 20px;
+  height: 25px;
+  background-color: white;
+  z-index: 100;
+}
+.star-rating-5 {
+  position: absolute;
+  left: 80px;
+  width: 20px;
+  height: 25px;
+  background-color: red;
+  z-index: 100;
+}
 
 .rating-stars {
   width: 100px;

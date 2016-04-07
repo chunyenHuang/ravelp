@@ -375,13 +375,15 @@ app.get('/search-for', function(req, res){
 })
 
 app.get('/check-review-post/:storeId', session, function(req, res){
-  console.log(req.url);
   var userId = req.matchUser.id;
   var storeId = tool.filterInt(req.params.storeId);
   var store = _.where(stores, {id: storeId});
   var review = _.where(store[0].reviews, {userId: userId});
-  console.log(review[0].id);
-  res.json({review: review[0]});
+  if (review.length > 0) {
+    res.json({review: review[0]});
+  } else {
+    res.sendStatus(205);
+  }
 })
 
 app.listen(port, function(){

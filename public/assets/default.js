@@ -954,18 +954,55 @@ function reviewForm(store, review, location){
   var rightFromRow = document.createElement('div');
   rightFromRow.className = 'col-sm-3';
   var starRatings = document.createElement('div');
-  for (var i = 1; i <= 5; i++) {
-    var starLabel = document.createElement('label');
-    starLabel.className = "radio-inline";
-    starLabel.textContent = i;
-    var starInput = document.createElement('input');
-    starInput.setAttribute('type', 'radio');
-    starInput.setAttribute('name', 'star-options');
-    starInput.setAttribute('value', i);
-    starInput.setAttribute('required', 'required');
-    starLabel.appendChild(starInput);
-    starRatings.appendChild(starLabel);
-  }
+  // for (var i = 1; i <= 5; i++) {
+  //   var starLabel = document.createElement('label');
+  //   starLabel.className = "radio-inline";
+  //   starLabel.textContent = i;
+  //   var starInput = document.createElement('input');
+  //   starInput.setAttribute('type', 'radio');
+  //   starInput.setAttribute('name', 'star-options');
+  //   starInput.setAttribute('value', i);
+  //   starInput.setAttribute('required', 'required');
+  //   starLabel.appendChild(starInput);
+  //   starRatings.appendChild(starLabel);
+  // }
+  var startValue = 0;
+  var starRatingsBox = document.createElement('div');
+  starRatingsBox.className = 'star-rating-box';
+  starRatings.appendChild(starRatingsBox);
+  var star1 = document.createElement('span');
+  star1.className = 'star-rating-1';
+  var star2 = document.createElement('span');
+  star2.className = 'star-rating-2';
+  var star3 = document.createElement('span');
+  star3.className = 'star-rating-3';
+  var star4 = document.createElement('span');
+  star4.className = 'star-rating-4';
+  var star5 = document.createElement('span');
+  star5.className = 'star-rating-5';
+  starRatingsBox.appendChild(star1);
+  starRatingsBox.appendChild(star2);
+  starRatingsBox.appendChild(star3);
+  starRatingsBox.appendChild(star4);
+  starRatingsBox.appendChild(star5);
+
+  star1.addEventListener('click', function(){
+    startValue = 1;
+  })
+  star2.addEventListener('click', function(){
+    startValue = 2;
+  })
+  star3.addEventListener('click', function(){
+    startValue = 3;
+  })
+  star4.addEventListener('click', function(){
+    startValue = 4;
+  })
+  star5.addEventListener('click', function(){
+    startValue = 5;
+  })
+
+
   var textarea = document.createElement('textarea');
   textarea.className= 'form-control';
   textarea.setAttribute('id', 'write-review-content')
@@ -998,16 +1035,16 @@ function reviewForm(store, review, location){
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var starOptions = document.getElementsByName('star-options');
-    for (var x=0; x<starOptions.length; x++){
-      if (starOptions[x].checked){
-        var starValue = filterInt(starOptions[x].value);
-        break;
-      }
-    }
+    // for (var x=0; x<starOptions.length; x++){
+    //   if (starOptions[x].checked){
+    //     var starValue = filterInt(starOptions[x].value);
+    //     break;
+    //   }
+    // }
     var newReview = {
       id: store.id,
       content: textarea.value,
-      rating: starValue
+      rating: starValue,
     }
     var payload = JSON.stringify(newReview);
     var XHR = new XMLHttpRequest();
@@ -1363,16 +1400,14 @@ function writeReview(store, location){
       msg.textContent = 'Login and Write My Review.';
       writingZone.appendChild(msgbox);
       msgbox.appendChild(msg);
+    } else if (XHR.status === 205){
+      reviewForm(store, 'comments...', writingZone);
     } else {
       var response = JSON.parse(XHR.responseText);
-      if (typeof(response.review.id) === 'undefined'){
-        reviewForm(store, 'comments...', writingZone);
-      } else {
-        var msgbox = document.createElement('div');
-        msgbox.setAttribute('id', 'myReview-' + store.id + '-' + response.review.id);
-        attachReview(store, response.review, msgbox);
-        writingZone.appendChild(msgbox);
-      }
+      var msgbox = document.createElement('div');
+      msgbox.setAttribute('id', 'myReview-' + store.id + '-' + response.review.id);
+      attachReview(store, response.review, msgbox);
+      writingZone.appendChild(msgbox);
     }
   }
   location.appendChild(writingZone);
