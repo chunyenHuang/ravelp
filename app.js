@@ -205,12 +205,19 @@ app.get('/user-data/:id', loginStatus, function(req, res){
   } else {
     var followed = false;
   }
+  var matchComploments = _.where(compliments, {giver: req.matchUser.id, receiver: id});
+  if (matchComploments.length>0) {
+    var comlimented = true;
+  } else {
+    var comlimented = false;
+  }
   var others = {
     followers: followers,
     followed: followed,
     ratingCount: statistic.ratingCount(id),
     tagCount: statistic.tagCount(id),
     compliments: statistic.compliments(id),
+    comlimented: comlimented,
   }
   console.log(others.compliments.length);
   res.json({

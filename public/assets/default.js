@@ -1072,6 +1072,7 @@ function showUserProfile(object, location){
   var ratingCount = object.others.ratingCount;
   var tagCount = object.others.tagCount;
   var compliments = object.others.compliments;
+  var complimented = object.others.complimented;
 
   var row = document.createElement('div');
   row.className = 'row';
@@ -1117,6 +1118,17 @@ function showUserProfile(object, location){
   followLink.setAttribute('data-value', false);
   followLink.setAttribute('saved-location', location.getAttribute('id'));
 
+  var complimentLink = document.createElement('button');
+  if (complimented){
+    complimentLink.textContent = 'UnCompliment ' + user.firstname;
+  } else {
+    complimentLink.textContent = 'Compliment ' + user.firstname;
+  }
+  complimentLink.className = 'btn btn-default pull-right';
+  complimentLink.setAttribute('data-id', user.id);
+  complimentLink.setAttribute('data-type', 'compliment-user');
+  complimentLink.setAttribute('data-value', false);
+
   var name = document.createElement('h1');
   name.textContent = user.firstname + ' ' + user.lastname;
 
@@ -1151,6 +1163,7 @@ function showUserProfile(object, location){
   countlist.appendChild(list2);
   countlist.appendChild(list3);
   titleBox.appendChild(followLink);
+  titleBox.appendChild(complimentLink);
   titleBox.appendChild(name);
   titleBox.appendChild(countlist);
   mid.appendChild(titleBox);
@@ -1320,6 +1333,7 @@ function displayUser(id, thumb, location){
   }
 }
 
+
 function showFollowers(object, location) {
   removeAllChild(location);
   var user = object.user;
@@ -1384,4 +1398,17 @@ function writeReview(store, location){
     }
   }
   location.appendChild(writingZone);
+}
+
+function checkCurrentUser(){
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/check-current-user');
+  XHR.send();
+  XHR.onload = function(){
+    if (XHR.status === 200){
+      var response = JSON.parse(XHR.responseText);
+      var currentUserId = response.id;
+      return currentUserId;
+    }
+  }
 }
