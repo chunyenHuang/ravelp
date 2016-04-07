@@ -11,9 +11,10 @@ function search(){
     var space = ' ';
     var searchNameArray = name.split(space);
     var searchLocationArray = location.split(space);
+
     var resultsNames = [];
     var resultsLocation = [];
-    var resultsTags = [];
+    var resultsCategorys = [];
     var resultsDescriptions =[];
 
     // Search for exact name
@@ -29,7 +30,19 @@ function search(){
       }
     }
 
-    if (resultsNames.length == 0){
+    for (var t=0; t<searchLocationArray.length; t++){
+      for (var i=0; i<stores.length; i++){
+        var locationArray = stores[i].city.split(space);
+        for (var x=0; x<locationArray.length; x++){
+          if (locationArray[x].toLowerCase().indexOf(searchLocationArray[t].toLowerCase()) != -1){
+            resultsLocation.push({id: stores[i].id, weight: 2});
+          }
+        }
+      }
+    }
+
+    //
+    if (resultsNames.length == 0 && resultsLocation.length == 0 ){
       // Search compare with Name
       for (var t=0; t<searchNameArray.length; t++){
         for (var i=0; i<stores.length; i++){
@@ -41,13 +54,13 @@ function search(){
           }
         }
       }
-      // Search Compare with brands
+      // Search Compare with location
       for (var t=0; t<searchLocationArray.length; t++){
         for (var i=0; i<stores.length; i++){
-          var locationArray = stores[i].address.split(space);
+          var locationArray = stores[i].city.split(space);
           for (var x=0; x<locationArray.length; x++){
             if (locationArray[x].toLowerCase().indexOf(searchLocationArray[t].toLowerCase()) != -1){
-              resultsLocation.push({id: stores[i].id, weight: 0.7});
+              resultsLocation.push({id: stores[i].id, weight: 1});
             }
           }
         }
@@ -55,10 +68,10 @@ function search(){
       // Search Compare with tag
       for (var t=0; t<searchNameArray.length; t++){
         for (var i=0; i<stores.length; i++){
-          var tagsArray = stores[i].tags;
-          for (var x=0; x<tagsArray.length; x++){
-            if (tagsArray[x].toLowerCase().indexOf(searchNameArray[t].toLowerCase()) != -1){
-              resultsTags.push({id: stores[i].id, weight: 0.3});
+          var categorysArray = stores[i].category;
+          for (var x=0; x<categorysArray.length; x++){
+            if (categorysArray[x].toLowerCase().indexOf(searchNameArray[t].toLowerCase()) != -1){
+              resultsCategorys.push({id: stores[i].id, weight: 0.7});
             }
           }
         }
@@ -78,11 +91,12 @@ function search(){
     var resultWeight = [];
     resultsNames = _.uniq(resultsNames, function(x){return x.id;});
     resultsLocation = _.uniq(resultsLocation, function(x){return x.id;});
-    resultsTags = _.uniq(resultsTags, function(x){return x.id;});
+    resultsCategorys = _.uniq(resultsCategorys, function(x){return x.id;});
     resultsDescriptions = _.uniq(resultsDescriptions, function(x){return x.id;});
+
     resultWeight.push(resultsNames);
     resultWeight.push(resultsLocation);
-    resultWeight.push(resultsTags);
+    resultWeight.push(resultsCategorys);
     resultWeight.push(resultsDescriptions);
     resultWeight = _.flatten(resultWeight, 1);
     resultWeight = _(resultWeight).groupBy('id');
