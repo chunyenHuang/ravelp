@@ -4,14 +4,14 @@ body {
 .star-rating-box {
   width: 100px;
   height: 25px;
-  background-color: black;
+  padding: 0px;
+  background-image: 'rating-1.png';
 }
 .star-rating-1 {
   position: absolute;
   left: 0px;
   width: 20px;
   height: 25px;
-  background-color: red;
   z-index: 100;
 }
 .star-rating-2 {
@@ -19,7 +19,6 @@ body {
   left: 20px;
   width: 20px;
   height: 25px;
-  background-color: white;
   z-index: 100;
 }
 .star-rating-3 {
@@ -27,7 +26,6 @@ body {
   left: 40px;
   width: 20px;
   height: 25px;
-  background-color: blue;
   z-index: 100;
 }
 .star-rating-4 {
@@ -35,7 +33,6 @@ body {
   left: 60px;
   width: 20px;
   height: 25px;
-  background-color: white;
   z-index: 100;
 }
 .star-rating-5 {
@@ -43,7 +40,6 @@ body {
   left: 80px;
   width: 20px;
   height: 25px;
-  background-color: red;
   z-index: 100;
 }
 

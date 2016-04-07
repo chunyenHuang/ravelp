@@ -863,9 +863,7 @@ function showStoreDetail(target){
       showRatingStars(theReviews[i], reviewRight);
       reviewRight.appendChild(reviewDate);
       reviewRight.appendChild(reviewContent);
-      if (typeof(userId)!='undefined'){
-        setTagButtons(userId, store, theReviews[i], reviewRight);
-      }
+      setTagButtons(userId, store, theReviews[i], reviewRight);
     }
   }
 
@@ -889,56 +887,54 @@ function setTagButtons(userId, store, review, location){
   XHR.open('get', '/review-tags-count/' + store.id + '/' + review.id);
   XHR.send();
   XHR.onload = function (){
-    if (XHR.stats != 404){
-      var response = JSON.parse(XHR.responseText);
-      var buttonUseful = document.createElement('button');
-      buttonUseful.className = 'btn btn-sm btn-default';
-      buttonUseful.setAttribute('name', 'useful');
-      buttonUseful.setAttribute('data-id', store.id);
-      buttonUseful.setAttribute('data-sub-id', review.id);
-      buttonUseful.setAttribute('data-type', 'review-tags');
-      buttonUseful.textContent = 'useful ' + response.useful;
+    var response = JSON.parse(XHR.responseText);
+    var buttonUseful = document.createElement('button');
+    buttonUseful.className = 'btn btn-sm btn-default';
+    buttonUseful.setAttribute('name', 'useful');
+    buttonUseful.setAttribute('data-id', store.id);
+    buttonUseful.setAttribute('data-sub-id', review.id);
+    buttonUseful.setAttribute('data-type', 'review-tags');
+    buttonUseful.textContent = 'useful ' + response.useful;
 
-      var buttonFunny = document.createElement('button');
-      buttonFunny.className = 'btn btn-sm btn-default';
-      buttonFunny.setAttribute('name', 'funny');
-      buttonFunny.setAttribute('data-id', store.id);
-      buttonFunny.setAttribute('data-sub-id', review.id);
-      buttonFunny.setAttribute('data-type', 'review-tags');
-      buttonFunny.textContent = 'funny ' + response.funny;
+    var buttonFunny = document.createElement('button');
+    buttonFunny.className = 'btn btn-sm btn-default';
+    buttonFunny.setAttribute('name', 'funny');
+    buttonFunny.setAttribute('data-id', store.id);
+    buttonFunny.setAttribute('data-sub-id', review.id);
+    buttonFunny.setAttribute('data-type', 'review-tags');
+    buttonFunny.textContent = 'funny ' + response.funny;
 
-      var buttonCool = document.createElement('button');
-      buttonCool.className = 'btn btn-sm btn-default';
-      buttonCool.setAttribute('name', 'cool');
-      buttonCool.setAttribute('data-id', store.id);
-      buttonCool.setAttribute('data-sub-id', review.id);
-      buttonCool.setAttribute('data-type', 'review-tags');
-      buttonCool.textContent = 'cool ' + response.cool;
+    var buttonCool = document.createElement('button');
+    buttonCool.className = 'btn btn-sm btn-default';
+    buttonCool.setAttribute('name', 'cool');
+    buttonCool.setAttribute('data-id', store.id);
+    buttonCool.setAttribute('data-sub-id', review.id);
+    buttonCool.setAttribute('data-type', 'review-tags');
+    buttonCool.textContent = 'cool ' + response.cool;
 
-      if (userId){
-        var check = _.findWhere(review.tags, {userId: userId});
-        if (check){
-          if (check.useful){
-            buttonUseful.classList.add('active');
-          }
-          if (check.funny){
-            buttonFunny.classList.add('active');
-          }
-          if (check.cool){
-            buttonCool.classList.add('active');
-          }
+    if (userId){
+      var check = _.findWhere(review.tags, {userId: userId});
+      if (check){
+        if (check.useful){
+          buttonUseful.classList.add('active');
+        }
+        if (check.funny){
+          buttonFunny.classList.add('active');
+        }
+        if (check.cool){
+          buttonCool.classList.add('active');
         }
       }
-
-      var buttons = document.createElement('div');
-      var header = document.createElement('h5');
-      header.textContent = 'Was this review …?';
-      buttons.appendChild(header);
-      buttons.appendChild(buttonUseful);
-      buttons.appendChild(buttonFunny);
-      buttons.appendChild(buttonCool);
-      location.appendChild(buttons);
     }
+
+    var buttons = document.createElement('div');
+    var header = document.createElement('h5');
+    header.textContent = 'Was this review …?';
+    buttons.appendChild(header);
+    buttons.appendChild(buttonUseful);
+    buttons.appendChild(buttonFunny);
+    buttons.appendChild(buttonCool);
+    location.appendChild(buttons);
   }
 }
 
@@ -954,55 +950,18 @@ function reviewForm(store, review, location){
   var rightFromRow = document.createElement('div');
   rightFromRow.className = 'col-sm-3';
   var starRatings = document.createElement('div');
-  // for (var i = 1; i <= 5; i++) {
-  //   var starLabel = document.createElement('label');
-  //   starLabel.className = "radio-inline";
-  //   starLabel.textContent = i;
-  //   var starInput = document.createElement('input');
-  //   starInput.setAttribute('type', 'radio');
-  //   starInput.setAttribute('name', 'star-options');
-  //   starInput.setAttribute('value', i);
-  //   starInput.setAttribute('required', 'required');
-  //   starLabel.appendChild(starInput);
-  //   starRatings.appendChild(starLabel);
-  // }
-  var startValue = 0;
-  var starRatingsBox = document.createElement('div');
-  starRatingsBox.className = 'star-rating-box';
-  starRatings.appendChild(starRatingsBox);
-  var star1 = document.createElement('span');
-  star1.className = 'star-rating-1';
-  var star2 = document.createElement('span');
-  star2.className = 'star-rating-2';
-  var star3 = document.createElement('span');
-  star3.className = 'star-rating-3';
-  var star4 = document.createElement('span');
-  star4.className = 'star-rating-4';
-  var star5 = document.createElement('span');
-  star5.className = 'star-rating-5';
-  starRatingsBox.appendChild(star1);
-  starRatingsBox.appendChild(star2);
-  starRatingsBox.appendChild(star3);
-  starRatingsBox.appendChild(star4);
-  starRatingsBox.appendChild(star5);
-
-  star1.addEventListener('click', function(){
-    startValue = 1;
-  })
-  star2.addEventListener('click', function(){
-    startValue = 2;
-  })
-  star3.addEventListener('click', function(){
-    startValue = 3;
-  })
-  star4.addEventListener('click', function(){
-    startValue = 4;
-  })
-  star5.addEventListener('click', function(){
-    startValue = 5;
-  })
-
-
+  for (var i = 1; i <= 5; i++) {
+    var starLabel = document.createElement('label');
+    starLabel.className = "radio-inline";
+    starLabel.textContent = i;
+    var starInput = document.createElement('input');
+    starInput.setAttribute('type', 'radio');
+    starInput.setAttribute('name', 'star-options');
+    starInput.setAttribute('value', i);
+    starInput.setAttribute('required', 'required');
+    starLabel.appendChild(starInput);
+    starRatings.appendChild(starLabel);
+  }
   var textarea = document.createElement('textarea');
   textarea.className= 'form-control';
   textarea.setAttribute('id', 'write-review-content')
@@ -1035,12 +994,12 @@ function reviewForm(store, review, location){
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var starOptions = document.getElementsByName('star-options');
-    // for (var x=0; x<starOptions.length; x++){
-    //   if (starOptions[x].checked){
-    //     var starValue = filterInt(starOptions[x].value);
-    //     break;
-    //   }
-    // }
+    for (var x=0; x<starOptions.length; x++){
+      if (starOptions[x].checked){
+        var starValue = filterInt(starOptions[x].value);
+        break;
+      }
+    }
     var newReview = {
       id: store.id,
       content: textarea.value,

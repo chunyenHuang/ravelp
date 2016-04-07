@@ -266,11 +266,12 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
   } else {
     change = false;
   }
+  console.log(theReview[0].tags);
   var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
-  if (theTag.length < 1){
+  if (theTag.length == 0){
     var array = theReview[0].tags;
-    if (theReview[0].tags.length>0){
-      var last = _.last(theReview[0].tags);
+    if (array.length>0){
+      var last = _.last(array);
       var id = last.id+1;
     } else{
       var id = 1;
@@ -278,6 +279,7 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
     array.push({id: id, userId: matchUser.id, useful: false, funny: false, cool: false });
     theTag = _.where(array, {userId: matchUser.id});
   }
+
   if (tagName === 'useful'){
     theTag[0].useful = change;
   }
@@ -316,6 +318,8 @@ app.post('/new-review', session, jsonParser, function(req, res){
   var date = new Date();
   var store = _.where(stores, {id: id});
   var check = _.where(store[0].reviews, {userId: matchUser.id});
+  var tags = [];
+  var comments = [];
   if (check.length > 0){
     check[0].description = description;
     check[0].rating = rating;
@@ -327,7 +331,7 @@ app.post('/new-review', session, jsonParser, function(req, res){
     } else {
       var newId = 1;
     }
-    var addNewReview = new constructor.Review(newId, matchUser.id, content, rating, date);
+    var addNewReview = new constructor.Review(newId, matchUser.id, description, rating, date, tags, comments);
     store[0].reviews.push(addNewReview);
   }
   var reviewUserlist = [];
