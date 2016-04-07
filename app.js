@@ -20,7 +20,7 @@ var app = express();
 var users = database.users;
 var stores = database.stores;
 var sessions = database.sessions;
-
+var compliments = database.compliments;
 // Sessions
 // emitter.on('examination', function(cookie){
 //   matchSession = [];
@@ -183,6 +183,7 @@ app.get('/get-currentUser', session, function(req, res){
   var others = {
     followers: followers,
     ratingCount: statistic.ratingCount(id),
+    compliments: statistic.compliments(id),
   }
   res.json({
     user: currentUser[0],
@@ -209,7 +210,9 @@ app.get('/user-data/:id', loginStatus, function(req, res){
     followed: followed,
     ratingCount: statistic.ratingCount(id),
     tagCount: statistic.tagCount(id),
+    compliments: statistic.compliments(id),
   }
+  console.log(others.compliments.length);
   res.json({
     user: user[0],
     reviews: userReviews,

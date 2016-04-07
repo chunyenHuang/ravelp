@@ -6,6 +6,7 @@ var _ = require('underscore');
 var users = database.users;
 var stores = database.stores;
 var sessions = database.sessions;
+var compliments = database.compliments;
 
 function statistic(){
   function reviews(userId){
@@ -72,6 +73,15 @@ function statistic(){
       return 0;
     }
   }
+  function getCompliments(receiverId) {
+    var match = _.where(compliments, {receiver: receiverId});
+    console.log(match.length);
+    if (match.length > 0){
+      return match;
+    } else {
+      return [];
+    }
+  }
 
   return {
     reviews: reviews, // [{store, review}, {}...]
@@ -79,6 +89,7 @@ function statistic(){
     ratingCount: ratingCount,
     tagCount: tagCount,
     countTag: countTag,
+    compliments: getCompliments,
   }
 }
 module.exports = statistic();

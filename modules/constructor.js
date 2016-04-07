@@ -51,12 +51,18 @@ function constructor() {
     this.token = token;
     this.id = id;
   }
+  function Compliment(giver, receiver, message) {
+    this.giver = giver;
+    this.receiver = receiver;
+    this.message = message;
+  }
   return {
     Store: Store,
     Review: Review,
     User: User,
     Session: Session,
     Tags: Tags,
+    Compliment: Compliment,
   }
 }
 

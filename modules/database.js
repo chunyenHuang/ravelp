@@ -111,7 +111,7 @@ function database(){
   ];
 
   // Add Random Users
-  for (var i=4; i<=200;i++){
+  for (var i=4; i<=10;i++){
     var username = Faker.Name.findName();
     var firstname = Faker.Name.firstName();
     var lastname = Faker.Name.lastName();
@@ -184,7 +184,7 @@ function database(){
     stores.push(addNewStore);
   }
   // Add Random Reviews
-  for (var i=1; i<=300;i++){
+  for (var i=1; i<=50;i++){
     var randomStore = _.sample(stores, 1);
     var last = _.last(randomStore[0].reviews);
     if (typeof(last)==='object'){
@@ -213,10 +213,24 @@ function database(){
     var addNewReview = new constructor.Review(last, randomeUser[0].id, tool.randomText(150), randomRating, randomDate, randomTagsArray);
     randomStore[0].reviews.push(addNewReview);
   }
+
+  // Add Random Compliment
+  var compliments = [];
+  for (var i = 0; i < 500; i++) {
+    var randomeUser1 = _.sample(users, 1);
+    var randomeUser2 = _.sample(users, 1);
+    var message = Faker.Lorem.sentence();
+    var match = _.where(compliments, {giver: randomeUser1, receiver:randomeUser2});
+    if (match.length == 0){
+      var compliment = new constructor.Compliment(randomeUser1[0].id, randomeUser2[0].id, message);
+      compliments.push(compliment);
+    }
+  }
   return {
     stores: stores,
     users: users,
-    sessions: sessions
+    sessions: sessions,
+    compliments: compliments,
   }
 }
 

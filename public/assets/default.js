@@ -424,6 +424,8 @@ function showUser(object){
   var store = object.store;
   var reviews = object.reviews;
   var followers = object.others.followers;
+  var compliments = object.others.compliments;
+
   accountDetail.classList.remove('hidden');
 
   // My Info
@@ -456,6 +458,7 @@ function showUser(object){
   // body.appendChild(ul);
   var accountInfo = document.getElementById('account-info');
   removeAllChild(accountInfo);
+  // displayUser(user.id, false, accountInfo);
   showUserProfile(object, accountInfo);
   // accountInfo.appendChild(row);
 
@@ -1068,6 +1071,7 @@ function showUserProfile(object, location){
   var followed = object.others.followed;
   var ratingCount = object.others.ratingCount;
   var tagCount = object.others.tagCount;
+  var compliments = object.others.compliments;
 
   var row = document.createElement('div');
   row.className = 'row';
@@ -1112,6 +1116,7 @@ function showUserProfile(object, location){
   followLink.setAttribute('data-type', 'follow-user');
   followLink.setAttribute('data-value', false);
   followLink.setAttribute('saved-location', location.getAttribute('id'));
+
   var name = document.createElement('h1');
   name.textContent = user.firstname + ' ' + user.lastname;
 
@@ -1130,12 +1135,21 @@ function showUserProfile(object, location){
   var list2icon = document.createElement('i');
   list2icon.className = "fa fa-users fa";
 
+  var list3 = document.createElement('li');
+  var list3text = document.createElement('span');
+  list3text.textContent = ' ' + compliments.length + ' Compliments';
+  var list3icon = document.createElement('i');
+  list3icon.className = "fa fa-angellist";
+
   list1.appendChild(list1icon);
   list1.appendChild(list1text);
   list2.appendChild(list2icon);
   list2.appendChild(list2text);
+  list3.appendChild(list3icon);
+  list3.appendChild(list3text);
   countlist.appendChild(list1);
   countlist.appendChild(list2);
+  countlist.appendChild(list3);
   titleBox.appendChild(followLink);
   titleBox.appendChild(name);
   titleBox.appendChild(countlist);
