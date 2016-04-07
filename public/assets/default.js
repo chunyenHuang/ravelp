@@ -51,6 +51,7 @@ function clearPage(){
   // newUserForm.classList.add('hidden');
   newStoreForm.classList.add('hidden');
   editStoreForm.classList.add('hidden');
+  sortBar.classList.add('hidden');
 }
 
 function homepage(){
@@ -88,6 +89,8 @@ var editStoreForm = document.getElementById('store-edit');
 var login = document.getElementById('login-button');
 var logout = document.getElementById('logout-button');
 var profile = document.getElementById('profile-button');
+var sortBar = document.getElementById('sort-bar');
+var menu = document.getElementById('sort-menu');
 
 // EventListeners
 document.body.addEventListener('click', function(event){
@@ -227,15 +230,11 @@ document.body.addEventListener('click', function(event){
     XHR.send();
     XHR.onload = function(){
       var response = JSON.parse(XHR.responseText);
-      clearPage();
-      var stores = response.stores;
-      for (var i = 0; i < stores.length; i++) {
-        showStores(stores[i], main)
-      }
+      showAllStores(response.stores, 'revelance', main);
     }
   }
-})
 
+})
 document.body.addEventListener('submit', function(event){
   event.preventDefault();
   var id = filterInt(event.target.getAttribute('data-id'));
@@ -338,10 +337,7 @@ document.body.addEventListener('submit', function(event){
 
     XHR.onload = function(){
       var store = JSON.parse(XHR.responseText);
-      clearPage();
-      for (var i=0; i<store.length; i++){
-        showStores(store[i], main);
-      }
+      showAllStores(store, 'relevance', main);
     }
   }
   if (type==='new-store'){
@@ -1453,4 +1449,80 @@ function checkCurrentUser(){
       return currentUserId;
     }
   }
+}
+
+function showAllStores(array, value, location){
+  clearPage();
+  sortBar.classList.remove('hidden');
+  removeAllChild(menu);
+  var sortResult = document.createElement('form');
+  sortResult.className = "form form-inline";
+  sortResult.textContent ="sort by: ";
+  var sortResultOptions = document.createElement('select');
+  sortResultOptions.className="form-control input-sm";
+  var option1 = document.createElement('option');
+  option1.textContent = "Relevance";
+  option1.value ="relevance";
+  var option2 = document.createElement('option');
+  option2.textContent = "Price: Low to High";
+  option2.value = "priceLow";
+  var option3 = document.createElement('option');
+  option3.textContent = "Category";
+  option3.value = "category";
+  var option4 = document.createElement('option');
+  option4.textContent = "Most Review";
+  option4.value = "mostReview";
+  var option5 = document.createElement('option');
+  option5.textContent = "Average Rating";
+  option5.value = "average";
+  sortResultOptions.appendChild(option1);
+  sortResultOptions.appendChild(option2);
+  sortResultOptions.appendChild(option3);
+  sortResultOptions.appendChild(option4);
+  sortResultOptions.appendChild(option5);
+  sortResultOptions.value = value;
+  sortResult.appendChild(sortResultOptions);
+  menu.appendChild(sortResult);
+  for (var i=0; i<array.length; i++){
+    showStores(array[i], location);
+  }
+
+  sortResultOptions.addEventListener('change', function(){
+    var value = event.target.value;
+    if (value === 'category') {
+      array = _.sortBy(array, 'category');
+    }
+    if (value === 'priceLow') {
+      array = _.sortBy(array, 'price');
+    }
+    if (value === 'mostReview') {
+      var counts = [];
+      for (var i = 0; i < array.length; i++) {
+        counts.push({store: array[i], reviews: array[i].reviews.length});
+      }
+      counts = _.sortBy(counts, 'reviews').reverse();
+      array = [];
+      for (var i = 0; i < counts.length; i++) {
+        array.push(counts[i].store);
+      }
+    }
+    if (value === 'average') {
+      var average = [];
+      for (var i = 0; i < array.length; i++) {
+        var rating = 0;
+        for (var x = 0; x < array[i].reviews.length; x++) {
+          rating = rating + array[i].reviews[x].rating;
+        }
+        average.push({store: array[i], average: (rating/array[i].reviews.length)});
+        console.log(average);
+      }
+      average = _.sortBy(average, 'average').reverse();
+      array = [];
+      for (var i = 0; i < average.length; i++) {
+        array.push(average[i].store);
+      }
+    }
+    showAllStores(array, value, location);
+  })
+
 }
