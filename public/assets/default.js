@@ -194,7 +194,6 @@ document.body.addEventListener('click', function(event){
     XHR.send();
     XHR.onload = function(){
       var response = JSON.parse(XHR.responseText);
-      console.log(response);
       reviewForm(response.store, response.review, editBox);
     }
   }
@@ -584,20 +583,46 @@ function showUser(object){
   var accountFollowing = document.getElementById('account-following');
 
   removeAllChild(accountFollowing);
-  if (user.following.length>0) {
-    var followingRow = document.createElement('div');
-    followingRow.className = 'row';
-    for (var i = 0; i < user.following.length; i++) {
+
+  function askforLatestReview(userId, location){
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', '/user-data/' + userId);
+    XHR.send();
+    XHR.onload = function(){
+      var followingRow = document.createElement('div');
+      followingRow.className = 'row';
       var followingCol = document.createElement('div');
-      followingCol.className = 'col-xs-4 col-sm-3 col-md-2 padding-top-bottom';
+      followingCol.className = 'col-xs-6 col-sm-4 col-md-2 padding-top-bottom';
       var followingBox = document.createElement('div');
       followingBox.className = 'user-thumb-box';
       followingBox.setAttribute('id', 'user-thumb-box-' + user.following[i]);
       followingCol.appendChild(followingBox);
       followingRow.appendChild(followingCol);
-      displayUser(user.following[i], true, followingBox);
+      var newFeed = document.createElement('div');
+      newFeed.className = 'col-xs-6 col-sm-8 col-md-10';
+      var response = JSON.parse(XHR.responseText);
+      response.showLatest = true;
+      showUserProfileThumb(response, followingBox);
+      followingCol.appendChild(followingBox);
+      if (response.reviews.length >0 ){
+        showReviews(response, newFeed);
+        followingRow.appendChild(newFeed);
+      } else {
+        var emptybox = document.createElement('div');
+        emptybox.className = 'row';
+        var empty = document.createElement('div');
+        empty.textContent = 'No Review Yet';
+        emptybox.appendChild(empty);
+        newFeed.appendChild(emptybox);
+        followingRow.appendChild(newFeed);
+      }
+      location.appendChild(followingRow);
     }
-    accountFollowing.appendChild(followingRow)
+  }
+  if (user.following.length>0) {
+    for (var i = 0; i < user.following.length; i++) {
+      askforLatestReview(user.following[i], accountFollowing);
+    }
   } else {
     var msgFollowing = document.createElement('p');
     msgFollowing.textContent = 'You did not follow anyone.'
@@ -1278,69 +1303,6 @@ function showUserProfile(object, location){
     location.appendChild(tagHeader);
     location.appendChild(tagRow);
   }
-  function showReviews(object, location) {
-    removeAllChild(location);
-    console.log(object.reviews[0]);
-    var user = object.user;
-    var reviews = object.reviews;
-    var followers = object.others.followers;
-    var followed = object.others.followed;
-    var ratingCount = object.others.ratingCount;
-    var tagCount = object.others.tagCount;
-
-    var header = document.createElement('h4');
-    header.textContent = 'Reviews';
-
-    var row = document.createElement('div');
-    row.className = 'row';
-    for (var i = 0; i < reviews.length; i++) {
-      var col = document.createElement('div');
-      col.className = 'col-md-12 padding-top-bottom with-border';
-      var media = document.createElement('div');
-      media.className = 'media';
-      var left = document.createElement('div');
-      left.className = 'media-left';
-      var link = document.createElement('a');
-      link.href = '#';
-      var img = document.createElement('img');
-      img.className = 'media-object';
-      img.src = reviews[i].store.thumb;
-      img.setAttribute('width', '100px');
-      var body = document.createElement('div');
-      body.className = 'media-body';
-      var heading = document.createElement('h4');
-      heading.className = 'media-heading';
-      heading.textContent = reviews[i].store.name;
-      var address = document.createElement('p');
-      address.textContent = reviews[i].store.address;
-
-      var content1 = document.createElement('p');
-      content1.className = 'padding-top';
-      showRatingStars(reviews[i].review, content1);
-      var dateField = document.createElement('span');
-      dateField.textContent = timeStamp(reviews[i].review.date);
-      content1.appendChild(dateField);
-      var content2 = document.createElement('p');
-      content2.textContent = reviews[i].review.description;
-      var tags = document.createElement('div');
-
-      setTagButtons(user.id, reviews[i].store, reviews[i].review, tags);
-
-      row.appendChild(col);
-      col.appendChild(media);
-      media.appendChild(left);
-      media.appendChild(body);
-      left.appendChild(link);
-      link.appendChild(img);
-      body.appendChild(heading);
-      body.appendChild(address);
-      col.appendChild(content1);
-      col.appendChild(content2);
-      col.appendChild(tags);
-    }
-    location.appendChild(header);
-    location.appendChild(row);
-  }
 
   overview(object, body);
 
@@ -1390,13 +1352,14 @@ function showFollowers(object, location) {
     followingRow.className = 'row';
     for (var i = 0; i < followers.length; i++) {
       var followingCol = document.createElement('div');
-      followingCol.className = 'col-xs-4 col-sm-3 col-md-2 padding-top-bottom';
+      followingCol.className = 'col-xs-6 col-sm-4 col-md-2 padding-top-bottom';
       var followingBox = document.createElement('div');
       followingBox.className = 'user-thumb-box';
       followingBox.setAttribute('id', 'user-thumb-box-' + followers[i].id);
+      displayUser(followers[i].id, true, followingBox);
+
       followingCol.appendChild(followingBox);
       followingRow.appendChild(followingCol);
-      displayUser(followers[i].id, true, followingBox);
     }
     location.appendChild(followingRow)
   } else {
@@ -1404,7 +1367,6 @@ function showFollowers(object, location) {
     msg.textContent = user.firstname +  'doesn not have any follower.'
     location.appendChild(msg);
   }
-
 }
 
 function writeReview(store, location){
@@ -1514,7 +1476,6 @@ function showAllStores(array, value, location){
           rating = rating + array[i].reviews[x].rating;
         }
         average.push({store: array[i], average: (rating/array[i].reviews.length)});
-        console.log(average);
       }
       average = _.sortBy(average, 'average').reverse();
       array = [];
@@ -1525,4 +1486,114 @@ function showAllStores(array, value, location){
     showAllStores(array, value, location);
   })
 
+}
+
+function showReviews(object, location) {
+  removeAllChild(location);
+  var user = object.user;
+  var reviews = object.reviews;//{store: store, review: review}
+  var followers = object.others.followers;
+  var followed = object.others.followed;
+  var ratingCount = object.others.ratingCount;
+  var tagCount = object.others.tagCount;
+  var showLatest = object.showLatest;
+  var header = document.createElement('h4');
+  // header.textContent = 'Reviews';
+
+  var row = document.createElement('div');
+  row.className = 'row';
+  if (showLatest===true){
+    var col = document.createElement('div');
+    col.className = 'col-md-12 padding-top-bottom with-border';
+    var media = document.createElement('div');
+    media.className = 'media';
+    var left = document.createElement('div');
+    left.className = 'media-left';
+    var link = document.createElement('a');
+    link.href = '#';
+    var img = document.createElement('img');
+    img.className = 'media-object';
+    img.src = reviews[0].store.thumb;
+    img.setAttribute('width', '100px');
+    var body = document.createElement('div');
+    body.className = 'media-body';
+    var heading = document.createElement('h4');
+    heading.className = 'media-heading';
+    heading.textContent = reviews[0].store.name;
+    var address = document.createElement('p');
+    address.textContent = reviews[0].store.address;
+
+    var content1 = document.createElement('p');
+    content1.className = 'padding-top';
+    showRatingStars(reviews[0].review, content1);
+    var dateField = document.createElement('span');
+    dateField.textContent = timeStamp(reviews[0].review.date);
+    content1.appendChild(dateField);
+    var content2 = document.createElement('p');
+    content2.textContent = reviews[0].review.description;
+    var tags = document.createElement('div');
+
+    setTagButtons(user.id, reviews[0].store, reviews[0].review, tags);
+
+    row.appendChild(col);
+    col.appendChild(media);
+    media.appendChild(left);
+    media.appendChild(body);
+    left.appendChild(link);
+    link.appendChild(img);
+    body.appendChild(heading);
+    body.appendChild(address);
+    col.appendChild(content1);
+    col.appendChild(content2);
+    col.appendChild(tags);
+  }
+  else {
+    for (var i = 0; i < reviews.length; i++) {
+      var col = document.createElement('div');
+      col.className = 'col-md-12 padding-top-bottom with-border';
+      var media = document.createElement('div');
+      media.className = 'media';
+      var left = document.createElement('div');
+      left.className = 'media-left';
+      var link = document.createElement('a');
+      link.href = '#';
+      var img = document.createElement('img');
+      img.className = 'media-object';
+      img.src = reviews[i].store.thumb;
+      img.setAttribute('width', '100px');
+      var body = document.createElement('div');
+      body.className = 'media-body';
+      var heading = document.createElement('h4');
+      heading.className = 'media-heading';
+      heading.textContent = reviews[i].store.name;
+      var address = document.createElement('p');
+      address.textContent = reviews[i].store.address;
+
+      var content1 = document.createElement('p');
+      content1.className = 'padding-top';
+      showRatingStars(reviews[i].review, content1);
+      var dateField = document.createElement('span');
+      dateField.textContent = timeStamp(reviews[i].review.date);
+      content1.appendChild(dateField);
+      var content2 = document.createElement('p');
+      content2.textContent = reviews[i].review.description;
+      var tags = document.createElement('div');
+
+      setTagButtons(user.id, reviews[i].store, reviews[i].review, tags);
+
+      row.appendChild(col);
+      col.appendChild(media);
+      media.appendChild(left);
+      media.appendChild(body);
+      left.appendChild(link);
+      link.appendChild(img);
+      body.appendChild(heading);
+      body.appendChild(address);
+      col.appendChild(content1);
+      col.appendChild(content2);
+      col.appendChild(tags);
+    }
+  }
+  location.appendChild(header);
+  location.appendChild(row);
 }

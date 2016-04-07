@@ -14,9 +14,10 @@ function statistic(){
     for (var i = 0; i < stores.length; i++) {
       var match = _.where(stores[i].reviews, {userId: userId});
       if (match.length>0){
-        userReviews.push({store: stores[i], review: match[0]});
+        userReviews.push({store: stores[i], review: match[0], date: match[0].date});
       }
     }
+    userReviews = _.sortBy(userReviews, 'date').reverse();
     return userReviews;
   }
   function followers(userId){
@@ -82,6 +83,7 @@ function statistic(){
       return [];
     }
   }
+
 
   return {
     reviews: reviews, // [{store, review}, {}...]

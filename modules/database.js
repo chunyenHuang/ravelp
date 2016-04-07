@@ -111,7 +111,7 @@ function database(){
   ];
 
   // Add Random Users
-  for (var i=4; i<=10;i++){
+  for (var i=4; i<=100;i++){
     var username = Faker.Name.findName();
     var firstname = Faker.Name.firstName();
     var lastname = Faker.Name.lastName();

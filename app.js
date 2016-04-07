@@ -194,6 +194,7 @@ app.get('/get-currentUser', session, function(req, res){
 })
 
 app.get('/user-data/:id', loginStatus, function(req, res){
+  console.log(req.url);
   var currentUser = _.where(users, {id: req.matchUser.id});
   var id = tool.filterInt(req.params.id);
   var user = _.where(users, {id: id});
@@ -219,7 +220,6 @@ app.get('/user-data/:id', loginStatus, function(req, res){
     compliments: statistic.compliments(id),
     comlimented: comlimented,
   }
-  console.log(others.compliments.length);
   res.json({
     user: user[0],
     reviews: userReviews,
