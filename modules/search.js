@@ -114,7 +114,6 @@ function search(){
 
     // Print Result (Remove Duplicates)
     foundStores = _.uniq(foundStores);
-    console.log(foundStores.length);
     return foundStores;
   }
   return {

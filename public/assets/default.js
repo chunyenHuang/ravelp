@@ -16,21 +16,16 @@ function removeAllChild(nodeName){
       nodeName.removeChild(nodeName.firstChild);
   }
 }
-
-var currentUser = 0;
-function checkCurrentUser(){
-  var XHR = new XMLHttpRequest();
-  XHR.open('get', '/check-current-user');
-  XHR.send();
-  XHR.onload = function(){
-    if (XHR.status != 404){
-      var response = JSON.parse(XHR.responseText);
-      currentUser = response.id;
-    } else {
-      console.log('not found');
-    }
-  }
-}
+//
+// function checkCurrentUser(){
+//   var XHR = new XMLHttpRequest();
+//   XHR.open('get', '/check-current-user');
+//   XHR.send();
+//   XHR.onload = function(){
+//     var response = JSON.parse(XHR.responseText);
+//     return currentUserId = response.id;
+//   }
+// }
 
 function toggleClass(target, value){
   var classes = target.className.split(' ');
@@ -731,15 +726,17 @@ function showStores(store, location){
   var hours = document.createElement('ul');
   hours.className = 'list-unstyled';
   var hoursArray = _.pairs(store.hours);
-  console.log(hoursArray);
 
   for (var i = 0; i < hoursArray.length; i++) {
     var li = document.createElement('li');
-    li.textContent = hoursArray[i][0] + ' - ';
-    var span = document.createElement('span');
-    span.className = 'pull-right';
-    span.textContent = hoursArray[i][1][0] + ':' + hoursArray[i][1][1] + ' - ' + hoursArray[i][1][2] + ':' + hoursArray[i][1][3];
-    li.appendChild(span);
+    var day = document.createElement('b');
+    day.className = 'monospace';
+    day.textContent = hoursArray[i][0] + ' ';
+    var time = document.createElement('span');
+    time.className = 'pull-right';
+    time.textContent = hoursArray[i][1][0] + ':' + hoursArray[i][1][1] + ' - ' + hoursArray[i][1][2] + ':' + hoursArray[i][1][3];
+    li.appendChild(day);
+    li.appendChild(time);
     hours.appendChild(li);
   }
   var XHR = new XMLHttpRequest();
@@ -789,7 +786,6 @@ function showRating(store, all,location){
     var reviewBox = document.createElement('div');
     var showReview = document.createElement('img');
     showReview.src = "rating-" + Math.floor(average) + ".png";
-    console.log(Math.floor(average));
     showReview.className="rating-stars";
     var reviewCount = document.createTextNode(" "+store.reviews.length+" reviews");
     reviewBox.appendChild(showReview);
@@ -1081,7 +1077,6 @@ function reviewForm(store, review, location){
         break;
       }
     }
-    console.log(starValue);
     var newReview = {
       id: store.id,
       content: textarea.value,
@@ -1175,6 +1170,10 @@ function showUserProfile(object, location){
   var mid = document.createElement('div');
   mid.className = 'col-md-9';
   // Left
+  var userLink = document.createElement('a');
+  userLink.setAttribute('data-type', 'show-user');
+  userLink.setAttribute('data-id', user.id);
+  userLink.href = '#';
   var img = document.createElement('img');
   img.src = user.thumb;
   img.setAttribute('width', '100%');
@@ -1291,10 +1290,11 @@ function showUserProfile(object, location){
   headrow.appendChild(headcol2);
   mid.appendChild(headrow);
 
-  left.appendChild(img);
+  left.appendChild(userLink);
   left.appendChild(followLink);
   left.appendChild(complimentLink);
   left.appendChild(btnGroup);
+  userLink.appendChild(img);
 
   // Mid2 stars distribution
   var body = document.createElement('div');
@@ -1486,18 +1486,6 @@ function writeReview(store, location){
   location.appendChild(writingZone);
 }
 
-function checkCurrentUser(){
-  var XHR = new XMLHttpRequest();
-  XHR.open('get', '/check-current-user');
-  XHR.send();
-  XHR.onload = function(){
-    if (XHR.status === 200){
-      var response = JSON.parse(XHR.responseText);
-      var currentUserId = response.id;
-      return currentUserId;
-    }
-  }
-}
 
 function showAllStores(array, value, location){
   clearPage();
@@ -1596,7 +1584,7 @@ function showReviews(object, location) {
     var left = document.createElement('div');
     left.className = 'media-left';
     var link = document.createElement('a');
-    link.href = reviews[0].store.id;
+    link.href = '#';
     link.setAttribute('data-id', reviews[0].store.id);
     link.setAttribute('data-type', 'show-store');
     var img = document.createElement('img');
@@ -1644,7 +1632,7 @@ function showReviews(object, location) {
       var left = document.createElement('div');
       left.className = 'media-left';
       var link = document.createElement('a');
-      link.href = reviews[i].store.id;
+      link.href = '#';
       link.setAttribute('data-id', reviews[i].store.id);
       link.setAttribute('data-type', 'show-store');
       var img = document.createElement('img');

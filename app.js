@@ -354,7 +354,7 @@ app.get('/get-review/:id/:subId', function(req, res){
   res.json({store: store[0], review: review[0]});
 })
 
-app.get('/check-current-user', session, function(req, res){
+app.get('/check-current-user', function(req, res){
   res.json({id: req.matchUser.id});
 })
 

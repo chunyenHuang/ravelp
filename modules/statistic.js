@@ -76,7 +76,6 @@ function statistic(){
   }
   function getCompliments(receiverId) {
     var match = _.where(compliments, {receiver: receiverId});
-    console.log(match.length);
     if (match.length > 0){
       return match;
     } else {
