@@ -99,6 +99,7 @@ app.get('/get-currentUser', session, function(req, res){
   var store = _.where(stores, {userId: id});
   var userReviews = statistic.reviews(id);
   var followers = statistic.followers(id);
+  currentUser[0].following = statistic.arrUserIdByReviewDate(currentUser[0].following);
 
   if (store.length>0){
     var theStore = store;
@@ -260,7 +261,6 @@ app.get('/user-data/:id', loginStatus, function(req, res){
   var user = _.where(users, {id: id});
   var userReviews = statistic.reviews(id);
   var followers = statistic.followers(id);
-
   if (_.contains(followers, currentUser[0])) {
     var followed = true;
   } else {

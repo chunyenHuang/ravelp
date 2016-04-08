@@ -82,6 +82,25 @@ function statistic(){
       return [];
     }
   }
+  function arrUserIdByReviewDate(userArray) {
+    console.log(userArray);
+    var newArray = [];
+    for (var i = 0; i < userArray.length; i++) {
+      var userId = userArray[i];
+      var userReviews = reviews(userId);
+      newArray.push({id: userId, date: userReviews[0].date});
+    }
+    console.log(newArray);
+    userArray = [];
+    newArray = _.sortBy(newArray, 'date').reverse();
+    console.log(newArray);
+    for (var i = 0; i < newArray.length; i++) {
+      userArray.push(newArray[i].id);
+    }
+    console.log(userArray);
+
+    return userArray;
+  }
 
   return {
     reviews: reviews, // [{store, review}, {}...]
@@ -90,6 +109,7 @@ function statistic(){
     tagCount: tagCount,
     countTag: countTag,
     compliments: getCompliments,
+    arrUserIdByReviewDate: arrUserIdByReviewDate,
   }
 }
 
