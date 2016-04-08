@@ -202,30 +202,28 @@ function database(){
     var randomDate = new Date(randomYear, randomMonth, randomDay);
     return randomDate;
   }
-  var written = [];
   var storesArray1 = [stores[0], stores[1], stores[2]];
   var storesArray2 = _.difference(stores, storesArray1);
   function reviewStores(stores, min, max, amount){
     for (var i=1; i<=amount; i++){
       var randomStore = _.sample(stores, 1);
       var randomRating = Math.floor(Math.random() * (max-min+1)) + min;
-      var checkStore = _.where(written.store, randomStore[0]);
-      var wroteUser = [];
-      if (checkStore.length >0) {
-        for (var i = 0; i < checkStore.length; i++) {
-          wroteUser.push(checkStore[i].user);
+
+      var wroteUsers = [];
+      if (typeof(randomStore.reviews) === 'array') {
+        for (var i = 0; i < randomStore.reviews.length; i++) {
+          var matches = _.where(users, {id: randomStore.reviews[i].userId});
+          wroteUsers.push(matches[0]);
         }
       }
-      var diffUser = _.difference(users, wroteUser);
+      var diffUser = _.difference(users, wroteUsers);
       var randomeUser = _.sample(diffUser, 1);
-      written.push({store: randomStore[0], user: randomeUser[0]});
       var last = _.last(randomStore[0].reviews);
       if (typeof(last)==='object'){
         last = last.id+1
       } else {
         last =1;
       }
-
       var randomDate = pickDate();
       var randomTagsArray = [];
       for (var x = 1; x <= 10; x++) {
@@ -243,6 +241,8 @@ function database(){
     }
   }
   reviewStores(storesArray1, 3, 5, 1000);
+  reviewStores(storesArray1, 1, 3, 50);
+  reviewStores(storesArray2, 3, 5, 100);
   reviewStores(storesArray2, 1, 4, 500);
 
   // Add Random Compliment
