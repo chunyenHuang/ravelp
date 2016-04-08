@@ -258,6 +258,8 @@ document.body.addEventListener('submit', function(event){
 
     var msg = document.getElementById('error-msg');
     XHR.onload = function(){
+      var routeType = event.target.getAttribute('data-route');
+      var routeId = event.target.getAttribute('data-route-id');
       if (XHR.status === 404) {
         msg.textContent = '(username not exists)';
       } else if (XHR.status === 403){
@@ -271,7 +273,9 @@ document.body.addEventListener('submit', function(event){
         login.classList.add('hidden');
         profile.setAttribute('data-id', response.id);
         navbarUsername.textContent = 'Hello~ ' + response.firstname;
-
+        if (routeType==='store-review') {
+          getStoreData(filterInt(routeId));
+        }
         // clearPage();
         // getCurrentUser();
       }
@@ -611,6 +615,7 @@ function showUser(object){
         var emptybox = document.createElement('div');
         emptybox.className = 'row';
         var empty = document.createElement('div');
+        empty.className='padding-top margin-top';
         empty.textContent = 'No Review Yet';
         emptybox.appendChild(empty);
         newFeed.appendChild(emptybox);
@@ -1419,6 +1424,8 @@ function writeReview(store, location){
       msg.href='#';
       msg.setAttribute('data-target', '#login-window');
       msg.setAttribute('data-toggle', 'modal');
+      $("#login-form").attr("data-route", 'store-review');
+      $("#login-form").attr("data-route-id", store.id);
       msg.textContent = 'Login and Write Your Review.';
       writingZone.appendChild(msgbox);
       msgbox.appendChild(msg);
@@ -1545,7 +1552,9 @@ function showReviews(object, location) {
     var left = document.createElement('div');
     left.className = 'media-left';
     var link = document.createElement('a');
-    link.href = '#';
+    link.href = reviews[0].store.id;
+    link.setAttribute('data-id', reviews[0].store.id);
+    link.setAttribute('data-type', 'show-store');
     var img = document.createElement('img');
     img.className = 'media-object';
     img.src = reviews[0].store.thumb;
@@ -1591,7 +1600,9 @@ function showReviews(object, location) {
       var left = document.createElement('div');
       left.className = 'media-left';
       var link = document.createElement('a');
-      link.href = '#';
+      link.href = reviews[i].store.id;
+      link.setAttribute('data-id', reviews[i].store.id);
+      link.setAttribute('data-type', 'show-store');
       var img = document.createElement('img');
       img.className = 'media-object';
       img.src = reviews[i].store.thumb;
