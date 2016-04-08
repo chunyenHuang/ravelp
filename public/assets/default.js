@@ -729,7 +729,7 @@ function showStores(store, location){
       storeEdit.textContent = 'Edit My Store';
       storeEdit.setAttribute('data-type', 'show-edit-store-page');
       storeEdit.setAttribute('data-id', store.id);
-      storeEdit.className = 'btn btn-sm btn-default pull-right';
+      storeEdit.className = 'btn btn-sm btn-warning pull-right';
       name.appendChild(storeEdit);
     }
   }
@@ -1083,7 +1083,7 @@ function showUserProfileThumb(object, location){
   thumb.setAttribute('data-type', 'show-user');
   link.appendChild(thumb);
   var followLink = document.createElement('button');
-  followLink.className = 'btn btn-xs btn-default';
+  followLink.className = 'btn btn-xs btn-warning';
   followLink.setAttribute('data-id', user.id);
   followLink.setAttribute('data-type', 'follow-user');
   followLink.setAttribute('data-value', true);
@@ -1096,9 +1096,21 @@ function showUserProfileThumb(object, location){
   }
 
   var totalReviewCounts = document.createElement('p');
-  totalReviewCounts.textContent = reviews.length + ' Reviews';
+  var list1icon = document.createElement('i');
+  list1icon.className = "fa fa-star-o fa-xs profile-list";
+  var totalReviewText = document.createElement('span');
+  totalReviewText.textContent = ' ' + reviews.length + ' Reviews';
+  totalReviewCounts.appendChild(list1icon);
+  totalReviewCounts.appendChild(totalReviewText);
+
   var totalFollowers = document.createElement('p');
-  totalFollowers.textContent = followers.length + ' Followers';
+  var list2icon = document.createElement('i');
+  list2icon.className = "fa fa-users fa fa-xs profile-list";
+  var totalFollowersText = document.createElement('span');
+  totalFollowersText.textContent = ' ' + followers.length + ' Followers';
+  totalFollowers.appendChild(list2icon);
+  totalFollowers.appendChild(totalFollowersText);
+
   box.appendChild(link);
   box.appendChild(name);
   box.appendChild(totalReviewCounts);
@@ -1133,19 +1145,17 @@ function showUserProfile(object, location){
   btnGroup.setAttribute('role', 'group');
   var btnOverview = document.createElement('div');
   btnOverview.className = 'btn btn-default';
-  btnOverview.textContent = 'Overview';
+  btnOverview.textContent = 'About ' + user.firstname;
   var btnReviews = document.createElement('div');
   btnReviews.className = 'btn btn-default';
-  btnReviews.textContent = 'Reviews';
+  btnReviews.textContent = user.firstname + "'s Reviews";
   var btnFollowers = document.createElement('div');
   btnFollowers.className = 'btn btn-default';
-  btnFollowers.textContent = 'Followers';
+  btnFollowers.textContent = 'See who follows ' + user.firstname;
 
   btnGroup.appendChild(btnOverview);
   btnGroup.appendChild(btnReviews);
   btnGroup.appendChild(btnFollowers);
-  left.appendChild(img);
-  left.appendChild(btnGroup);
   // Mid
   var headrow = document.createElement('div');
   headrow.className = 'row';
@@ -1163,7 +1173,7 @@ function showUserProfile(object, location){
   } else {
     followLink.textContent = 'Follow ' + user.firstname;
   }
-  followLink.className = 'btn btn-default btn-block pull-right';
+  followLink.className = 'btn btn-warning btn-block btn-inlist pull-right';
   followLink.setAttribute('data-id', user.id);
   followLink.setAttribute('data-type', 'follow-user');
   followLink.setAttribute('data-value', false);
@@ -1178,7 +1188,7 @@ function showUserProfile(object, location){
     complimentLink.textContent = 'Compliment ';
   }
   complimentLink.appendChild(comIcon);
-  complimentLink.className = 'btn btn-default btn-block pull-right';
+  complimentLink.className = 'btn btn-danger btn-block btn-inlist pull-right';
   complimentLink.setAttribute('type', 'button');
   complimentLink.setAttribute('data-toggle', 'modal');
   complimentLink.setAttribute('data-target', '#com-window');
@@ -1226,11 +1236,14 @@ function showUserProfile(object, location){
   titleBox.appendChild(name);
   titleBox.appendChild(countlist);
   headcol1.appendChild(titleBox);
-  headcol2.appendChild(followLink);
-  headcol2.appendChild(complimentLink);
   headrow.appendChild(headcol1);
   headrow.appendChild(headcol2);
   mid.appendChild(headrow);
+
+  left.appendChild(img);
+  left.appendChild(followLink);
+  left.appendChild(complimentLink);
+  left.appendChild(btnGroup);
 
   // Mid2 stars distribution
   var body = document.createElement('div');
