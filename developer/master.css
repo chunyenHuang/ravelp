@@ -1,14 +1,8 @@
-/*red1
-background-color: rgb(198, 27, 26);
-
-orange
-color: rgb(172, 62, 0);
-*/
-
 body {
   margin: 0px;
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Geneva, Verdana, sans-serif;
 }
+
 .progress-bar-success {
   background-color: rgb(189, 51, 0);
 }
@@ -17,7 +11,6 @@ body {
   background-color: rgb(198, 27, 26);
   margin: 0px;
   color: white;
-  /*height: 70px;*/
   padding-top:10px;
   padding-bottom: 10px;
   border: 0px;
@@ -61,6 +54,7 @@ body {
     max-height: 420px;
     overflow-y: auto;
 }
+
 .monospace {
   font-family: 'Lucida Console', 'Lucida Sans Typewriter', monaco, 'Bitstream Vera Sans Mono', monospace;
 }
@@ -79,6 +73,7 @@ body {
   border: 0px;
   height: 30px;
 }
+
 .textarea {
   width: 100%;
   resize: none;
@@ -143,7 +138,6 @@ body {
   background-color: rgb(250, 250, 250);
 }
 
-
 .text-center {
   text-align: center;
 }
@@ -195,10 +189,12 @@ body {
   background-color: rgb(231, 231, 231);
   font-weight: bold;
 }
+
 .btn-useful.active {
   background-color: rgb(221, 53, 0);
   color: rgb(246, 246, 246);
 }
+
 .btn-funny {
   padding: 2px 15px 2px 15px;
   margin-left: 15px;
@@ -206,10 +202,12 @@ body {
   background-color: rgb(231, 231, 231);
   font-weight: bold;
 }
+
 .btn-funny.active {
   background-color: rgb(59, 143, 0);
   color: rgb(246, 246, 246);
 }
+
 .btn-cool {
   padding: 2px 15px 2px 15px;
   margin-left: 15px;
@@ -217,6 +215,7 @@ body {
   background-color: rgb(231, 231, 231);
   font-weight: bold;
 }
+
 .btn-cool.active {
   background-color: rgb(46, 92, 195);
   color: rgb(246, 246, 246);
@@ -295,46 +294,35 @@ fieldset[disabled] .btn-primary.focus {
   width: 100%;
 }
 
-
-/*rating stars*/
 .rating {
     float:left;
 }
-
 .rating:not(:checked) > input {
-    position:absolute;
-    top:-9999px;
-    clip:rect(0,0,0,0);
+  position:absolute;
+  top:-9999px;
+  clip:rect(0,0,0,0);
 }
-
 .rating:not(:checked) > label {
-    float:right;
-    width:1em;
-    padding:0 .1em;
-    overflow:hidden;
-    white-space:nowrap;
-    cursor:pointer;
-    font-size:200%;
-    line-height:1.2;
-    color:#494949;
-    /*text-shadow:1px 1px #bbb, 2px 2px #666, .1em .1em .2em rgba(0,0,0,.5);*/
+  float:right;
+  width:1em;
+  padding:0 .1em;
+  overflow:hidden;
+  white-space:nowrap;
+  cursor:pointer;
+  font-size:200%;
+  line-height:1.2;
+  color:#494949;
 }
-
 .rating:not(:checked) > label:before {
     content: '★ ';
 }
-
 .rating > input:checked ~ label {
   color: #ffc125;
-    /*text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);*/
 }
-
 .rating:not(:checked) > label:hover,
 .rating:not(:checked) > label:hover ~ label {
   color: #ffd15d;
-    /*text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);*/
 }
-
 .rating > input:checked + label:hover,
 .rating > input:checked + label:hover ~ label,
 .rating > input:checked ~ label:hover,
@@ -342,9 +330,8 @@ fieldset[disabled] .btn-primary.focus {
 .rating > label:hover ~ input:checked ~ label {
   color: #ffd15d;
 }
-
 .rating > label:active {
-    position:relative;
-    top:2px;
-    left:2px;
+  position:relative;
+  top:2px;
+  left:2px;
 }

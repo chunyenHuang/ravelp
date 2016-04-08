@@ -5,11 +5,6 @@ function filterInt(value) {
   return NaN;
 }
 
-// function timeStamp(date) {
-//   var showDate = [ date[1], date[2], date[0]];
-//   return showDate.join("/");
-// }
-
 function timeStamp(dateValue) {
   var date = new Date(dateValue);
   var showDate = [ date.getMonth() + 1, date.getDate(), date.getFullYear() ];
@@ -21,16 +16,6 @@ function removeAllChild(nodeName){
       nodeName.removeChild(nodeName.firstChild);
   }
 }
-//
-// function checkCurrentUser(){
-//   var XHR = new XMLHttpRequest();
-//   XHR.open('get', '/check-current-user');
-//   XHR.send();
-//   XHR.onload = function(){
-//     var response = JSON.parse(XHR.responseText);
-//     return currentUserId = response.id;
-//   }
-// }
 
 function toggleClass(target, value){
   var classes = target.className.split(' ');
@@ -47,8 +32,6 @@ function clearPage(){
   removeAllChild(main);
   storeDetail.classList.add('hidden');
   accountDetail.classList.add('hidden');
-  // loginForm.classList.add('hidden');
-  // newUserForm.classList.add('hidden');
   newStoreForm.classList.add('hidden');
   editStoreForm.classList.add('hidden');
   sortBar.classList.add('hidden');
@@ -107,13 +90,11 @@ document.body.addEventListener('click', function(event){
     var id = filterInt(event.target.parentNode.getAttribute('data-id'));
     var type = event.target.parentNode.getAttribute('data-type');
   }
+
   if (type==='home'){
     homepage();
   }
-  // if (type==='show-login-page'){
-  //   event.preventDefault();
-  //   showLoginPage();
-  // }
+
   if (type==='review-tags'){
     event.preventDefault();
     var review = event.target.getAttribute('data-sub-id');
@@ -136,10 +117,7 @@ document.body.addEventListener('click', function(event){
       }
     }
   }
-  // if (type==='new-user'){
-  //   newUserForm.classList.remove('hidden');
-  //   loginForm.classList.add('hidden');
-  // }
+
   if (type==='logout'){
     var XHR = new XMLHttpRequest();
     XHR.open('get','/logout');
@@ -153,17 +131,20 @@ document.body.addEventListener('click', function(event){
       homepage();
     }
   }
+
   if (type==='profile'){
     getCurrentUser();
   }
+
   if (type==='show-store'){
-    // event.preventDefault();
     getStoreData(id);
   }
+
   if (type==='show-add-store-page'){
     clearPage();
     newStoreForm.classList.remove('hidden');
   }
+
   if (type==='show-edit-store-page'){
     clearPage();
     var XHR = new XMLHttpRequest();
@@ -194,6 +175,7 @@ document.body.addEventListener('click', function(event){
       editStoreForm.classList.remove('hidden');
     }
   }
+
   if (type==='edit-review'){
     var subId = filterInt(event.target.getAttribute('data-sub-id'));
     var editBox = document.getElementById('myReview-' + id + '-' + subId);
@@ -206,6 +188,7 @@ document.body.addEventListener('click', function(event){
       reviewForm(response.store, response.review, editBox);
     }
   }
+
   if (type==='follow-user') {
     event.preventDefault();
     var value = event.target.getAttribute('data-value');
@@ -228,14 +211,14 @@ document.body.addEventListener('click', function(event){
           displayUser(response.id, false, location);
         }
       }
-
     }
   }
+
   if (type==='show-user') {
-    // event.preventDefault();
     clearPage();
     displayUser(id, false, main);
   }
+
   if (type==='search-for'){
     event.preventDefault();
     var query = event.target.getAttribute('data-content');
@@ -247,10 +230,8 @@ document.body.addEventListener('click', function(event){
       showAllStores(response.stores, 'revelance', main);
     }
   }
-  if (type==='compliment-user') {
-
-  }
 })
+
 document.body.addEventListener('submit', function(event){
   event.preventDefault();
   var id = filterInt(event.target.getAttribute('data-id'));
@@ -296,11 +277,10 @@ document.body.addEventListener('submit', function(event){
         if (routeType==='user') {
           showUserProfile(filterInt(routeId));
         }
-        // clearPage();
-        // getCurrentUser();
       }
     }
   }
+
   if (type==='new-user'){
     var username = document.getElementById('new-username');
     var password = document.getElementById('new-password');
@@ -358,12 +338,13 @@ document.body.addEventListener('submit', function(event){
     XHR.setRequestHeader('content-type', 'application/json');
     XHR.send(payload);
 
-    XHR.onload = function(){
+    XHR.onload = function() {
       var store = JSON.parse(XHR.responseText);
       showAllStores(store, 'relevance', main);
     }
   }
-  if (type==='new-store'){
+
+  if (type==='new-store') {
     var name = document.getElementById('new-store-name');
     var description = document.getElementById('new-store-description');
     var phone = document.getElementById('new-store-phone');
@@ -390,6 +371,7 @@ document.body.addEventListener('submit', function(event){
       }
     }
   }
+
   if (type==='edit-store'){
     var name = document.getElementById('edit-store-name');
     var description = document.getElementById('edit-store-description');
@@ -418,6 +400,7 @@ document.body.addEventListener('submit', function(event){
       }
     }
   }
+
   if (type==='compliment-user') {
     var content = document.getElementById('compliment-content');
     var msgbox = document.getElementById('compliment-success-msg');
@@ -429,6 +412,7 @@ document.body.addEventListener('submit', function(event){
       msg.textContent = 'Thanks for your compliment! '
       msgbox.appendChild(msg);
       var close = function(){
+        removeAllChild(msgbox);
         $('#com-window').modal('hide');
         displayUser(id, false, main);
       }
@@ -442,11 +426,11 @@ function showLoginPage(){
   loginForm.classList.remove('hidden');
 }
 
-function getCurrentUser(){
+function getCurrentUser() {
   var XHR = new XMLHttpRequest();
   XHR.open('get', '/get-currentUser');
   XHR.send();
-  XHR.onload = function(){
+  XHR.onload = function() {
     var response = JSON.parse(XHR.responseText);
     clearPage();
     profile.classList.remove('hidden');
@@ -457,59 +441,24 @@ function getCurrentUser(){
   }
 }
 
-function showUser(object){
+function showUser(object) {
   clearPage();
   var user = object.user;
   var store = object.store;
   var reviews = object.reviews;
   var followers = object.others.followers;
   var compliments = object.others.compliments;
-
   accountDetail.classList.remove('hidden');
-
-  // My Info
-  // var heading = document.getElementById('account-title');
-  // heading.textContent = '';
-  // var row = document.createElement('div');
-  // row.className = "row";
-  // var body = document.createElement('div');
-  // body.className = 'col-md-12';
-  // var ul = document.createElement('ul');
-  // var li1 = document.createElement('li');
-  // var li2 = document.createElement('li');
-  // var li3 = document.createElement('li');
-  // var li4 = document.createElement('li');
-  // var li5 = document.createElement('li');
-  // var li6 = document.createElement('li');
-  // li1.textContent = user.username;
-  // li2.textContent = user.firstname + ' ' + user.lastname;
-  // li3.textContent = user.email;
-  // li4.textContent = user.phone;
-  // li5.textContent = user.address;
-  // li6.textContent = 'business: ' + user.business;
-  // ul.appendChild(li1);
-  // ul.appendChild(li2);
-  // ul.appendChild(li3);
-  // ul.appendChild(li4);
-  // ul.appendChild(li5);
-  // ul.appendChild(li6);
-  // row.appendChild(body);
-  // body.appendChild(ul);
   var accountInfo = document.getElementById('account-info');
   removeAllChild(accountInfo);
-  // displayUser(user.id, false, accountInfo);
   showUserProfile(object, accountInfo);
-  // accountInfo.appendChild(row);
-
   // My Reviews
   var accountReviews = document.getElementById('account-reviews');
-
   removeAllChild(accountReviews);
   if (typeof(reviews)==='object'){
     for (var i = 0; i < reviews.length; i++) {
       var myReviews = reviews[i].review;
       var theStore = reviews[i].store;
-
       var rBox = document.createElement('div');
       rBox.className = 'row reviews';
       var rStoreBox = document.createElement('div');
@@ -527,7 +476,6 @@ function showUser(object){
       rStoreTitle.textContent = theStore.name;
       var rField = document.createElement('div');
       rField.setAttribute('id', 'myReview-' + theStore.id + '-' + myReviews.id);
-
       accountReviews.appendChild(rBox);
       rBox.appendChild(rStoreBox);
       rBox.appendChild(rTextBox);
@@ -541,47 +489,10 @@ function showUser(object){
   else {
     accountReviews.textContent = reviews;
   }
-
   // My Stores
   var accountStore = document.getElementById('account-store');
-
   removeAllChild(accountStore);
   if (typeof(store)==='object'){
-    // for (var i = 0; i < store.length; i++) {
-    //   var storeBox = document.createElement('div');
-    //   storeBox.className = 'row reviews';
-    //   var storeImgBox = document.createElement('div');
-    //   storeImgBox.className = 'col-sm-3';
-    //   var storeInfoBox = document.createElement('div');
-    //   storeInfoBox.className = 'col-sm-9';
-    //   var storeLink = document.createElement('a');
-    //   storeLink.href='#';
-    //   storeLink.setAttribute('data-type', 'show-store');
-    //   storeLink.setAttribute('data-id', filterInt(store[i].id));
-    //   var storeImg = document.createElement('img');
-    //   storeImg.src = store[i].thumb;
-    //   storeImg.className = 'img-responsive';
-    //   var storeTitle = document.createElement('h5');
-    //   storeTitle.textContent = store[i].name;
-    //   var storeEdit = document.createElement('button');
-    //   storeEdit.textContent = 'Edit Store';
-    //   storeEdit.setAttribute('data-type', 'show-edit-store-page');
-    //   storeEdit.setAttribute('data-id', filterInt(store[i].id));
-    //   storeEdit.className = 'btn btn-sm btn-default';
-    //   accountStore.appendChild(storeBox);
-    //   storeBox.appendChild(storeImgBox);
-    //   storeBox.appendChild(storeInfoBox);
-    //   storeImgBox.appendChild(storeLink);
-    //   storeLink.appendChild(storeImg);
-    //   storeInfoBox.appendChild(storeTitle);
-    //   storeInfoBox.appendChild(storeEdit);
-    // }
-    // var linkNewStore = document.createElement('a');
-    // linkNewStore.textContent = 'Add a new store';
-    // linkNewStore.href='#';
-    // linkNewStore.setAttribute('data-type', 'show-add-store-page');
-    // linkNewStore.setAttribute('data-id', 'nan');
-    // accountStore.appendChild(linkNewStore);
     for (var i = 0; i < store.length; i++) {
       showStores(store[i], accountStore);
     }
@@ -602,7 +513,6 @@ function showUser(object){
 
   // My Following
   var accountFollowing = document.getElementById('account-following');
-
   removeAllChild(accountFollowing);
 
   function askforLatestReview(userId, location){
@@ -641,6 +551,7 @@ function showUser(object){
       location.appendChild(followingRow);
     }
   }
+
   if (user.following.length>0) {
     for (var i = 0; i < user.following.length; i++) {
       askforLatestReview(user.following[i], accountFollowing);
@@ -650,10 +561,8 @@ function showUser(object){
     msgFollowing.textContent = 'You did not follow anyone.'
     accountFollowing.appendChild(msgFollowing);
   }
-
   // My Followers
   var accountFollowers = document.getElementById('account-followers');
-
   showFollowers(object ,accountFollowers);
 }
 
@@ -696,7 +605,6 @@ function showStores(store, location){
   col6.className = 'col-md-6';
   var col2 = document.createElement('div');
   col2.className = 'col-md-2';
-
   var link = document.createElement('a');
   link.href = "#";
   var img = document.createElement('img');
@@ -704,7 +612,6 @@ function showStores(store, location){
   img.setAttribute('width', '100%');
   img.setAttribute('data-id', store.id);
   img.setAttribute('data-type', 'show-store');
-
   var name = document.createElement('h5');
   name.textContent = store.name;
   var phone = document.createElement('p');
@@ -764,7 +671,6 @@ function showStores(store, location){
   row.appendChild(col2);
   col4.appendChild(link);
   link.appendChild(img);
-
   col6.appendChild(name);
   col6.appendChild(phone);
   col6.appendChild(address);
@@ -827,79 +733,21 @@ function showStoreDetail(target){
   var editable = target.editable;
   $("#login-window").attr("data-route", "store");
   $("#login-window").attr("data-route-id", store.id);
-
-  // var storeImg = document.getElementById('store-img');
   var storeInfo = document.getElementById('store-info');
   var storeReviewsStat = document.getElementById('store-review-statistic');
   var storeReviews = document.getElementById('store-reviews');
 
   clearPage();
   storeDetail.classList.remove('hidden');
-  // removeAllChild(storeImg);
   removeAllChild(storeInfo);
   removeAllChild(storeReviewsStat);
   removeAllChild(storeReviews);
   showStores(store, storeInfo);
-  // Store info
-  // storeImg.src = store.thumb;
-  // storeImg.setAttribute('width', '100%');
-  // var name = document.createElement('h3');
-  // name.textContent = store.name;
-  // var phone = document.createElement('h5');
-  // phone.textContent = store.phone;
-  // var address = document.createElement('h5');
-  // address.textContent = store.address + ', ' + store.city + ', ' + store.state + ' ' + store.zipCode;
-  // var categoryField = document.createElement('p');
-  // var priceRange = document.createElement('span');
-  // priceRange.textContent = store.price + ' - ';
-  // var categoryLink = document.createElement('a');
-  // categoryLink.textContent = store.category[0];
-  // categoryLink.href = 'search-for?category=' + store.category[0];
-  // categoryLink.setAttribute('data-id', 0);
-  // categoryLink.setAttribute('data-type', 'search-for');
-  // categoryLink.setAttribute('data-content', store.category[0])
-  // categoryField.appendChild(priceRange);
-  // categoryField.appendChild(categoryLink);
-  // var ratings = document.createElement('div');
-  // showRating(store, false, ratings);
-  // var description = document.createElement('p');
-  // description.className = 'padding-top';
-  // description.textContent = store.description;
-  //
-  // storeInfo.appendChild(name);
-  // storeInfo.appendChild(phone);
-  // storeInfo.appendChild(address);
-  // storeInfo.appendChild(categoryField);
-  // storeInfo.appendChild(description);
-
   showRating(store, true, storeReviewsStat);
 
   // Write Reviews
   removeAllChild(storeReviews);
   writeReview(store, storeReviews);
-  // if (writable){
-  //   reviewForm(store, 'comments...', writingZone);
-  // }
-  // else if (editable) {
-  //   var myReview = _.where(theReviews, {userId: userId});
-  //   var msgbox = document.createElement('div');
-  //   writingZone.appendChild(msgbox);
-  //   msgbox.setAttribute('id', 'myReview-' + store.id + '-' + myReview[0].id);
-  //   attachReview(store, myReview[0], msgbox);
-  // }
-  // else  {
-  //   var msgbox = document.createElement('p');
-  //   msgbox.className="well";
-  //   var msg = document.createElement('a');
-  //   msg.href='#';
-  //   msg.setAttribute('data-type', 'show-login-page');
-  //   msg.setAttribute('data-id', 'nan');
-  //   msg.textContent = 'You must login for writing review.';
-  //   writingZone.appendChild(msgbox);
-  //   msgbox.appendChild(msg);
-  //
-  // }
-  // storeReviews.appendChild(writingZone);
 
   var showedReviews = [];
   function loadMoreReviews(review, showed, num){
@@ -923,10 +771,8 @@ function showStoreDetail(target){
 
       var reviewers = _.where(reviewUserlist, {id: theReviews[i].userId});
       displayUser(theReviews[i].userId, true, reviewLeft);
-
       var reviewDate = document.createElement('span');
       reviewDate.textContent = timeStamp(theReviews[i].date);
-
       var reviewContent = document.createElement('p');
       reviewContent.className = 'padding-top-bottom';
       reviewContent.textContent = theReviews[i].description;
@@ -1338,7 +1184,6 @@ function showUserProfile(object, location){
       progressBar.setAttribute('aria-valuemax', '100');
       progressBar.setAttribute('aria-valuenow', Math.floor(ratingCount[i]*100/totalRating));
       progressBar.setAttribute('style', 'width:' + Math.floor(ratingCount[i]*100/totalRating) +'%');
-      // progressBar.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
 
       var progressStar =document.createElement('div');
       progressStar.className = 'col-sm-2 col-sm-offset-1';
@@ -1346,11 +1191,6 @@ function showUserProfile(object, location){
       showStars.src = "rating-" + i + ".png";
       showStars.className = "rating-stars pull-right";
       progressStar.appendChild(showStars);
-      // if (typeof(ratingCount[i]) != 'undefined'){
-      //   progressTitle.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
-      // } else {
-      //   progressTitle.textContent = ' ' + i + ' Stars: 0';
-      // }
       if (typeof(ratingCount[i]) != 'undefined'){
         progressBar.textContent = ratingCount[i];
       }
@@ -1435,9 +1275,6 @@ function showFollowers(object, location) {
   var followed = object.others.followed;
   var ratingCount = object.others.ratingCount;
   var tagCount = object.others.tagCount;
-  // var header = document.createElement('h4');
-  // header.textContent = 'Followers';
-  // location.appendChild(header);
 
   if (followers.length>0) {
     var followingRow = document.createElement('div');
@@ -1576,7 +1413,6 @@ function showAllStores(array, value, location){
     }
     showAllStores(array, value, location);
   })
-
 }
 
 function showReviews(object, location) {
@@ -1589,7 +1425,6 @@ function showReviews(object, location) {
   var tagCount = object.others.tagCount;
   var showLatest = object.showLatest;
   var header = document.createElement('h4');
-  // header.textContent = 'Reviews';
 
   var row = document.createElement('div');
   row.className = 'row';
@@ -1747,9 +1582,6 @@ function showCompliments(userId, location) {
       col2.appendChild(name);
       col2.appendChild(msg);
       userLink.appendChild(img);
-
     }
-
-
   }
 }

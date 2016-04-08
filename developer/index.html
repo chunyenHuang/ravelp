@@ -3,6 +3,9 @@
   <head>
     <meta charset="utf-8">
     <title>Ravel</title>
+    <meta name="author" content="Chunyen Huang">
+    <meta name="description" content="Ravelp">
+    <link rel="shortcut icon" type="image/x-icon" href="./images/favicon.ico">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="master.css">
@@ -34,13 +37,13 @@
           <ul class="nav navbar-nav navbar-right text-center">
             <li><p class='navbar-text white' id="show-user-name"></p></li>
             <li><button type="button" class="navbar-btn btn btn-primary" id="login-button" data-toggle="modal" data-target="#login-window">Login</button></li>
-            <!-- <li><button type="button" class="navbar-btn btn btn-default"  data-id="nan" data-type="show-login-page">Login</button> -->
             <li><button type="button" class="navbar-btn btn btn-primary hidden" id="logout-button" data-id="nan" data-type="logout">Logout</button>
             <li><button type="button" class="navbar-btn btn btn-primary hidden" id="profile-button" data-id="nan" data-type="profile">My Account</button>
           </ul>
         </div>
       </div>
     </nav>
+
     <div class="container hidden padding-top" id='sort-bar'>
       <div class="row">
         <div class="col-md-12">
@@ -48,6 +51,7 @@
         </div>
       </div>
     </div>
+
     <div class="container padding-top-bottom" id='main'></div>
 
     <form id="store-application" class="hidden" data-id="nan" data-type='new-store'>
@@ -148,22 +152,9 @@
 
     <div id="store-detail" class="hidden">
       <div class="container">
-        <div id="store-info">
-
-        </div>
+        <div id="store-info"></div>
       </div>
       <div class="container">
-        <!-- <div class="row">
-          <div class="col-sm-3 col-md-4">
-            <img id='store-img'>
-          </div>
-          <div class="col-sm-6 col-md-6">
-            <div id="store-info"></div>
-          </div>
-          <div class="col-sm-3 col-md-2">
-            <div id="store-hours"></div>
-          </div>
-        </div> -->
         <div class="row">
           <div class="col-md-3">
             <div id='store-review-statistic' class='padding-top-bottom'></div>
@@ -173,40 +164,17 @@
             <div id="expand-reviews"></div>
           </div>
         </div>
-
-
-        <!-- </div>
-        <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a href="#store-info" aria-controls="store-info" role="tab" data-toggle="tab">Infomation</a></li>
-          <li role="presentation"><a href="#store-reviews-tab" aria-controls="store-reviews-tab" role="tab" data-toggle="tab">Reviews</a></li>
-        </ul>
-        <div class="tab-content">
-          <div role="tabpanel" class="tab-pane active" id="store-info">...</div>
-          <div role="tabpanel" class="tab-pane" id="store-reviews-tab">
-            <div id="store-reviews"></div>
-            <div id="expand-reviews"></div>
-            <div class="">
-              <p  class="text-center">
-                <a href="#">
-                  Back to Top
-                </a>
-              </p>
-            </div>
-          </div>
-        </div> -->
       </div>
     </div>
 
     <div id="account-detail" class="hidden">
       <div class="container">
-        <!-- <h3 id="account-title"></h3> -->
         <ul class="nav nav-tabs" role="tablist">
           <li role="presentation" class="active"><a href="#account-info" aria-controls="account-info" role="tab" data-toggle="tab">My Page</a></li>
           <li role="presentation"><a href="#account-reviews" aria-controls="account-reviews" role="tab" data-toggle="tab">My Reviews</a></li>
           <li role="presentation"><a href="#account-store" aria-controls="account-store" role="tab" data-toggle="tab" name="store-tab">My Stores</a></li>
           <li role="presentation"><a href="#account-following" aria-controls="account-following" role="tab" data-toggle="tab" name="following-tab">Following</a></li>
           <li role="presentation"><a href="#account-followers" aria-controls="account-followers" role="tab" data-toggle="tab" name="followers-tab">My Followers</a></li>
-
         </ul>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane active" id="account-info"></div>
@@ -218,136 +186,133 @@
       </div>
     </div>
 
-<!-- login Form -->
-<div class="modal fade" id="new-user-window" tabindex="-1" role="dialog" aria-labelledby="new-user-label">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form id="user-application" class="" data-id="nan" data-type='new-user'>
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="new-user-label">New User</h4>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="new-username">Username</label>
-            <input type="text" class="form-control" id="new-username" value="johndoe123">
-          </div>
-          <div class="form-group">
-            <label for="new-password">Password</label>
-            <input type="password" class="form-control" id="new-password" value="123123123">
-          </div>
-          <hr>
-          <div class="form-group">
-            <label for="new-firstname">Firstname</label>
-            <input type="text" class="form-control" id="new-firstname" value="John">
-          </div>
-          <div class="form-group">
-            <label for="new-lastname">Lastname</label>
-            <input type="text" class="form-control" id="new-lastname" value="Doe">
-          </div>
-          <div class="form-group">
-            <label for="new-email">Email</label>
-            <input type="email" class="form-control" id="new-email" value="johnDoe@gmail.com">
-          </div>
-          <div class="form-group">
-            <label for="new-phone">Phone</label>
-            <input type="phone" class="form-control" id="new-phone" value="(123)123-1234">
-          </div>
-          <hr>
-          <div class="form-group">
-            <label for="new-address">Address</label>
-            <input type="text" class="form-control" id="new-address" value="100 JD St.">
-          </div>
-          <div class="form-group">
-            <label for="new-city">City</label>
-            <input type="text" class="form-control" id="new-city" value="Irvine">
-          </div>
-          <div class="form-group">
-            <label for="new-state">State</label>
-            <input type="text" class="form-control" id="new-state" value="CA">
-          </div>
-          <div class="form-group">
-            <label for="new-zipCode">ZipCode</label>
-            <input type="text" class="form-control" id="new-zipCode" value="92603">
-          </div>
-          <hr>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" id="new-business"> Business Account
-            </label>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <span id='error-msg-2'></span>
-          <button type="submit" class="btn btn-primary">Apply</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- login Form -->
-<div class="modal fade" id="login-window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <form id="login-form" class="" data-id='nan' data-type='login'>
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">User Login</h4>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="input-username">Username</label>
-            <input type="text" class="form-control" id="input-username" value="business">
-          </div>
-          <div class="form-group">
-            <label for="input-password">Password</label>
-            <input type="password" class="form-control" id="input-password" value='123'>
-          </div>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" id="remember-me" checked> Remember Me
-            </label>
-          </div>
-          <div class="checkbox hidden">
-            <label>
-              <input type="checkbox" id="business"> Business Account
-            </label>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Login</button>
-          <button type="button" class="btn btn-default" data-toggle="modal" data-dismiss="modal" data-target="#new-user-window">New User</button>
-          <p id='error-msg'></p>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- model compliments -->
-<div class="modal fade" id="com-window" tabindex="-1" role="dialog" aria-labelledby="compliment-label">
-  <div class="modal-dialog" role="document">
-    <form id="compliment-form">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4>Say something to <span id='receiver-name'></span></h4>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <textarea id="compliment-content" rows="5" cols="60"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <span id="compliment-success-msg"></span>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Send My Compliment!</button>
+    <div class="modal fade" id="new-user-window" tabindex="-1" role="dialog" aria-labelledby="new-user-label">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form id="user-application" class="" data-id="nan" data-type='new-user'>
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="new-user-label">New User</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="new-username">Username</label>
+                <input type="text" class="form-control" id="new-username" value="johndoe123">
+              </div>
+              <div class="form-group">
+                <label for="new-password">Password</label>
+                <input type="password" class="form-control" id="new-password" value="123123123">
+              </div>
+              <hr>
+              <div class="form-group">
+                <label for="new-firstname">Firstname</label>
+                <input type="text" class="form-control" id="new-firstname" value="John">
+              </div>
+              <div class="form-group">
+                <label for="new-lastname">Lastname</label>
+                <input type="text" class="form-control" id="new-lastname" value="Doe">
+              </div>
+              <div class="form-group">
+                <label for="new-email">Email</label>
+                <input type="email" class="form-control" id="new-email" value="johnDoe@gmail.com">
+              </div>
+              <div class="form-group">
+                <label for="new-phone">Phone</label>
+                <input type="phone" class="form-control" id="new-phone" value="(123)123-1234">
+              </div>
+              <hr>
+              <div class="form-group">
+                <label for="new-address">Address</label>
+                <input type="text" class="form-control" id="new-address" value="100 JD St.">
+              </div>
+              <div class="form-group">
+                <label for="new-city">City</label>
+                <input type="text" class="form-control" id="new-city" value="Irvine">
+              </div>
+              <div class="form-group">
+                <label for="new-state">State</label>
+                <input type="text" class="form-control" id="new-state" value="CA">
+              </div>
+              <div class="form-group">
+                <label for="new-zipCode">ZipCode</label>
+                <input type="text" class="form-control" id="new-zipCode" value="92603">
+              </div>
+              <hr>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="new-business"> Business Account
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <span id='error-msg-2'></span>
+              <button type="submit" class="btn btn-primary">Apply</button>
+            </div>
+          </form>
         </div>
       </div>
-    </form>
-  </div>
-</div>
+    </div>
+
+    <div class="modal fade" id="login-window" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <form id="login-form" class="" data-id='nan' data-type='login'>
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">User Login</h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="input-username">Username</label>
+                <input type="text" class="form-control" id="input-username" value="business">
+              </div>
+              <div class="form-group">
+                <label for="input-password">Password</label>
+                <input type="password" class="form-control" id="input-password" value='123'>
+              </div>
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" id="remember-me" checked> Remember Me
+                </label>
+              </div>
+              <div class="checkbox hidden">
+                <label>
+                  <input type="checkbox" id="business"> Business Account
+                </label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Login</button>
+              <button type="button" class="btn btn-default" data-toggle="modal" data-dismiss="modal" data-target="#new-user-window">New User</button>
+              <p id='error-msg'></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="com-window" tabindex="-1" role="dialog" aria-labelledby="compliment-label">
+      <div class="modal-dialog" role="document">
+        <form id="compliment-form">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4>Say something to <span id='receiver-name'></span></h4>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                <textarea id="compliment-content" rows="5" cols="60" required="required"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <span id="compliment-success-msg"><span></span></span>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Send My Compliment!</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

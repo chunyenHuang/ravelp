@@ -17,17 +17,13 @@ var emitter = new events.EventEmitter();
 var port = process.env.PORT || 1337;
 var app = express();
 
+// Database
 var users = database.users;
 var stores = database.stores;
 var sessions = database.sessions;
 var compliments = database.compliments;
-// Sessions
-// emitter.on('examination', function(cookie){
-//   matchSession = [];
-//   matchSession = _.where(sessions, {token: cookie});
-// })
 
-// Search EventEmitter
+// EventEmitter
 var foundStores = [];
 emitter.on('search', function(name, location){
   foundStores = [];
@@ -41,9 +37,118 @@ app.use(express.static('./public'));
 app.use(express.static('./public/assets'));
 app.use(express.static('./public/images'));
 
-// CRUD
+// get
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/index.html');
+})
+
+app.get('/check-current-user', session, function(req, res){
+  res.json({id: req.matchUser.id});
+})
+
+app.get('/check-own-store/:storeId', session, function(req, res){
+  var userId = req.matchUser.id;
+  var storeId = tool.filterInt(req.params.storeId);
+  var store = _.where(stores, {id: storeId});
+  if (store[0].userId === userId){
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
+})
+
+app.get('/check-review-post/:storeId', session, function(req, res){
+  var userId = req.matchUser.id;
+  var storeId = tool.filterInt(req.params.storeId);
+  var store = _.where(stores, {id: storeId});
+  var review = _.where(store[0].reviews, {userId: userId});
+  if (review.length > 0) {
+    res.json({review: review[0]});
+  } else {
+    res.sendStatus(205);
+  }
+})
+
+app.get('/compliment-user/:id/:content', session, function(req, res){
+  var currentUserId = req.matchUser.id;
+  var id = tool.filterInt(req.params.id);
+  var content = req.params.content;
+  var compliment = new constructor.Compliment(currentUserId, id, content);
+  compliments.push(compliment);
+  res.sendStatus(200);
+})
+
+app.get('/follow-user/:id', session, function(req, res){
+  var matchUser = _.where(users, {id: req.matchUser.id});
+  var id = tool.filterInt(req.params.id);
+  var user = _.where(users, {id: id});
+  var position = _.indexOf(matchUser[0].following, id);
+  if (position != -1) {
+    matchUser[0].following.splice(position, 1);
+    res.json({id: user[0].id});
+  } else {
+    matchUser[0].following.push(id);
+    res.json({id: user[0].id});
+  }
+})
+
+app.get('/get-currentUser', session, function(req, res){
+  var matchUser = req.matchUser;
+  var id = matchUser.id;
+  var currentUser = _.where(users, {id: id});
+  var store = _.where(stores, {userId: id});
+  var userReviews = statistic.reviews(id);
+  var followers = statistic.followers(id);
+
+  if (store.length>0){
+    var theStore = store;
+  }
+  else if (currentUser[0].business){
+    var theStore = 'Add your store.';
+  }
+  else {
+    var theStore = 'You have to register a business account.';
+  }
+  if (userReviews.length == 0){
+    userReviews = 'You have not written any reviews yet.';
+  }
+
+  var others = {
+    followers: followers,
+    ratingCount: statistic.ratingCount(id),
+    compliments: statistic.compliments(id),
+  }
+  res.json({
+    user: currentUser[0],
+    store: theStore,
+    reviews: userReviews,
+    others: others
+  });
+})
+
+app.get('/get-compliments/:id', function(req, res) {
+  var userId = tool.filterInt(req.params.id);
+  var userCompliments = _.where(compliments, {receiver: userId});
+  var givers = [];
+  for (var i = 0; i < userCompliments.length; i++) {
+    var matches = _.where(users, {id: userCompliments[i].giver});
+    givers.push(matches[0]);
+  }
+  var object = {
+    compliments: userCompliments,
+    givers: givers,
+  }
+  res.json(object);
+})
+
+app.get('/get-review/:id/:subId', function(req, res){
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
+  var review = _.where(store[0].reviews, {id: tool.filterInt(req.params.subId)});
+  res.json({store: store[0], review: review[0]});
+})
+
+app.get('/guest', function(req, res) {
+  res.json({login: false, stores: stores});
 })
 
 app.get('/home', authorization, function(req, res) {
@@ -52,8 +157,151 @@ app.get('/home', authorization, function(req, res) {
   res.json({login: true, user: currentUser[0], stores: stores});
 })
 
-app.get('/guest', function(req, res) {
-  res.json({login: false, stores: stores});
+app.get('/logout', function(req, res){
+  res.clearCookie('sessionTokenForRavelp');
+  res.sendStatus(200);
+})
+
+app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
+  var matchUser = req.matchUser;
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
+  var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
+  var tagName = req.params.tag;
+  var change = req.params.change;
+  if (change === 'true'){
+    change = true;
+  } else {
+    change = false;
+  }
+  var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
+  if (theTag.length == 0){
+    var array = theReview[0].tags;
+    if (array.length>0){
+      var last = _.last(array);
+      var id = last.id+1;
+    } else{
+      var id = 1;
+    }
+    array.push({id: id, userId: matchUser.id, useful: false, funny: false, cool: false });
+    theTag = _.where(array, {userId: matchUser.id});
+  }
+
+  if (tagName === 'useful'){
+    theTag[0].useful = change;
+  }
+  if (tagName === 'funny'){
+    theTag[0].funny = change;
+  }
+  if (tagName === 'cool'){
+    theTag[0].cool = change;
+  }
+  var response = {
+    tag: theTag[0],
+    tagCount: statistic.countTag(theReview[0], tagName),
+  }
+  res.json(response);
+})
+
+app.get('/review-tags-count/:id/:review/', function(req, res){
+  var matchUser = req.matchUser;
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
+  var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
+  var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
+  var response = {
+    useful: statistic.countTag(theReview[0], 'useful'),
+    funny: statistic.countTag(theReview[0], 'funny'),
+    cool: statistic.countTag(theReview[0], 'cool'),
+  }
+  res.json(response);
+})
+
+app.get('/search-for', function(req, res){
+  var category = req.query.category;
+  var found = [];
+  for (var i = 0; i < stores.length; i++) {
+    var check = _.contains(stores[i].category, category);
+    if (check){
+      found.push(stores[i]);
+    }
+  }
+  res.json({stores: found});
+})
+
+app.get('/show-store/:id', function(req, res){
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
+  var reviewUserlist = [];
+  for (var i = 0; i < store[0].reviews.length; i++) {
+    var user = _.where(users, {id: store[0].reviews[i].userId});
+    if (user.length>0){
+      reviewUserlist.push(user[0]);
+    }
+  }
+  var matchSession = _.where(sessions, {token: req.cookies.sessionTokenForRavelp});
+  if (matchSession.length>0) {
+    var written = _.where(store[0].reviews, {userId: matchSession[0].id});
+    if (written.length>0) {
+      res.json({writable: false, editable: true, store: store[0], reviewers: reviewUserlist, currentUserId: matchSession[0].id});
+    } else {
+      res.json({writable: true, editable: false, store: store[0], reviewers: reviewUserlist, currentUserId: matchSession[0].id});
+    }
+  } else {
+    res.json({writable: false, editable: false, store: store[0], reviewers: reviewUserlist});
+  }
+})
+
+app.get('/store-data/:id', function(req, res){
+  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
+  res.json(store[0]);
+})
+
+app.get('/user-data/:id', loginStatus, function(req, res){
+  var currentUser = _.where(users, {id: req.matchUser.id});
+  var id = tool.filterInt(req.params.id);
+  var user = _.where(users, {id: id});
+  var userReviews = statistic.reviews(id);
+  var followers = statistic.followers(id);
+
+  if (_.contains(followers, currentUser[0])) {
+    var followed = true;
+  } else {
+    var followed = false;
+  }
+  var matchComploments = _.where(compliments, {giver: req.matchUser.id, receiver: id});
+  if (matchComploments.length>0) {
+    var comlimented = true;
+  } else {
+    var comlimented = false;
+  }
+  var others = {
+    followers: followers,
+    followed: followed,
+    ratingCount: statistic.ratingCount(id),
+    tagCount: statistic.tagCount(id),
+    compliments: statistic.compliments(id),
+    comlimented: comlimented,
+  }
+  res.json({
+    user: user[0],
+    reviews: userReviews,
+    others: others,
+  });
+})
+
+// post
+app.post('/edit-store', session, jsonParser, function(req, res){
+  var matchUser = req.matchUser;
+  var id = req.body.id;
+  var name = req.body.name;
+  var description = req.body.description;
+  var phone = req.body.phone;
+  var address = req.body.address;
+  var userId = matchUser.id;
+  var theStore = _.where(stores, {id: id, userId: userId});
+  theStore[0].name = name;
+  theStore[0].description = description;
+  theStore[0].phone = phone;
+  theStore[0].address = address;
+  res.sendStatus('200');
 })
 
 app.post('/login', jsonParser, function(req, res){
@@ -126,194 +374,6 @@ app.post('/new-store', session, jsonParser, function(req, res){
   res.sendStatus('200');
 })
 
-app.post('/edit-store', session, jsonParser, function(req, res){
-  var matchUser = req.matchUser;
-  var id = req.body.id;
-  var name = req.body.name;
-  var description = req.body.description;
-  var phone = req.body.phone;
-  var address = req.body.address;
-  var userId = matchUser.id;
-  var theStore = _.where(stores, {id: id, userId: userId});
-  theStore[0].name = name;
-  theStore[0].description = description;
-  theStore[0].phone = phone;
-  theStore[0].address = address;
-  res.sendStatus('200');
-})
-
-app.get('/logout', function(req, res){
-  res.clearCookie('sessionTokenForRavelp');
-  res.sendStatus(200);
-})
-
-app.post('/search', jsonParser, function(req, res){
-  emitter.emit('search', req.body.content, req.body.location);
-  res.json(foundStores);
-})
-
-app.get('/store-data/:id', function(req, res){
-  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
-  res.json(store[0]);
-})
-
-app.get('/get-currentUser', session, function(req, res){
-  var matchUser = req.matchUser;
-  var id = matchUser.id;
-  var currentUser = _.where(users, {id: id});
-  var store = _.where(stores, {userId: id});
-  var userReviews = statistic.reviews(id);
-  var followers = statistic.followers(id);
-
-  if (store.length>0){
-    var theStore = store;
-  }
-  else if (currentUser[0].business){
-    var theStore = 'Add your store.';
-  }
-  else {
-    var theStore = 'You have to register a business account.';
-  }
-  if (userReviews.length == 0){
-    userReviews = 'You have not written any reviews yet.';
-  }
-
-  var others = {
-    followers: followers,
-    ratingCount: statistic.ratingCount(id),
-    compliments: statistic.compliments(id),
-  }
-  res.json({
-    user: currentUser[0],
-    store: theStore,
-    reviews: userReviews,
-    others: others
-  });
-})
-
-app.get('/user-data/:id', loginStatus, function(req, res){
-  var currentUser = _.where(users, {id: req.matchUser.id});
-  var id = tool.filterInt(req.params.id);
-  var user = _.where(users, {id: id});
-  var userReviews = statistic.reviews(id);
-  var followers = statistic.followers(id);
-
-  if (_.contains(followers, currentUser[0])) {
-    var followed = true;
-  } else {
-    var followed = false;
-  }
-  var matchComploments = _.where(compliments, {giver: req.matchUser.id, receiver: id});
-  if (matchComploments.length>0) {
-    var comlimented = true;
-  } else {
-    var comlimented = false;
-  }
-  var others = {
-    followers: followers,
-    followed: followed,
-    ratingCount: statistic.ratingCount(id),
-    tagCount: statistic.tagCount(id),
-    compliments: statistic.compliments(id),
-    comlimented: comlimented,
-  }
-  res.json({
-    user: user[0],
-    reviews: userReviews,
-    others: others,
-  });
-})
-
-app.get('/show-store/:id', function(req, res){
-  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
-  var reviewUserlist = [];
-  for (var i = 0; i < store[0].reviews.length; i++) {
-    var user = _.where(users, {id: store[0].reviews[i].userId});
-    if (user.length>0){
-      reviewUserlist.push(user[0]);
-      // reviewUserlist.push({id: user[0].id, name: user[0].firstname});
-    }
-  }
-  var matchSession = _.where(sessions, {token: req.cookies.sessionTokenForRavelp});
-  if (matchSession.length>0) {
-    var written = _.where(store[0].reviews, {userId: matchSession[0].id});
-    if (written.length>0) {
-      res.json({writable: false, editable: true, store: store[0], reviewers: reviewUserlist, currentUserId: matchSession[0].id});
-    } else {
-      res.json({writable: true, editable: false, store: store[0], reviewers: reviewUserlist, currentUserId: matchSession[0].id});
-    }
-  } else {
-    res.json({writable: false, editable: false, store: store[0], reviewers: reviewUserlist});
-  }
-})
-
-app.get('/follow-user/:id', session, function(req, res){
-  var matchUser = _.where(users, {id: req.matchUser.id});
-  var id = tool.filterInt(req.params.id);
-  var user = _.where(users, {id: id});
-  var position = _.indexOf(matchUser[0].following, id);
-  if (position != -1) {
-    matchUser[0].following.splice(position, 1);
-    res.json({id: user[0].id});
-  } else {
-    matchUser[0].following.push(id);
-    res.json({id: user[0].id});
-  }
-})
-
-app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
-  var matchUser = req.matchUser;
-  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
-  var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
-  var tagName = req.params.tag;
-  var change = req.params.change;
-  if (change === 'true'){
-    change = true;
-  } else {
-    change = false;
-  }
-  var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
-  if (theTag.length == 0){
-    var array = theReview[0].tags;
-    if (array.length>0){
-      var last = _.last(array);
-      var id = last.id+1;
-    } else{
-      var id = 1;
-    }
-    array.push({id: id, userId: matchUser.id, useful: false, funny: false, cool: false });
-    theTag = _.where(array, {userId: matchUser.id});
-  }
-
-  if (tagName === 'useful'){
-    theTag[0].useful = change;
-  }
-  if (tagName === 'funny'){
-    theTag[0].funny = change;
-  }
-  if (tagName === 'cool'){
-    theTag[0].cool = change;
-  }
-  var response = {
-    tag: theTag[0],
-    tagCount: statistic.countTag(theReview[0], tagName),
-  }
-  res.json(response);
-})
-
-app.get('/review-tags-count/:id/:review/', function(req, res){
-  var matchUser = req.matchUser;
-  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
-  var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
-  var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
-  var response = {
-    useful: statistic.countTag(theReview[0], 'useful'),
-    funny: statistic.countTag(theReview[0], 'funny'),
-    cool: statistic.countTag(theReview[0], 'cool'),
-  }
-  res.json(response);
-})
-
 app.post('/new-review', session, jsonParser, function(req, res){
   var matchUser = req.matchUser;
   var id = req.body.id;
@@ -348,75 +408,12 @@ app.post('/new-review', session, jsonParser, function(req, res){
   res.json({writable: false, editable: true, store: store[0], reviewers: reviewUserlist, currentUserId: matchUser.id});
 })
 
-app.get('/get-review/:id/:subId', function(req, res){
-  var store = _.where(stores, {id: tool.filterInt(req.params.id)});
-  var review = _.where(store[0].reviews, {id: tool.filterInt(req.params.subId)});
-  res.json({store: store[0], review: review[0]});
+app.post('/search', jsonParser, function(req, res){
+  emitter.emit('search', req.body.content, req.body.location);
+  res.json(foundStores);
 })
 
-app.get('/check-current-user', session, function(req, res){
-  res.json({id: req.matchUser.id});
-})
-
-app.get('/check-own-store/:storeId', session, function(req, res){
-  var userId = req.matchUser.id;
-  var storeId = tool.filterInt(req.params.storeId);
-  var store = _.where(stores, {id: storeId});
-  if (store[0].userId === userId){
-    res.sendStatus(200);
-  } else {
-    res.sendStatus(404);
-  }
-})
-
-app.get('/search-for', function(req, res){
-  var category = req.query.category;
-  var found = [];
-  for (var i = 0; i < stores.length; i++) {
-    var check = _.contains(stores[i].category, category);
-    if (check){
-      found.push(stores[i]);
-    }
-  }
-  res.json({stores: found});
-})
-
-app.get('/check-review-post/:storeId', session, function(req, res){
-  var userId = req.matchUser.id;
-  var storeId = tool.filterInt(req.params.storeId);
-  var store = _.where(stores, {id: storeId});
-  var review = _.where(store[0].reviews, {userId: userId});
-  if (review.length > 0) {
-    res.json({review: review[0]});
-  } else {
-    res.sendStatus(205);
-  }
-})
-
-app.get('/compliment-user/:id/:content', session, function(req, res){
-  var currentUserId = req.matchUser.id;
-  var id = tool.filterInt(req.params.id);
-  var content = req.params.content;
-  var compliment = new constructor.Compliment(currentUserId, id, content);
-  compliments.push(compliment);
-  res.sendStatus(200);
-})
-
-app.get('/get-compliments/:id', function(req, res) {
-  var userId = tool.filterInt(req.params.id);
-  var userCompliments = _.where(compliments, {receiver: userId});
-  var givers = [];
-  for (var i = 0; i < userCompliments.length; i++) {
-    var matches = _.where(users, {id: userCompliments[i].giver});
-    givers.push(matches[0]);
-  }
-  var object = {
-    compliments: userCompliments,
-    givers: givers,
-  }
-  res.json(object);
-})
-
+// Server On
 app.listen(port, function(){
   console.log('listening to port: ' + port);
 })

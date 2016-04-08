@@ -1,4 +1,5 @@
 var _ = require('underscore');
+
 function filterInt(value) {
   if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value)){
     return Number(value);
@@ -41,7 +42,6 @@ function search(){
       }
     }
 
-    //
     if (resultsNames.length == 0 && resultsLocation.length == 0 ){
       // Search compare with Name
       for (var t=0; t<searchNameArray.length; t++){

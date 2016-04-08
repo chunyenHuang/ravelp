@@ -14,7 +14,6 @@ session.use(function(req, res, next){
     next();
   } else {
     res.sendStatus(404);
-    // res.redirect('/guest');
   }
 });
 

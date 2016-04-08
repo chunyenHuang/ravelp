@@ -83,7 +83,6 @@ function statistic(){
     }
   }
 
-
   return {
     reviews: reviews, // [{store, review}, {}...]
     followers: followers, // [id, ids...]
@@ -93,4 +92,5 @@ function statistic(){
     compliments: getCompliments,
   }
 }
+
 module.exports = statistic();

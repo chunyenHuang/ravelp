@@ -27,24 +27,6 @@ function database(){
       state: 'CA',
       zipCode: 90012,
       reviews: []
-      //   {
-      //     id: 1,
-      //     userId: 3,
-      //     description: tool.randomText(200),
-      //     date: new Date(),
-      //     rating: 5,
-      //     tags: [{
-      //       id: 1,
-      //       userId: 2,
-      //       useful: true,
-      //       funny: true,
-      //       cool: false
-      //     }],
-      //     comments: [{
-      //       id:1,
-      //       userId: 2,
-      //       comments: tool.randomText(20)}]
-      //   }
     }, {
       id: 2,
       userId: 2,
@@ -229,13 +211,7 @@ function database(){
         last =1;
       }
 
-      // var randomYear = Math.floor(Math.random() * (8)) + 2008;
-      // var randomMonth = Math.floor(Math.random() * (11)) + 1;
-      // var randomDay = Math.floor(Math.random() * (29)) + 1;
-      // var randomDate = [randomYear, randomMonth, randomDay];
-
       var randomDate = pickDate();
-      console.log(tool.timeStamp(randomDate));
       var randomTagsArray = [];
       for (var x = 1; x <= 10; x++) {
         var tf1 = Math.floor(Math.random() * (2)) + 1;
@@ -251,10 +227,8 @@ function database(){
       randomStore[0].reviews.push(addNewReview);
     }
   }
-
   reviewStores(storesArray1, 3, 5, 1000);
   reviewStores(storesArray2, 1, 4, 500);
-
 
   // Add Random Compliment
   var compliments = [];

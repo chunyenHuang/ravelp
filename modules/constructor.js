@@ -1,7 +1,5 @@
 function constructor() {
-  function Store(id, userId, name, category, price, hours,
-                 description, phone, address, thumb) {
-    //address = {};
+  function Store(id, userId, name, category, price, hours, description, phone, address, thumb) {
     this.id = id;
     this.userId = userId;
     this.name = name;
@@ -26,8 +24,7 @@ function constructor() {
     this.tags = tags;
     this.commemts = [];
   }
-  function User(id, username, password, firstname, lastname, thumb,
-                email, phone, address, business, following) {
+  function User(id, username, password, firstname, lastname, thumb, email, phone, address, business, following) {
     this.id = id;
     this.username = username;
     this.password = password;
