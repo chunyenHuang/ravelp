@@ -56,6 +56,10 @@ body {
   border: 0px;
   height: 30px;
 }
+.textarea {
+  width: 100%;
+  resize: none;
+}
 
 .writingZone {
   margin-left: -15px;

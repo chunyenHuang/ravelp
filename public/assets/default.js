@@ -997,25 +997,12 @@ function reviewForm(store, review, location){
   var form = document.createElement('form');
   form.className = 'form';
   var leftFromRow = document.createElement('div');
-  leftFromRow.className = 'col-sm-3';
+  leftFromRow.className = 'col-sm-6';
   var midFromRow = document.createElement('div');
-  midFromRow.className = 'col-sm-6';
+  midFromRow.className = 'col-sm-12';
   var rightFromRow = document.createElement('div');
-  rightFromRow.className = 'col-sm-3';
+  rightFromRow.className = 'col-sm-6';
 
-  // var starRatings = document.createElement('div');
-  // for (var i = 1; i <= 5; i++) {
-  //   var starLabel = document.createElement('label');
-  //   starLabel.className = "radio-inline";
-  //   starLabel.textContent = i;
-  //   var starInput = document.createElement('input');
-  //   starInput.setAttribute('type', 'radio');
-  //   starInput.setAttribute('name', 'star-options');
-  //   starInput.setAttribute('value', i);
-  //   starInput.setAttribute('required', 'required');
-  //   starLabel.appendChild(starInput);
-  //   starRatings.appendChild(starLabel);
-  // }
   var ratingField = document.createElement('div');
   ratingField.className = 'rating';
   for (var i=5; i>=1; i--) {
@@ -1035,6 +1022,7 @@ function reviewForm(store, review, location){
   var textarea = document.createElement('textarea');
   textarea.className= 'form-control';
   textarea.setAttribute('id', 'write-review-content')
+  textarea.setAttribute('rows', '10')
   if (typeof(review.description) != 'undefined'){
     textarea.value = review.description;
   }
@@ -1057,8 +1045,8 @@ function reviewForm(store, review, location){
   location.appendChild(formRow);
   formRow.appendChild(form);
   form.appendChild(leftFromRow);
-  form.appendChild(midFromRow);
   form.appendChild(rightFromRow);
+  form.appendChild(midFromRow);
   // leftFromRow.appendChild(starRatings);
   leftFromRow.appendChild(ratingField);
   midFromRow.appendChild(textarea);
@@ -1418,8 +1406,7 @@ function writeReview(store, location){
   XHR.send()
   XHR.onload = function(){
     if (XHR.status === 404){
-      var msgbox = document.createElement('p');
-      msgbox.className="well";
+      var msgbox = document.createElement('h5');
       var msg = document.createElement('a');
       msg.href='#';
       msg.setAttribute('data-target', '#login-window');
@@ -1429,8 +1416,19 @@ function writeReview(store, location){
       msg.textContent = 'Login and Write Your Review.';
       writingZone.appendChild(msgbox);
       msgbox.appendChild(msg);
+      msgbox.appendChild(list1icon);
     } else if (XHR.status === 205){
-      reviewForm(store, 'comments...', writingZone);
+      var msgbox = document.createElement('h5');
+      var msg = document.createElement('span');
+      msg.className = 'btn btn-primary';
+      msg.textContent = 'Write Your Review';
+      writingZone.appendChild(msgbox);
+      msgbox.appendChild(msg);
+      msg.addEventListener('click', function(e){
+        e.preventDefault();
+        removeAllChild(writingZone);
+        reviewForm(store, 'comments...', writingZone);
+      })
     } else {
       var response = JSON.parse(XHR.responseText);
       var msgbox = document.createElement('div');

@@ -160,18 +160,31 @@ function database(){
     var picked = [price[random]];
     return picked;
   };
+  function pickNumber(min, max) {
+    var random = Math.floor(Math.random() * (max) + min);
+    return random;
+  }
   for (var i=3; i<=10; i++){
     var randomeUser = _.sample(users, 1);
     var randomName = Faker.Company.companyName();
     var randomCategory = pickCatetory();
     var randomPrice = pickPrice();
     var randomPhone = Faker.PhoneNumber.phoneNumber();
+    var randomNum1 = pickNumber(6, 12);
+    var randomNum2 = pickNumber(2, 10);
+    if (randomNum1%2 ===0){
+      var zz = '00';
+      var tz = '30';
+    } else {
+      var zz = '00';
+      var tz = '00';
+    }
     var randomHours = {
-      mon: ['9', '00', '2', '30'],
-      tue: ['9', '00', '6', '30'],
-      wed: ['9', '00', '6', '30'],
-      thu: ['9', '00', '6', '30'],
-      fri: ['9', '00', '6', '30']
+      mon: [randomNum1, zz, randomNum2, tz],
+      tue: [randomNum1, zz, randomNum2, tz],
+      wed: [randomNum1, zz, randomNum2, tz],
+      thu: [randomNum1, zz, randomNum2, tz],
+      fri: [randomNum1, zz, randomNum2, tz],
     };
     var randomAddress = {
       address: Faker.Address.streetName(),
@@ -184,7 +197,9 @@ function database(){
     stores.push(addNewStore);
   }
   // Add Random Reviews
-  for (var i=1; i<=50;i++){
+  var someUsers = _.sample(users, 50);
+  var writtenUser = [];
+  for (var i=1; i<=2000;i++){
     var randomStore = _.sample(stores, 1);
     var last = _.last(randomStore[0].reviews);
     if (typeof(last)==='object'){
@@ -193,14 +208,16 @@ function database(){
       last =1;
     }
     var randomRating = Math.floor(Math.random() * (5)) + 1;
-    var randomeUser = _.sample(users, 1);
+    var diffUser = _.difference(someUsers, writtenUser);
+    var randomeUser = _.sample(diffUser, 1);
+    writtenUser.push(randomeUser);
     var randomYear = Math.floor(Math.random() * (8)) + 2008;
     var randomMonth = Math.floor(Math.random() * (11)) + 1;
     var randomDay = Math.floor(Math.random() * (29)) + 1;
     // var randomDate = new Date(randomYear, randomMonth, randomDay);
     var randomDate = [randomYear, randomMonth, randomDay];
     var randomTagsArray = [];
-    for (var x = 1; x <= 50; x++) {
+    for (var x = 1; x <= 10; x++) {
       var tf1 = Math.floor(Math.random() * (2)) + 1;
       if (tf1 == 1){tf1 = true;} else {tf1= false;}
       var tf2 = Math.floor(Math.random() * (2)) + 1;
