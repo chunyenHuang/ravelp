@@ -68,9 +68,14 @@ function homepage(){
       profile.setAttribute('data-id', response.user.id);
       // navbar
       navbarUsername.textContent = 'Hello~ ' + response.user.firstname;
-    }
-    for (var i = 0; i < response.stores.length; i++) {
-      showStores(response.stores[i], main);
+      for (var i = 0; i < response.stores.length; i++) {
+        showStores(response.stores[i], main);
+      }
+    } else {
+      clearPage();
+      for (var i = 0; i < response.stores.length; i++) {
+        showStores(response.stores[i], main);
+      }
     }
   }
 }
@@ -122,9 +127,13 @@ document.body.addEventListener('click', function(event){
     XHR.open('get','/review-tags/' + id + '/' + filterInt(review) + '/' + tag + '/' + change);
     XHR.send();
     XHR.onload = function(){
-      var response = JSON.parse(XHR.response);
-      toggleClass(event.target, 'active');
-      event.target.textContent = event.target.getAttribute('name') + ' ' + response.tagCount ;
+      if (XHR.status == 404) {
+        $('#login-window').modal('show');
+      } else {
+        var response = JSON.parse(XHR.response);
+        toggleClass(event.target, 'active');
+        event.target.textContent = event.target.getAttribute('name') + ' ' + response.tagCount ;
+      }
     }
   }
   // if (type==='new-user'){
@@ -821,7 +830,6 @@ function showStoreDetail(target){
   $("#login-window").attr("data-route", "store");
   $("#login-window").attr("data-route-id", store.id);
 
-
   // var storeImg = document.getElementById('store-img');
   var storeInfo = document.getElementById('store-info');
   var storeReviewsStat = document.getElementById('store-review-statistic');
@@ -1349,7 +1357,16 @@ function showUserProfile(object, location){
       tagCol = document.createElement('div');
       tagCol.className = 'col-md-4 text-center';
       tagBtn = document.createElement('button');
-      tagBtn.className = 'btn btn-lg btn-default';
+      tagBtn.className = 'btn btn-lg active';
+      if (i == 0) {
+        tagBtn.classList.add('btn-useful');
+      }
+      if (i == 1) {
+        tagBtn.classList.add('btn-funny');
+      }
+      if (i == 2) {
+        tagBtn.classList.add('btn-cool');
+      }
       tagBtn.textContent = tagCountArray[i][0] + ': ' + tagCountArray[i][1];
       tagCol.appendChild(tagBtn);
       tagRow.appendChild(tagCol);
@@ -1447,7 +1464,6 @@ function writeReview(store, location){
       msg.textContent = 'Login and Write Your Review.';
       writingZone.appendChild(msgbox);
       msgbox.appendChild(msg);
-      msgbox.appendChild(list1icon);
     } else if (XHR.status === 205){
       var msgbox = document.createElement('h5');
       var msg = document.createElement('span');

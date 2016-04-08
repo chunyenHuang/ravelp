@@ -103,7 +103,6 @@ app.post('/newuser', jsonParser, function(req, res){
     var newUser = new constructor.User(id, username, password, firstname,
       lastname, thumb, email, phone, address, business, following);
     users.push(newUser);
-    console.log(newUser);
     var currentUser = _.where(users, {username: username});
     var token = tool.sessionToken(50);
     res.cookie('sessionTokenForRavelp', token);
@@ -124,7 +123,6 @@ app.post('/new-store', session, jsonParser, function(req, res){
   var id = last.id + 1;
   var newStore = new constructor.Store(id, userId, name, description, phone, address, thumb);
   stores.push(newStore);
-  console.log(stores);
   res.sendStatus('200');
 })
 
@@ -194,7 +192,6 @@ app.get('/get-currentUser', session, function(req, res){
 })
 
 app.get('/user-data/:id', loginStatus, function(req, res){
-  console.log(req.url);
   var currentUser = _.where(users, {id: req.matchUser.id});
   var id = tool.filterInt(req.params.id);
   var user = _.where(users, {id: id});
@@ -262,7 +259,6 @@ app.get('/follow-user/:id', session, function(req, res){
     matchUser[0].following.push(id);
     res.json({id: user[0].id});
   }
-  console.log(matchUser[0].following);
 })
 
 app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
@@ -276,7 +272,6 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
   } else {
     change = false;
   }
-  console.log(theReview[0].tags);
   var theTag = _.where(theReview[0].tags, {userId: matchUser.id});
   if (theTag.length == 0){
     var array = theReview[0].tags;
@@ -299,7 +294,6 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
   if (tagName === 'cool'){
     theTag[0].cool = change;
   }
-  console.log(theTag[0]);
   var response = {
     tag: theTag[0],
     tagCount: statistic.countTag(theReview[0], tagName),
@@ -307,7 +301,7 @@ app.get('/review-tags/:id/:review/:tag/:change', session, function(req, res){
   res.json(response);
 })
 
-app.get('/review-tags-count/:id/:review/', session, function(req, res){
+app.get('/review-tags-count/:id/:review/', function(req, res){
   var matchUser = req.matchUser;
   var store = _.where(stores, {id: tool.filterInt(req.params.id)});
   var theReview = _.where(store[0].reviews, {id: tool.filterInt(req.params.review)});
@@ -361,7 +355,6 @@ app.get('/get-review/:id/:subId', function(req, res){
 })
 
 app.get('/check-current-user', session, function(req, res){
-  console.log('ask for current user id');
   res.json({id: req.matchUser.id});
 })
 
@@ -401,7 +394,6 @@ app.get('/check-review-post/:storeId', session, function(req, res){
 })
 
 app.get('/compliment-user/:id/:content', session, function(req, res){
-  console.log(req.url);
   var currentUserId = req.matchUser.id;
   var id = tool.filterInt(req.params.id);
   var content = req.params.content;

@@ -204,14 +204,8 @@ function database(){
   function reviewStores(stores, min, max, amount){
     for (var i=1; i<=amount; i++){
       var randomStore = _.sample(stores, 1);
-      var last = _.last(randomStore[0].reviews);
-      if (typeof(last)==='object'){
-        last = last.idł+1
-      } else {
-        last =1;
-      }
+
       var randomRating = Math.floor(Math.random() * (max-min+1)) + min;
-      console.log(randomRating);
       var checkStore = _.where(written.store, randomStore[0]);
       var wroteUser = [];
       if (checkStore.length >0) {
@@ -222,6 +216,12 @@ function database(){
       var diffUser = _.difference(users, wroteUser);
       var randomeUser = _.sample(diffUser, 1);
       written.push({store: randomStore[0], user: randomeUser[0]});
+      var last = _.last(randomStore[0].reviews);
+      if (typeof(last)==='object'){
+        last = last.id+1
+      } else {
+        last =1;
+      }
       var randomYear = Math.floor(Math.random() * (8)) + 2008;
       var randomMonth = Math.floor(Math.random() * (11)) + 1;
       var randomDay = Math.floor(Math.random() * (29)) + 1;
