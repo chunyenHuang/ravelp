@@ -14,9 +14,26 @@ body {
   background-color: rgb(198, 27, 26);
   margin: 0px;
   color: white;
-  height: 70px;
+  /*height: 70px;*/
   padding-top:10px;
+  padding-bottom: 10px;
+  border: 0px;
+  border-radius: 0 0 0 0 ;
 }
+
+.navbar-collapse {
+  border: 0px;
+  border-radius: 0 0 0 0 ;
+}
+
+#search-form .form-group {
+  margin-right: 5px;
+}
+
+.navbar .nav > li {
+  margin-left: 5px;
+}
+
 .navbar .nav > li > p {
   color: rgb(255, 255, 255);
 }

@@ -23,11 +23,15 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <form class="navbar-form navbar-left" role="search" id="search-form" data-id="nan" data-type="search">
-            <input type="text" class="form-control" id="search-content" placeholder="Store Name...">
-            <input type="text" class="form-control" id="search-location" placeholder="Location">
+            <div class="form-group">
+              <input type="text" class="form-control" id="search-content" placeholder="Store Name...">
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" id="search-location" placeholder="Location">
+            </div>
             <button type="submit" class="btn btn-primary"><i class="fa fa-search fa-lg"></i></button>
           </form>
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right text-center">
             <li><p class='navbar-text white' id="show-user-name"></p></li>
             <li><button type="button" class="navbar-btn btn btn-primary" id="login-button" data-toggle="modal" data-target="#login-window">Login</button></li>
             <!-- <li><button type="button" class="navbar-btn btn btn-default"  data-id="nan" data-type="show-login-page">Login</button> -->
