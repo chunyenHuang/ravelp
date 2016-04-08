@@ -9,6 +9,9 @@ body {
   margin: 0px;
   font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Geneva, Verdana, sans-serif;
 }
+.progress-bar-success {
+  background-color: rgb(189, 51, 0);
+}
 
 .navbar {
   background-color: rgb(198, 27, 26);
@@ -298,9 +301,6 @@ fieldset[disabled] .btn-primary.focus {
     float:left;
 }
 
-/* :not(:checked) is a filter, so that browsers that don’t support :checked don’t
-   follow these rules. Every browser that supports :checked also supports :not(), so
-   it doesn’t make the test unnecessarily selective */
 .rating:not(:checked) > input {
     position:absolute;
     top:-9999px;
@@ -325,13 +325,13 @@ fieldset[disabled] .btn-primary.focus {
 }
 
 .rating > input:checked ~ label {
-    color: #f70;
+  color: #ffc125;
     /*text-shadow:1px 1px #c60, 2px 2px #940, .1em .1em .2em rgba(0,0,0,.5);*/
 }
 
 .rating:not(:checked) > label:hover,
 .rating:not(:checked) > label:hover ~ label {
-    color: gold;
+  color: #ffd15d;
     /*text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);*/
 }
 
@@ -340,8 +340,7 @@ fieldset[disabled] .btn-primary.focus {
 .rating > input:checked ~ label:hover,
 .rating > input:checked ~ label:hover ~ label,
 .rating > label:hover ~ input:checked ~ label {
-    color: #be8905;
-    /*text-shadow:1px 1px goldenrod, 2px 2px #B57340, .1em .1em .2em rgba(0,0,0,.5);*/
+  color: #ffd15d;
 }
 
 .rating > label:active {

@@ -1039,7 +1039,6 @@ function reviewForm(store, review, location){
     ratingField.appendChild(starInput);
     ratingField.appendChild(starLabel);
   }
-
   var textarea = document.createElement('textarea');
   textarea.className= 'form-control';
   textarea.setAttribute('id', 'write-review-content')
@@ -1318,8 +1317,8 @@ function showUserProfile(object, location){
     var tagCount = object.others.tagCount;
 
     var ratingHeader = document.createElement('h4');
-    ratingHeader.textContent = 'Rating Distribution';
     var ratingCountsBox = document.createElement('div');
+    ratingCountsBox.className = 'row';
     var totalRating = 0;
     for (var i=1; i<= 5; i++) {
       if (typeof(ratingCount[i]) != 'undefined'){
@@ -1327,28 +1326,42 @@ function showUserProfile(object, location){
       }
     }
     for (var i=5; i>= 1; i--) {
-      var progressTitle =document.createElement('div');
-      if (typeof(ratingCount[i]) != 'undefined'){
-        progressTitle.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
-      } else {
-        progressTitle.textContent = ' ' + i + ' Stars: 0';
-      }
-
+      var progressCol = document.createElement('div');
+      progressCol.className = 'col-sm-9';
       var progress = document.createElement('div');
       progress.className = 'progress';
 
       var progressBar = document.createElement('div');
-      progressBar.className = 'progress-bar progress-bar-success text-left';
+      progressBar.className = 'progress-bar progress-bar-success text-center';
       progressBar.setAttribute('role', 'progressbar');
       progressBar.setAttribute('aria-valuemin', '0');
       progressBar.setAttribute('aria-valuemax', '100');
       progressBar.setAttribute('aria-valuenow', Math.floor(ratingCount[i]*100/totalRating));
       progressBar.setAttribute('style', 'width:' + Math.floor(ratingCount[i]*100/totalRating) +'%');
       // progressBar.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
+
+      var progressStar =document.createElement('div');
+      progressStar.className = 'col-sm-2 col-sm-offset-1';
+      var showStars = document.createElement('img');
+      showStars.src = "rating-" + i + ".png";
+      showStars.className = "rating-stars pull-right";
+      progressStar.appendChild(showStars);
+      // if (typeof(ratingCount[i]) != 'undefined'){
+      //   progressTitle.textContent = ' ' + i + ' Stars: ' + ratingCount[i];
+      // } else {
+      //   progressTitle.textContent = ' ' + i + ' Stars: 0';
+      // }
+      if (typeof(ratingCount[i]) != 'undefined'){
+        progressBar.textContent = ratingCount[i];
+      }
+
       progress.appendChild(progressBar);
-      progressTitle.appendChild(progress);
-      ratingCountsBox.appendChild(progressTitle);
+      progressCol.appendChild(progress);
+      ratingCountsBox.appendChild(progressStar)
+      ratingCountsBox.appendChild(progressCol);
     }
+    ratingHeader.textContent = 'Rating Distribution ( ' + totalRating + ' reviews )';
+
     // Mid3 tag counts
     tagCountArray = _.pairs(tagCount);
     var tagRow = document.createElement('div');
