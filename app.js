@@ -111,7 +111,7 @@ app.get('/get-currentUser', session, function(req, res){
     var theStore = 'You have to register a business account.';
   }
   if (userReviews.length == 0){
-    userReviews = 'You have not written any reviews yet.';
+    userReviews = [];
   }
 
   var others = {
@@ -291,16 +291,17 @@ app.get('/user-data/:id', loginStatus, function(req, res){
 app.post('/edit-store', session, jsonParser, function(req, res){
   var matchUser = req.matchUser;
   var id = req.body.id;
-  var name = req.body.name;
-  var description = req.body.description;
-  var phone = req.body.phone;
-  var address = req.body.address;
   var userId = matchUser.id;
   var theStore = _.where(stores, {id: id, userId: userId});
-  theStore[0].name = name;
-  theStore[0].description = description;
-  theStore[0].phone = phone;
-  theStore[0].address = address;
+  theStore[0].name = req.body.name;
+  theStore[0].category[0] = req.body.category;
+  theStore[0].price = req.body.price;
+  theStore[0].description = req.body.description;
+  theStore[0].phone = req.body.phone;
+  theStore[0].address = req.body.address;
+  theStore[0].city = req.body.city;
+  theStore[0].state = req.body.state;
+  theStore[0].zipCode = req.body.zipCode;
   res.sendStatus('200');
 })
 
@@ -334,12 +335,7 @@ app.post('/newuser', jsonParser, function(req, res){
   var thumb = 'p1.jpg';
   var email = req.body.email;
   var phone = req.body.phone;
-  var address = {
-    address: req.body.address,
-    city: req.body.city,
-    state: req.body.state,
-    zipCode: req.body.zipCode,
-  }
+  var address = req.body.address;
   var business = req.body.business;
   var following = [];
   var match = _.where(users, {username: username});
@@ -355,23 +351,27 @@ app.post('/newuser', jsonParser, function(req, res){
     var token = tool.sessionToken(50);
     res.cookie('sessionTokenForRavelp', token);
     sessions.push(new constructor.Session(token, currentUser[0].id));
+    console.log(newUser.id);
     res.sendStatus(200);
   }
 })
 
 app.post('/new-store', session, jsonParser, function(req, res){
-  var matchUser = req.matchUser;
   var name = req.body.name;
+  var category = [req.body.category];
+  var price = req.body.price;
   var description = req.body.description;
   var phone = req.body.phone;
   var address = req.body.address;
+  var hours = req.body.hours;
   var thumb = req.body.thumb;
+  var matchUser = req.matchUser;
   var userId = matchUser.id;
   var last = _.last(stores);
   var id = last.id + 1;
-  var newStore = new constructor.Store(id, userId, name, description, phone, address, thumb);
+  var newStore = new constructor.Store(id, userId, name, category, price, hours, description, phone, address, thumb);
   stores.push(newStore);
-  res.sendStatus('200');
+  res.json({id: id});
 })
 
 app.post('/new-review', session, jsonParser, function(req, res){

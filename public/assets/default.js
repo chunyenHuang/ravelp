@@ -325,6 +325,7 @@ document.body.addEventListener('submit', function(event){
       }
     }
   }
+
   if (type==='search'){
     var content = document.getElementById('search-content');
     var location = document.getElementById('search-location');
@@ -346,15 +347,28 @@ document.body.addEventListener('submit', function(event){
 
   if (type==='new-store') {
     var name = document.getElementById('new-store-name');
+    var category = document.getElementById('new-store-category');
+    var price = document.getElementById('new-store-price');
     var description = document.getElementById('new-store-description');
     var phone = document.getElementById('new-store-phone');
     var address = document.getElementById('new-store-address');
+    var city = document.getElementById('new-store-city');
+    var state = document.getElementById('new-store-state');
+    var zipCode = document.getElementById('new-store-zipCode');
     var newStore = {
       name: name.value,
-      description: description,
+      category: category.value,
+      price: price.value,
+      description: description.value,
       phone: phone.value,
-      address: address.value,
-      thumb: 'store.jpg'
+      address: {
+        address: address.value,
+        city: city.value,
+        state: state.value,
+        zipCode: zipCode.value,
+      },
+      hours: [],
+      thumb: 'store.jpg',
     }
     var payload = JSON.stringify(newStore);
     var XHR = new XMLHttpRequest();
@@ -363,26 +377,32 @@ document.body.addEventListener('submit', function(event){
     XHR.send(payload);
 
     XHR.onload = function(){
-      if (XHR.status===200){
-        getUserData();
-      }
-      else {
-        clearPage();
-      }
+      var response = JSON.parse(XHR.responseText);
+      getStoreData(response.id);
     }
   }
 
   if (type==='edit-store'){
     var name = document.getElementById('edit-store-name');
+    var category = document.getElementById('edit-store-category');
+    var price = document.getElementById('edit-store-price');
     var description = document.getElementById('edit-store-description');
     var phone = document.getElementById('edit-store-phone');
     var address = document.getElementById('edit-store-address');
+    var city = document.getElementById('edit-store-city');
+    var state = document.getElementById('edit-store-state');
+    var zipCode = document.getElementById('edit-store-zipCode');
     var editStore = {
       id: id,
       name: name.value,
+      category: category.value,
+      price: price.value,
       description: description.value,
       phone: phone.value,
       address: address.value,
+      city: city.value,
+      state: state.value,
+      zipCode: zipCode.value,
     }
     var payload = JSON.stringify(editStore);
     var XHR = new XMLHttpRequest();
@@ -414,6 +434,7 @@ document.body.addEventListener('submit', function(event){
       var close = function(){
         removeAllChild(msgbox);
         $('#com-window').modal('hide');
+        clearPage();
         displayUser(id, false, main);
       }
       setTimeout(close, 1000);
@@ -1007,6 +1028,7 @@ function showUserProfile(object, location){
   removeAllChild(location);
   var user = object.user;
   var reviews = object.reviews;
+  console.log(reviews);
   var followers = object.others.followers;
   var followed = object.others.followed;
   var ratingCount = object.others.ratingCount;
@@ -1297,8 +1319,8 @@ function showFollowers(object, location) {
     }
     location.appendChild(followingRow)
   } else {
-    var msg = document.createElement('p');
-    msg.textContent = user.firstname +  'doesn not have any follower.'
+    var msg = document.createElement('h5');
+    msg.textContent = user.firstname +  'No followers.'
     location.appendChild(msg);
   }
 }
