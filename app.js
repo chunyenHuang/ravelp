@@ -375,8 +375,10 @@ app.post('/new-store', session, jsonParser, function(req, res){
 })
 
 app.post('/new-review', session, jsonParser, function(req, res){
+  console.log(req.matchUser);
+  console.log(req.body.id);
   var matchUser = req.matchUser;
-  var id = req.body.id;
+  var id = tool.filterInt(req.body.id);
   var description = req.body.content;
   var rating = req.body.rating;
   var date = new Date();
@@ -390,7 +392,7 @@ app.post('/new-review', session, jsonParser, function(req, res){
     check[0].date = date;
   } else {
     var last = _.last(store[0].reviews);
-    if (last.id > 0){
+    if (typeof(last) === 'object'){
       var newId = last.id + 1;
     } else {
       var newId = 1;
