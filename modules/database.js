@@ -204,7 +204,6 @@ function database(){
   function reviewStores(stores, min, max, amount){
     for (var i=1; i<=amount; i++){
       var randomStore = _.sample(stores, 1);
-
       var randomRating = Math.floor(Math.random() * (max-min+1)) + min;
       var checkStore = _.where(written.store, randomStore[0]);
       var wroteUser = [];

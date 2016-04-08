@@ -51,9 +51,9 @@ function constructor() {
     this.token = token;
     this.id = id;
   }
-  function Compliment(giver, receiver, message) {
-    this.giver = giver;
-    this.receiver = receiver;
+  function Compliment(giverId, receiverId, message) {
+    this.giver = giverId;
+    this.receiver = receiverId;
     this.message = message;
   }
   return {

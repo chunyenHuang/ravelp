@@ -157,7 +157,7 @@ document.body.addEventListener('click', function(event){
     getCurrentUser();
   }
   if (type==='show-store'){
-    event.preventDefault();
+    // event.preventDefault();
     getStoreData(id);
   }
   if (type==='show-add-store-page'){
@@ -232,7 +232,7 @@ document.body.addEventListener('click', function(event){
     }
   }
   if (type==='show-user') {
-    event.preventDefault();
+    // event.preventDefault();
     clearPage();
     displayUser(id, false, main);
   }
@@ -424,18 +424,14 @@ document.body.addEventListener('submit', function(event){
     XHR.open('get', '/compliment-user/' + id + '/' + content.value);
     XHR.send();
     XHR.onload = function(){
-      if (XHR.status===200) {
-        var msg = document.createElement('span');
-        msg.textContent = 'Thanks for your compliment! '
-        msgbox.appendChild(msg);
-        var close = function(){
-          $('#com-window').modal('hide');
-        }
-        setInterval(close, 1000);
-      } else {
-        var msg = document.createElement('compliment-success-msg');
-        msg.textContent = 'You must login first!'
+      var msg = document.createElement('span');
+      msg.textContent = 'Thanks for your compliment! '
+      msgbox.appendChild(msg);
+      var close = function(){
+        $('#com-window').modal('hide');
+        displayUser(id, false, main);
       }
+      setTimeout(close, 1000);
     }
   }
 })
@@ -701,7 +697,7 @@ function showStores(store, location){
   col2.className = 'col-md-2';
 
   var link = document.createElement('a');
-  link.href = store.id;
+  link.href = "#";
   var img = document.createElement('img');
   img.src = store.thumb;
   img.setAttribute('width', '100%');
@@ -1378,6 +1374,8 @@ function showUserProfile(object, location){
     location.appendChild(hr);
     location.appendChild(tagHeader);
     location.appendChild(tagRow);
+
+    showCompliments(user.id, location);
   }
 
   overview(object, body);
@@ -1687,4 +1685,65 @@ function showReviews(object, location) {
   }
   location.appendChild(header);
   location.appendChild(row);
+}
+
+function showCompliments(userId, location) {
+  var XHR = new XMLHttpRequest();
+  XHR.open('get', '/get-compliments/' + userId);
+  XHR.send()
+  XHR.onload = function() {
+    var response = JSON.parse(XHR.responseText);
+    var givers = response.givers;
+    var compliments = response.compliments;
+
+    var hr = document.createElement('hr');
+    var title = document.createElement('h4');
+    title.textContent = 'How people compliment';
+    location.appendChild(hr);
+    location.appendChild(title);
+
+    compliments = compliments.reverse();
+    var count = 0;
+    for (var i = 0; i < compliments.length; i++) {
+      var users = _.where(givers, {id: compliments[i].giver});
+
+      var row = document.createElement('div');
+      row.className = 'row padding-top-bottom';
+      var col1 = document.createElement('div');
+      col1.className = 'col-sm-2';
+      var col2 = document.createElement('div');
+      col2.className = 'col-sm-10';
+
+      if (count%2 == 0) {
+        row.classList.add('back-gray');
+      } else {
+        row.classList.remove('back-gray');
+      }
+      count++;
+      var userLink = document.createElement('a');
+      userLink.href = '#';
+      userLink.setAttribute('data-type', 'show-user');
+      userLink.setAttribute('data-id', users[0].id);
+
+      var img = document.createElement('img');
+      img.src = users[0].thumb;
+      img.className = 'img-responsive img-rounded';
+
+      var name = document.createElement('h5');
+      name.textContent = users[0].firstname;
+      var msg = document.createElement('p');
+      msg.textContent = compliments[i].message;
+
+      location.appendChild(row);
+      row.appendChild(col1);
+      row.appendChild(col2);
+      col1.appendChild(userLink);
+      col2.appendChild(name);
+      col2.appendChild(msg);
+      userLink.appendChild(img);
+
+    }
+
+
+  }
 }

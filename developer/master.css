@@ -153,6 +153,15 @@ body {
   padding-top: 15px;
 }
 
+.padding-bottom {
+  padding-bottom: 15px;
+}
+
+.back-gray {
+  background-color: rgb(250, 250, 250);
+}
+
+
 .text-center {
   text-align: center;
 }

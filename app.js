@@ -402,6 +402,21 @@ app.get('/compliment-user/:id/:content', session, function(req, res){
   res.sendStatus(200);
 })
 
+app.get('/get-compliments/:id', function(req, res) {
+  var userId = tool.filterInt(req.params.id);
+  var userCompliments = _.where(compliments, {receiver: userId});
+  var givers = [];
+  for (var i = 0; i < userCompliments.length; i++) {
+    var matches = _.where(users, {id: userCompliments[i].giver});
+    givers.push(matches[0]);
+  }
+  var object = {
+    compliments: userCompliments,
+    givers: givers,
+  }
+  res.json(object);
+})
+
 app.listen(port, function(){
   console.log('listening to port: ' + port);
 })
