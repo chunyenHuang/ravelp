@@ -772,6 +772,7 @@ function showRating(store, all,location){
     var reviewBox = document.createElement('div');
     var showReview = document.createElement('img');
     showReview.src = "rating-" + Math.floor(average) + ".png";
+    console.log(Math.floor(average));
     showReview.className="rating-stars";
     var reviewCount = document.createTextNode(" "+store.reviews.length+" reviews");
     reviewBox.appendChild(showReview);

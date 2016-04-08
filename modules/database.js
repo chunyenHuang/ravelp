@@ -196,40 +196,55 @@ function database(){
        tool.randomText(20), randomPhone, randomAddress, i+'.jpg');
     stores.push(addNewStore);
   }
+
   // Add Random Reviews
-  var someUsers = _.sample(users, 50);
-  var writtenUser = [];
-  for (var i=1; i<=2000;i++){
-    var randomStore = _.sample(stores, 1);
-    var last = _.last(randomStore[0].reviews);
-    if (typeof(last)==='object'){
-      last = last.id+1
-    } else {
-      last =1;
+  var written = [];
+  var storesArray1 = [stores[0], stores[1], stores[2]];
+  var storesArray2 = _.difference(stores, storesArray1);
+  function reviewStores(stores, min, max, amount){
+    for (var i=1; i<=amount; i++){
+      var randomStore = _.sample(stores, 1);
+      var last = _.last(randomStore[0].reviews);
+      if (typeof(last)==='object'){
+        last = last.id+1
+      } else {
+        last =1;
+      }
+      var randomRating = Math.floor(Math.random() * (max-1)) + min;
+      var checkStore = _.where(written.store, randomStore[0]);
+      var wroteUser = [];
+      if (checkStore.length >0) {
+        for (var i = 0; i < checkStore.length; i++) {
+          wroteUser.push(checkStore[i].user);
+        }
+      }
+      var diffUser = _.difference(users, wroteUser);
+      var randomeUser = _.sample(diffUser, 1);
+      written.push({store: randomStore[0], user: randomeUser[0]});
+      var randomYear = Math.floor(Math.random() * (8)) + 2008;
+      var randomMonth = Math.floor(Math.random() * (11)) + 1;
+      var randomDay = Math.floor(Math.random() * (29)) + 1;
+      // var randomDate = new Date(randomYear, randomMonth, randomDay);
+      var randomDate = [randomYear, randomMonth, randomDay];
+      var randomTagsArray = [];
+      for (var x = 1; x <= 10; x++) {
+        var tf1 = Math.floor(Math.random() * (2)) + 1;
+        if (tf1 == 1){tf1 = true;} else {tf1= false;}
+        var tf2 = Math.floor(Math.random() * (2)) + 1;
+        if (tf2 == 1){tf2 = true;} else {tf2= false;}
+        var tf3 = Math.floor(Math.random() * (2)) + 1;
+        if (tf3 == 1){tf3 = true;} else {tf3= false;}
+        var randomTag = new constructor.Tags(x, x, tf1, tf2, tf3);
+        randomTagsArray.push(randomTag);
+      }
+      var addNewReview = new constructor.Review(last, randomeUser[0].id, tool.randomText(150), randomRating, randomDate, randomTagsArray);
+      randomStore[0].reviews.push(addNewReview);
     }
-    var randomRating = Math.floor(Math.random() * (5)) + 1;
-    var diffUser = _.difference(someUsers, writtenUser);
-    var randomeUser = _.sample(diffUser, 1);
-    writtenUser.push(randomeUser);
-    var randomYear = Math.floor(Math.random() * (8)) + 2008;
-    var randomMonth = Math.floor(Math.random() * (11)) + 1;
-    var randomDay = Math.floor(Math.random() * (29)) + 1;
-    // var randomDate = new Date(randomYear, randomMonth, randomDay);
-    var randomDate = [randomYear, randomMonth, randomDay];
-    var randomTagsArray = [];
-    for (var x = 1; x <= 10; x++) {
-      var tf1 = Math.floor(Math.random() * (2)) + 1;
-      if (tf1 == 1){tf1 = true;} else {tf1= false;}
-      var tf2 = Math.floor(Math.random() * (2)) + 1;
-      if (tf2 == 1){tf2 = true;} else {tf2= false;}
-      var tf3 = Math.floor(Math.random() * (2)) + 1;
-      if (tf3 == 1){tf3 = true;} else {tf3= false;}
-      var randomTag = new constructor.Tags(x, x, tf1, tf2, tf3);
-      randomTagsArray.push(randomTag);
-    }
-    var addNewReview = new constructor.Review(last, randomeUser[0].id, tool.randomText(150), randomRating, randomDate, randomTagsArray);
-    randomStore[0].reviews.push(addNewReview);
   }
+
+  reviewStores(storesArray1, 4, 5, 1000);
+  reviewStores(storesArray2, 1, 4, 500);
+
 
   // Add Random Compliment
   var compliments = [];
