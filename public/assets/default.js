@@ -5,9 +5,14 @@ function filterInt(value) {
   return NaN;
 }
 
-function timeStamp(date) {
-  // var showDate = [ date.getMonth() + 1, date.getDate(), date.getFullYear() ];
-  var showDate = [ date[1], date[2], date[0]];
+// function timeStamp(date) {
+//   var showDate = [ date[1], date[2], date[0]];
+//   return showDate.join("/");
+// }
+
+function timeStamp(dateValue) {
+  var date = new Date(dateValue);
+  var showDate = [ date.getMonth() + 1, date.getDate(), date.getFullYear() ];
   return showDate.join("/");
 }
 
@@ -1417,7 +1422,6 @@ function showFollowers(object, location) {
   var followed = object.others.followed;
   var ratingCount = object.others.ratingCount;
   var tagCount = object.others.tagCount;
-  // console.log(followers);
   // var header = document.createElement('h4');
   // header.textContent = 'Followers';
   // location.appendChild(header);

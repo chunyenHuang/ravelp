@@ -30,11 +30,16 @@ function tool(){
     }
     return NaN;
   }
+  function timeStamp(date) {
+    var showDate = [ date.getMonth() + 1, date.getDate(), date.getFullYear() ];
+    return showDate.join("/");
+  }
 
   return {
     randomText: randomText,
     sessionToken: sessionToken,
-    filterInt: filterInt
+    filterInt: filterInt,
+    timeStamp: timeStamp,
   }
 }
 

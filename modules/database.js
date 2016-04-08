@@ -198,6 +198,13 @@ function database(){
   }
 
   // Add Random Reviews
+  function pickDate(){
+    var randomYear = Math.floor(Math.random() * (8)) + 2008;
+    var randomMonth = Math.floor(Math.random() * (11));
+    var randomDay = Math.floor(Math.random() * (29)) + 1;
+    var randomDate = new Date(randomYear, randomMonth, randomDay);
+    return randomDate;
+  }
   var written = [];
   var storesArray1 = [stores[0], stores[1], stores[2]];
   var storesArray2 = _.difference(stores, storesArray1);
@@ -221,11 +228,14 @@ function database(){
       } else {
         last =1;
       }
-      var randomYear = Math.floor(Math.random() * (8)) + 2008;
-      var randomMonth = Math.floor(Math.random() * (11)) + 1;
-      var randomDay = Math.floor(Math.random() * (29)) + 1;
-      // var randomDate = new Date(randomYear, randomMonth, randomDay);
-      var randomDate = [randomYear, randomMonth, randomDay];
+
+      // var randomYear = Math.floor(Math.random() * (8)) + 2008;
+      // var randomMonth = Math.floor(Math.random() * (11)) + 1;
+      // var randomDay = Math.floor(Math.random() * (29)) + 1;
+      // var randomDate = [randomYear, randomMonth, randomDay];
+
+      var randomDate = pickDate();
+      console.log(tool.timeStamp(randomDate));
       var randomTagsArray = [];
       for (var x = 1; x <= 10; x++) {
         var tf1 = Math.floor(Math.random() * (2)) + 1;
