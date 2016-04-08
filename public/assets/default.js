@@ -997,19 +997,36 @@ function reviewForm(store, review, location){
   midFromRow.className = 'col-sm-6';
   var rightFromRow = document.createElement('div');
   rightFromRow.className = 'col-sm-3';
-  var starRatings = document.createElement('div');
-  for (var i = 1; i <= 5; i++) {
+
+  // var starRatings = document.createElement('div');
+  // for (var i = 1; i <= 5; i++) {
+  //   var starLabel = document.createElement('label');
+  //   starLabel.className = "radio-inline";
+  //   starLabel.textContent = i;
+  //   var starInput = document.createElement('input');
+  //   starInput.setAttribute('type', 'radio');
+  //   starInput.setAttribute('name', 'star-options');
+  //   starInput.setAttribute('value', i);
+  //   starInput.setAttribute('required', 'required');
+  //   starLabel.appendChild(starInput);
+  //   starRatings.appendChild(starLabel);
+  // }
+  var ratingField = document.createElement('div');
+  ratingField.className = 'rating';
+  for (var i=5; i>=1; i--) {
     var starLabel = document.createElement('label');
-    starLabel.className = "radio-inline";
-    starLabel.textContent = i;
+    starLabel.setAttribute('for', 'star'+i);
+    starLabel.textContent = i + ' stars';
     var starInput = document.createElement('input');
     starInput.setAttribute('type', 'radio');
-    starInput.setAttribute('name', 'star-options');
+    starInput.setAttribute('id', 'star' + i);
+    starInput.setAttribute('name', 'rating');
     starInput.setAttribute('value', i);
     starInput.setAttribute('required', 'required');
-    starLabel.appendChild(starInput);
-    starRatings.appendChild(starLabel);
+    ratingField.appendChild(starInput);
+    ratingField.appendChild(starLabel);
   }
+
   var textarea = document.createElement('textarea');
   textarea.className= 'form-control';
   textarea.setAttribute('id', 'write-review-content')
@@ -1027,7 +1044,8 @@ function reviewForm(store, review, location){
     buttonCancel.className = 'btn btn-sm btn-default pull-right';
     buttonCancel.textContent = "Cancel";
     rightFromRow.appendChild(buttonCancel);
-  } else {
+  }
+  else {
     button.textContent = "Write My Review";
   }
 
@@ -1036,18 +1054,21 @@ function reviewForm(store, review, location){
   form.appendChild(leftFromRow);
   form.appendChild(midFromRow);
   form.appendChild(rightFromRow);
-  leftFromRow.appendChild(starRatings);
+  // leftFromRow.appendChild(starRatings);
+  leftFromRow.appendChild(ratingField);
   midFromRow.appendChild(textarea);
   rightFromRow.appendChild(button);
+
   form.addEventListener('submit', function(e){
     e.preventDefault();
-    var starOptions = document.getElementsByName('star-options');
+    var starOptions = document.getElementsByName('rating');
     for (var x=0; x<starOptions.length; x++){
       if (starOptions[x].checked){
         var starValue = filterInt(starOptions[x].value);
         break;
       }
     }
+    console.log(starValue);
     var newReview = {
       id: store.id,
       content: textarea.value,
