@@ -954,6 +954,9 @@ function showUserProfileThumb(object, location){
   box.className = 'user-thumb-box';
   var name = document.createElement('h5');
   name.textContent = user.firstname;
+  var userLocation = document.createElement('p');
+  userLocation.className = 'small-text';
+  userLocation.textContent = user.address.city + ', ' + user.address.state;
   var link = document.createElement('a');
   link.href="#";
   var thumb = document.createElement('img');
@@ -993,6 +996,7 @@ function showUserProfileThumb(object, location){
 
   box.appendChild(link);
   box.appendChild(name);
+  box.appendChild(userLocation);
   box.appendChild(totalReviewCounts);
   box.appendChild(totalFollowers);
   box.appendChild(followLink);
@@ -1011,7 +1015,6 @@ function showUserProfile(object, location){
   var complimented = object.others.complimented;
   $("#login-form").attr("data-route", 'user');
   $("#login-form").attr("data-route-id", user.id);
-
 
   var row = document.createElement('div');
   row.className = 'row';
@@ -1102,7 +1105,8 @@ function showUserProfile(object, location){
 
   var name = document.createElement('h1');
   name.textContent = user.firstname + ' ' + user.lastname;
-
+  var userLocation = document.createElement('h4');
+  userLocation.textContent = user.address.city + ', ' + user.address.state;
   var countlist = document.createElement('ul');
   countlist.className = 'list-inline list-unstyled profile-list';
 
@@ -1134,6 +1138,7 @@ function showUserProfile(object, location){
   countlist.appendChild(list2);
   countlist.appendChild(list3);
   titleBox.appendChild(name);
+  titleBox.appendChild(userLocation);
   titleBox.appendChild(countlist);
   headcol1.appendChild(titleBox);
   headrow.appendChild(headcol1);
@@ -1339,7 +1344,6 @@ function writeReview(store, location){
   }
   location.appendChild(writingZone);
 }
-
 
 function showAllStores(array, value, location){
   clearPage();

@@ -62,7 +62,12 @@ function database(){
       thumb: 'p1.jpg',
       email: '123123@gmail.com',
       phone: '123-123-1233',
-      address: '100 JD St., Irvine, CA92603',
+      address: {
+        address: '100 JD St',
+        city: 'Irvine',
+        state: 'CA',
+        zipCode: 92603,
+      },
       business: false,
       following: [2, 3, 5, 10, 11, 12, 13, 20]
     }, {
@@ -74,7 +79,12 @@ function database(){
       thumb: 'p2.jpg',
       email: '123123@gmail.com',
       phone: '123-123-1233',
-      address: '100 JD St., Irvine, CA92603',
+      address: {
+        address: '100 JD St',
+        city: 'Irvine',
+        state: 'CA',
+        zipCode: 92603,
+      },
       business: true,
       following: [1, 3, 5, 10, 15, 16, 17, 18, 19, 20]
     }, {
@@ -86,7 +96,12 @@ function database(){
       thumb: 'p3.jpg',
       email: '123123@gmail.com',
       phone: '123-123-1233',
-      address: '100 JD St., Irvine, CA92603',
+      address: {
+        address: '100 JD St',
+        city: 'Irvine',
+        state: 'CA',
+        zipCode: 92603,
+      },
       business: true,
       following: [1, 2, 5, 10]
     }
