@@ -206,11 +206,12 @@ function database(){
       var randomStore = _.sample(stores, 1);
       var last = _.last(randomStore[0].reviews);
       if (typeof(last)==='object'){
-        last = last.id+1
+        last = last.idł+1
       } else {
         last =1;
       }
-      var randomRating = Math.floor(Math.random() * (max-1)) + min;
+      var randomRating = Math.floor(Math.random() * (max-min+1)) + min;
+      console.log(randomRating);
       var checkStore = _.where(written.store, randomStore[0]);
       var wroteUser = [];
       if (checkStore.length >0) {
@@ -242,7 +243,7 @@ function database(){
     }
   }
 
-  reviewStores(storesArray1, 4, 5, 1000);
+  reviewStores(storesArray1, 3, 5, 1000);
   reviewStores(storesArray2, 1, 4, 500);
 
 

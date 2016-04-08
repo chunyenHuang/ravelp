@@ -204,16 +204,22 @@ document.body.addEventListener('click', function(event){
     XHR.open('get', '/follow-user/' + id);
     XHR.send();
     XHR.onload = function(){
-      var response = JSON.parse(XHR.responseText);
-      if (value === 'true'){
-        var location = document.getElementById('user-thumb-box-'+id);
-        removeAllChild(location);
-        displayUser(response.id, true, location);
+      if (XHR.status == 404) {
+        $('#login-window').modal('show');
       } else {
-        var locationId = event.target.getAttribute('saved-location');
-        var location = document.getElementById(locationId);
-        displayUser(response.id, false, location);
+        var response = JSON.parse(XHR.responseText);
+        if (value === 'true'){
+          var location = document.getElementById('user-thumb-box-'+id);
+          removeAllChild(location);
+          displayUser(response.id, true, location);
+        }
+        else {
+          var locationId = event.target.getAttribute('saved-location');
+          var location = document.getElementById(locationId);
+          displayUser(response.id, false, location);
+        }
       }
+
     }
   }
   if (type==='show-user') {
@@ -232,7 +238,9 @@ document.body.addEventListener('click', function(event){
       showAllStores(response.stores, 'revelance', main);
     }
   }
+  if (type==='compliment-user') {
 
+  }
 })
 document.body.addEventListener('submit', function(event){
   event.preventDefault();
@@ -273,8 +281,11 @@ document.body.addEventListener('submit', function(event){
         login.classList.add('hidden');
         profile.setAttribute('data-id', response.id);
         navbarUsername.textContent = 'Hello~ ' + response.firstname;
-        if (routeType==='store-review') {
+        if (routeType==='store') {
           getStoreData(filterInt(routeId));
+        }
+        if (routeType==='user') {
+          showUserProfile(filterInt(routeId));
         }
         // clearPage();
         // getCurrentUser();
@@ -807,6 +818,9 @@ function showStoreDetail(target){
   var userId = target.currentUserId;
   var writable = target.writable;
   var editable = target.editable;
+  $("#login-window").attr("data-route", "store");
+  $("#login-window").attr("data-route-id", store.id);
+
 
   // var storeImg = document.getElementById('store-img');
   var storeInfo = document.getElementById('store-info');
@@ -1145,6 +1159,9 @@ function showUserProfile(object, location){
   var tagCount = object.others.tagCount;
   var compliments = object.others.compliments;
   var complimented = object.others.complimented;
+  $("#login-form").attr("data-route", 'user');
+  $("#login-form").attr("data-route-id", user.id);
+
 
   var row = document.createElement('div');
   row.className = 'row';
@@ -1206,10 +1223,23 @@ function showUserProfile(object, location){
   complimentLink.appendChild(comIcon);
   complimentLink.className = 'btn btn-danger btn-block btn-inlist pull-right';
   complimentLink.setAttribute('type', 'button');
-  complimentLink.setAttribute('data-toggle', 'modal');
-  complimentLink.setAttribute('data-target', '#com-window');
+  // complimentLink.setAttribute('data-toggle', 'modal');
+  // complimentLink.setAttribute('data-target', '#com-window');
   complimentLink.setAttribute('data-id', user.id);
   complimentLink.setAttribute('data-name', user.firstname);
+  complimentLink.addEventListener('click', function(){
+    var XHR = new XMLHttpRequest();
+    XHR.open('get', 'check-current-user');
+    XHR.send();
+    XHR.onload = function (){
+      if (XHR.status === 404){
+        $('#login-window').modal('show');
+      }
+      else {
+        $('#com-window').modal('show');
+      }
+    }
+  })
   var form = document.getElementById('compliment-form');
   form.setAttribute('data-id', user.id);
   form.setAttribute('data-type', 'compliment-user');
@@ -1412,7 +1442,7 @@ function writeReview(store, location){
       msg.href='#';
       msg.setAttribute('data-target', '#login-window');
       msg.setAttribute('data-toggle', 'modal');
-      $("#login-form").attr("data-route", 'store-review');
+      $("#login-form").attr("data-route", 'store');
       $("#login-form").attr("data-route-id", store.id);
       msg.textContent = 'Login and Write Your Review.';
       writingZone.appendChild(msgbox);
