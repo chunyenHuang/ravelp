@@ -770,15 +770,23 @@ function showStoreDetail(target){
   removeAllChild(storeReviews);
   writeReview(store, storeReviews);
 
+  // function loadMoreReviews(review, showed, num){
+  //   review.reverse();
+  //   var notShown = _.difference(review, showed);
+  //   var toShow = _.first(notShown, num);
+  //   toShow.reverse();
+  //   showedReviews.push(toShow);
+  //   showedReviews = _.flatten(showedReviews);
+  // }
+
+  theReviews.reverse();
   var showedReviews = [];
-  function loadMoreReviews(review, showed, num){
-    review.reverse();
-    var notShown = _.difference(review, showed);
-    var toShow = _.first(notShown, num);
-    toShow.reverse();
-    showedReviews.push(toShow);
-    showedReviews = _.flatten(showedReviews);
-  }
+  var notShown = _.difference(theReviews, showedReviews);
+  var toShow = _.first(notShown, 10);
+  toShow = toShow.reverse();
+  showedReviews.push(toShow);
+  showedReviews = _.flatten(showedReviews);
+  console.log(showedReviews);
 
   function loadReviews(theReviews, reviewUserlist, userId, store, location){
     for (var i = (theReviews.length-1); i >= 0; i--) {
@@ -808,18 +816,32 @@ function showStoreDetail(target){
     }
   }
 
-  loadMoreReviews(theReviews, showedReviews, 10);
-  loadReviews(showedReviews, reviewUserlist, userId, store, storeReviews);
+  // loadMoreReviews(theReviews, showedReviews, 10);
+  loadReviews(toShow, reviewUserlist, userId, store, storeReviews);
 
   var expand = document.getElementById('expand-reviews');
+  expand.classList.add('text-center');
   removeAllChild(expand);
   var expandButton = document.createElement('button');
   expandButton.className = 'btn btn-sm btn-default btn-block margin-top-bottom';
-  expandButton.textContent = 'Load more reviews.'
+  expandButton.textContent = 'Load 10 more reviews.'
   expand.appendChild(expandButton);
+  var linktoTop = document.createElement('a');
+  linktoTop.href = '#';
+  var backToTop = document.createElement('button');
+  backToTop.className = 'btn margin-top-bottom';
+  backToTop.textContent = 'Back to Top';
+  expand.appendChild(linktoTop);
+  linktoTop.appendChild(backToTop);
+
   expandButton.addEventListener('click', function(){
-    loadMoreReviews(theReviews, showedReviews, 10);
-    loadReviews(showedReviews, reviewUserlist, userId, store, storeReviews);
+    // loadMoreReviews(theReviews, showedReviews, 10);
+    var notShown = _.difference(theReviews, showedReviews);
+    var toShow = _.first(notShown, 10);
+    toShow = toShow.reverse();
+    showedReviews.push(toShow);
+    showedReviews = _.flatten(showedReviews);
+    loadReviews(toShow, reviewUserlist, userId, store, storeReviews);
   })
 }
 
