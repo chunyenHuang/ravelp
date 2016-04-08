@@ -902,6 +902,7 @@ function showStoreDetail(target){
       reviewDate.textContent = timeStamp(theReviews[i].date);
 
       var reviewContent = document.createElement('p');
+      reviewContent.className = 'padding-top-bottom';
       reviewContent.textContent = theReviews[i].description;
 
       location.appendChild(reviewBox);
@@ -936,7 +937,7 @@ function setTagButtons(userId, store, review, location){
   XHR.onload = function (){
     var response = JSON.parse(XHR.responseText);
     var buttonUseful = document.createElement('button');
-    buttonUseful.className = 'btn btn-sm btn-default';
+    buttonUseful.className = 'btn btn-sm btn-useful';
     buttonUseful.setAttribute('name', 'useful');
     buttonUseful.setAttribute('data-id', store.id);
     buttonUseful.setAttribute('data-sub-id', review.id);
@@ -944,7 +945,7 @@ function setTagButtons(userId, store, review, location){
     buttonUseful.textContent = 'useful ' + response.useful;
 
     var buttonFunny = document.createElement('button');
-    buttonFunny.className = 'btn btn-sm btn-default';
+    buttonFunny.className = 'btn btn-sm btn-funny';
     buttonFunny.setAttribute('name', 'funny');
     buttonFunny.setAttribute('data-id', store.id);
     buttonFunny.setAttribute('data-sub-id', review.id);
@@ -952,7 +953,7 @@ function setTagButtons(userId, store, review, location){
     buttonFunny.textContent = 'funny ' + response.funny;
 
     var buttonCool = document.createElement('button');
-    buttonCool.className = 'btn btn-sm btn-default';
+    buttonCool.className = 'btn btn-sm btn-cool';
     buttonCool.setAttribute('name', 'cool');
     buttonCool.setAttribute('data-id', store.id);
     buttonCool.setAttribute('data-sub-id', review.id);
@@ -1019,7 +1020,7 @@ function reviewForm(store, review, location){
   button.setAttribute('data-id', store.id);
   button.setAttribute('date-type', 'write-review');
   button.setAttribute('type', 'submit');
-  button.className = 'btn btn-sm btn-default pull-right';
+  button.className = 'btn btn-sm btn-warning pull-right';
   if (typeof(review.description) != 'undefined'){
     button.textContent = "Update My Review";
     var buttonCancel = document.createElement('button');
