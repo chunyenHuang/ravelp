@@ -410,10 +410,11 @@ document.body.addEventListener('submit', function(event){
 
     XHR.onload = function(){
       if (XHR.status===200){
-        getCurrentUser();
+        // getCurrentUser();
+        getStoreData(id);
       }
       else {
-        clearPage();
+        homepage();
       }
     }
   }
@@ -1445,7 +1446,7 @@ function showFollowers(object, location) {
 
 function writeReview(store, location){
   var writingZone = document.createElement('div');
-  writingZone.className = 'writingZone';
+  writingZone.className = 'writingZone back-gray';
   removeAllChild(writingZone);
   var XHR = new XMLHttpRequest();
   XHR.open('get', '/check-review-post/' + store.id);
