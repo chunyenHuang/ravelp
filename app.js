@@ -99,8 +99,9 @@ app.get('/get-currentUser', session, function(req, res){
   var store = _.where(stores, {userId: id});
   var userReviews = statistic.reviews(id);
   var followers = statistic.followers(id);
+  console.log(currentUser[0].following);
   currentUser[0].following = statistic.arrUserIdByReviewDate(currentUser[0].following);
-
+  console.log(currentUser[0].following);
   if (store.length>0){
     var theStore = store;
   }
@@ -113,7 +114,6 @@ app.get('/get-currentUser', session, function(req, res){
   if (userReviews.length == 0){
     userReviews = [];
   }
-
   var others = {
     followers: followers,
     ratingCount: statistic.ratingCount(id),

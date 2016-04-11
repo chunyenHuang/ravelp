@@ -108,7 +108,7 @@ function database(){
   ];
 
   // Add Random Users
-  for (var i=4; i<=100;i++){
+  for (var i=4; i<=300;i++){
     var username = Faker.Name.findName();
     var firstname = Faker.Name.firstName();
     var lastname = Faker.Name.lastName();
@@ -202,6 +202,7 @@ function database(){
     var randomDate = new Date(randomYear, randomMonth, randomDay);
     return randomDate;
   }
+  var userWhoWrite = _.sample(users, 250);
   var storesArray1 = [stores[0], stores[1], stores[2]];
   var storesArray2 = _.difference(stores, storesArray1);
   function reviewStores(stores, min, max, amount){
@@ -216,7 +217,7 @@ function database(){
           wroteUsers.push(matches[0]);
         }
       }
-      var diffUser = _.difference(users, wroteUsers);
+      var diffUser = _.difference(userWhoWrite, wroteUsers);
       var randomeUser = _.sample(diffUser, 1);
       var last = _.last(randomStore[0].reviews);
       if (typeof(last)==='object'){

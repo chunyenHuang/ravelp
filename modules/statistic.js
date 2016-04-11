@@ -83,12 +83,17 @@ function statistic(){
     }
   }
   function arrUserIdByReviewDate(userArray) {
-    console.log(userArray);
     var newArray = [];
     for (var i = 0; i < userArray.length; i++) {
       var userId = userArray[i];
       var userReviews = reviews(userId);
-      newArray.push({id: userId, date: userReviews[0].date});
+      var date = new Date();
+      if (userReviews.length>0) {
+        date = new Date(userReviews[0].date);
+      } else {
+        date = new Date(1800, 12, 31);
+      }
+      newArray.push({id: userId, date: date});
     }
     console.log(newArray);
     userArray = [];
@@ -97,8 +102,6 @@ function statistic(){
     for (var i = 0; i < newArray.length; i++) {
       userArray.push(newArray[i].id);
     }
-    console.log(userArray);
-
     return userArray;
   }
 

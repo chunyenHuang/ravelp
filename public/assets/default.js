@@ -473,6 +473,7 @@ function showUser(object) {
   var accountInfo = document.getElementById('account-info');
   removeAllChild(accountInfo);
   showUserProfile(object, accountInfo);
+
   // My Reviews
   var accountReviews = document.getElementById('account-reviews');
   removeAllChild(accountReviews);
@@ -510,6 +511,7 @@ function showUser(object) {
   else {
     accountReviews.textContent = reviews;
   }
+
   // My Stores
   var accountStore = document.getElementById('account-store');
   removeAllChild(accountStore);
@@ -541,13 +543,14 @@ function showUser(object) {
     XHR.open('get', '/user-data/' + userId);
     XHR.send();
     XHR.onload = function(){
+      console.log(userId);
       var followingRow = document.createElement('div');
       followingRow.className = 'row';
       var followingCol = document.createElement('div');
       followingCol.className = 'col-xs-6 col-sm-4 col-md-2 padding-top-bottom';
       var followingBox = document.createElement('div');
       followingBox.className = 'user-thumb-box';
-      followingBox.setAttribute('id', 'user-thumb-box-' + user.following[i]);
+      followingBox.setAttribute('id', 'user-thumb-box-' + userId);
       followingCol.appendChild(followingBox);
       followingRow.appendChild(followingCol);
       var newFeed = document.createElement('div');
@@ -572,7 +575,7 @@ function showUser(object) {
       location.appendChild(followingRow);
     }
   }
-
+  console.log(user.following);
   if (user.following.length>0) {
     for (var i = 0; i < user.following.length; i++) {
       askforLatestReview(user.following[i], accountFollowing);
@@ -582,6 +585,7 @@ function showUser(object) {
     msgFollowing.textContent = 'You did not follow anyone.'
     accountFollowing.appendChild(msgFollowing);
   }
+
   // My Followers
   var accountFollowers = document.getElementById('account-followers');
   showFollowers(object ,accountFollowers);
