@@ -434,6 +434,8 @@ document.body.addEventListener('submit', function(event){
       var close = function(){
         removeAllChild(msgbox);
         $('#com-window').modal('hide');
+        var form = document.getElementById('compliment-form');
+        form.reset();
         clearPage();
         displayUser(id, false, main);
       }
@@ -1005,7 +1007,8 @@ function showUserProfileThumb(object, location){
   link.href="#";
   var thumb = document.createElement('img');
   thumb.src = user.thumb;
-  thumb.className = 'img-responsive img-rounded';
+  thumb.className = ' img-rounded';
+  thumb.setAttribute('width', '100%');
   thumb.setAttribute('data-id', user.id);
   thumb.setAttribute('data-type', 'show-user');
   link.appendChild(thumb);
