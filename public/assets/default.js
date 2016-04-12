@@ -179,13 +179,14 @@ document.body.addEventListener('click', function(event){
   if (type==='edit-review'){
     var subId = filterInt(event.target.getAttribute('data-sub-id'));
     var editBox = document.getElementById('myReview-' + id + '-' + subId);
+    var instore = event.target.getAttribute('instore');//true or false
     removeAllChild(editBox);
     var XHR = new XMLHttpRequest();
     XHR.open('get', '/get-review/' + id + '/' + subId);
     XHR.send();
     XHR.onload = function(){
       var response = JSON.parse(XHR.responseText);
-      reviewForm(response.store, response.review, editBox);
+      reviewForm(response.store, response.review, editBox, instore);
     }
   }
 
@@ -507,7 +508,7 @@ function showUser(object) {
       rLink.appendChild(rStoreImg)
       rTextBox.appendChild(rStoreTitle);
       rTextBox.appendChild(rField);
-      attachReview(theStore, myReviews, rField);
+      attachReview(theStore, myReviews, rField, 'false');
     }
   }
   else {
@@ -591,13 +592,14 @@ function showUser(object) {
   showFollowers(object ,accountFollowers);
 }
 
-function attachReview(store, review, location){
+function attachReview(store, review, location, instore){
   var editReview = document.createElement('button');
   editReview.className = 'btn btn-sm btn-default pull-right';
   editReview.textContent = 'Update My Review'
   editReview.setAttribute('data-id', store.id);
   editReview.setAttribute('data-sub-id', review.id);
   editReview.setAttribute('data-type', 'edit-review');
+  editReview.setAttribute('instore', instore);
   var rContent = document.createElement('p');
   rContent.textContent = review.description;
   var rDate = document.createElement('p');
@@ -904,11 +906,12 @@ function setTagButtons(userId, store, review, location){
   }
 }
 
-function reviewForm(store, review, location){
+function reviewForm(store, review, location, instore){
   var formRow = document.createElement('div');
   formRow.className = 'row';
   var form = document.createElement('form');
   form.className = 'form';
+  form.setAttribute('instore', instore);
   var leftFromRow = document.createElement('div');
   leftFromRow.className = 'col-sm-6';
   var midFromRow = document.createElement('div');
@@ -949,6 +952,13 @@ function reviewForm(store, review, location){
     buttonCancel.className = 'btn btn-sm btn-default pull-right';
     buttonCancel.textContent = "Cancel";
     rightFromRow.appendChild(buttonCancel);
+    buttonCancel.addEventListener('click', function(){
+      if (instore === 'true'){
+        getStoreData(store.id)
+      } else {
+        getCurrentUser();
+      }
+    })
   }
   else {
     button.textContent = "Write My Review";
@@ -964,8 +974,9 @@ function reviewForm(store, review, location){
   midFromRow.appendChild(textarea);
   rightFromRow.appendChild(button);
 
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
+  form.addEventListener('submit', function(event){
+    event.preventDefault();
+    var instore = event.target.getAttribute('instore');
     var starOptions = document.getElementsByName('rating');
     for (var x=0; x<starOptions.length; x++){
       if (starOptions[x].checked){
@@ -986,7 +997,11 @@ function reviewForm(store, review, location){
 
     XHR.onload = function(){
       var response = JSON.parse(XHR.responseText);
-      showStoreDetail(response);
+      if (instore === 'true') {
+        showStoreDetail(response);
+      } else {
+        getCurrentUser();
+      }
     }
   })
 }
@@ -1379,13 +1394,13 @@ function writeReview(store, location){
       msg.addEventListener('click', function(e){
         e.preventDefault();
         removeAllChild(writingZone);
-        reviewForm(store, 'comments...', writingZone);
+        reviewForm(store, 'comments...', writingZone, 'true');
       })
     } else {
       var response = JSON.parse(XHR.responseText);
       var msgbox = document.createElement('div');
       msgbox.setAttribute('id', 'myReview-' + store.id + '-' + response.review.id);
-      attachReview(store, response.review, msgbox);
+      attachReview(store, response.review, msgbox, 'true');
       writingZone.appendChild(msgbox);
     }
   }
