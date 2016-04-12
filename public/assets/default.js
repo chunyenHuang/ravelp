@@ -543,7 +543,6 @@ function showUser(object) {
     XHR.open('get', '/user-data/' + userId);
     XHR.send();
     XHR.onload = function(){
-      console.log(userId);
       var followingRow = document.createElement('div');
       followingRow.className = 'row';
       var followingCol = document.createElement('div');
@@ -575,7 +574,6 @@ function showUser(object) {
       location.appendChild(followingRow);
     }
   }
-  console.log(user.following);
   if (user.following.length>0) {
     for (var i = 0; i < user.following.length; i++) {
       askforLatestReview(user.following[i], accountFollowing);
@@ -790,7 +788,6 @@ function showStoreDetail(target){
   toShow = toShow.reverse();
   showedReviews.push(toShow);
   showedReviews = _.flatten(showedReviews);
-  console.log(showedReviews);
 
   function loadReviews(theReviews, reviewUserlist, userId, store, location){
     for (var i = (theReviews.length-1); i >= 0; i--) {
@@ -1054,7 +1051,6 @@ function showUserProfile(object, location){
   removeAllChild(location);
   var user = object.user;
   var reviews = object.reviews;
-  console.log(reviews);
   var followers = object.others.followers;
   var followed = object.others.followed;
   var ratingCount = object.others.ratingCount;
@@ -1513,7 +1509,8 @@ function showReviews(object, location) {
     content2.textContent = reviews[0].review.description;
     var tags = document.createElement('div');
 
-    setTagButtons(user.id, reviews[0].store, reviews[0].review, tags);
+    var currentUserId = object.others.currentUserId;
+    setTagButtons(currentUserId, reviews[0].store, reviews[0].review, tags);
 
     row.appendChild(col);
     col.appendChild(media);
@@ -1561,7 +1558,8 @@ function showReviews(object, location) {
       content2.textContent = reviews[i].review.description;
       var tags = document.createElement('div');
 
-      setTagButtons(user.id, reviews[i].store, reviews[i].review, tags);
+      var currentUserId = object.others.currentUserId;
+      setTagButtons(currentUserId, reviews[i].store, reviews[i].review, tags);
 
       row.appendChild(col);
       col.appendChild(media);

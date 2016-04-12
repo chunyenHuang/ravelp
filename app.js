@@ -99,9 +99,7 @@ app.get('/get-currentUser', session, function(req, res){
   var store = _.where(stores, {userId: id});
   var userReviews = statistic.reviews(id);
   var followers = statistic.followers(id);
-  console.log(currentUser[0].following);
   currentUser[0].following = statistic.arrUserIdByReviewDate(currentUser[0].following);
-  console.log(currentUser[0].following);
   if (store.length>0){
     var theStore = store;
   }
@@ -279,6 +277,7 @@ app.get('/user-data/:id', loginStatus, function(req, res){
     tagCount: statistic.tagCount(id),
     compliments: statistic.compliments(id),
     comlimented: comlimented,
+    currentUserId: req.matchUser.id,
   }
   res.json({
     user: user[0],
@@ -351,7 +350,6 @@ app.post('/newuser', jsonParser, function(req, res){
     var token = tool.sessionToken(50);
     res.cookie('sessionTokenForRavelp', token);
     sessions.push(new constructor.Session(token, currentUser[0].id));
-    console.log(newUser.id);
     res.sendStatus(200);
   }
 })
@@ -375,8 +373,6 @@ app.post('/new-store', session, jsonParser, function(req, res){
 })
 
 app.post('/new-review', session, jsonParser, function(req, res){
-  console.log(req.matchUser);
-  console.log(req.body.id);
   var matchUser = req.matchUser;
   var id = tool.filterInt(req.body.id);
   var description = req.body.content;

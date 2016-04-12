@@ -122,7 +122,7 @@ function database(){
     }
     var thumb = Faker.Image.avatar();
     var following = [];
-    var randomOtherUsers = _.sample(users, 50);
+    var randomOtherUsers = _.sample(users, 5);
     for (var x = 0; x < randomOtherUsers.length; x++) {
       following.push(randomOtherUsers[x].id);
     }
