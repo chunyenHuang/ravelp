@@ -95,10 +95,8 @@ function statistic(){
       }
       newArray.push({id: userId, date: date});
     }
-    console.log(newArray);
     userArray = [];
     newArray = _.sortBy(newArray, 'date').reverse();
-    console.log(newArray);
     for (var i = 0; i < newArray.length; i++) {
       userArray.push(newArray[i].id);
     }

@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var mocha = require('gulp-mocha');
 var nodemon = require('gulp-nodemon');
 var htmlmin = require('gulp-htmlmin');
 var csso = require('gulp-csso');
@@ -20,10 +21,14 @@ gulp.task('minifyCSS', function(){
           .pipe(gulp.dest(homedir.assets));
 })
 
-gulp.task('server', function(){
+gulp.task('test-routes', function () {
+  return gulp.src('app.spec.js').pipe(mocha());
+});
+
+gulp.task('go', function(){
   nodemon({
     script: 'app.js'
-  })
+  }).on('start', ['test-routes']);
 
   var watcherCSS = gulp.watch('./developer/*.css', ['minifyCSS']);
   watcherCSS.on('change', function(event){
