@@ -108,7 +108,7 @@ function database(){
   ];
 
   // Add Random Users
-  for (var i=4; i<=300;i++){
+  for (var i=4; i<=20;i++){
     var username = Faker.Name.findName();
     var firstname = Faker.Name.firstName();
     var lastname = Faker.Name.lastName();
@@ -202,7 +202,7 @@ function database(){
     var randomDate = new Date(randomYear, randomMonth, randomDay);
     return randomDate;
   }
-  var userWhoWrite = _.sample(users, 250);
+  var userWhoWrite = _.sample(users, 10);
   var storesArray1 = [stores[0], stores[1], stores[2]];
   var storesArray2 = _.difference(stores, storesArray1);
   function reviewStores(stores, min, max, amount){
@@ -241,14 +241,14 @@ function database(){
       randomStore[0].reviews.push(addNewReview);
     }
   }
-  reviewStores(storesArray1, 3, 5, 1000);
-  reviewStores(storesArray1, 1, 3, 50);
-  reviewStores(storesArray2, 3, 5, 100);
-  reviewStores(storesArray2, 1, 4, 500);
+  reviewStores(storesArray1, 3, 5, 10);
+  reviewStores(storesArray1, 1, 3, 10);
+  reviewStores(storesArray2, 3, 5, 10);
+  reviewStores(storesArray2, 1, 4, 10);
 
   // Add Random Compliment
   var compliments = [];
-  for (var i = 0; i < 500; i++) {
+  for (var i = 0; i < 30; i++) {
     var randomeUser1 = _.sample(users, 1);
     var randomeUser2 = _.sample(users, 1);
     var message = Faker.Lorem.sentence();
