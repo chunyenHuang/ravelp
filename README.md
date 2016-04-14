@@ -9,13 +9,13 @@ A Yelp-like review-based website.[Live Demo on Heroku](https://ravelp.herokuapp.
 
 ## User can login for more features
 ### Features include:
-general users:
-1. Write and rate stores
-2. Manage own reviews
-3. Leave tags for other reviews
-4. Follow other users
-5. Compliment other users
+#### general users:  
+1. Write and rate stores  
+2. Manage own reviews  
+3. Leave tags for other reviews  
+4. Follow other users  
+5. Compliment other users  
 
-business accounts:
-1. Add own stores
-2. Manage own stores
+#### business accounts:  
+1. Add own stores  
+2. Manage own stores  
